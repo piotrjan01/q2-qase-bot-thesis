@@ -63,7 +63,12 @@ public class CommFun {
 		if (Math.abs(pos1.z-pos2.z) < tolerance) return true;
 		return false;
 	}
-	
+
+        /**
+         *
+         * @param ind the index of the gun in bots inventory
+         * @return the gun's name / or ammunition name
+         */
 	public static String getGunName(int ind) {
 		switch (ind) {
 			case 7: return "BLASTER";
