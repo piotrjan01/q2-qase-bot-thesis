@@ -15,7 +15,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * The global navigation module of the MapBotBase.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  * @see MapBotBase
  */
 public class RLBotGlobalNav implements GlobalNav {

@@ -1,13 +1,13 @@
 package piotrrr.thesis.common.jobs;
 
 import piotrrr.thesis.bots.botbase.BotBase;
-import piotrrr.thesis.bots.referencebot.ReferenceBot;
+import piotrrr.thesis.bots.referencebot22.ReferenceBot22;
 import piotrrr.thesis.common.fsm.StateBot;
 import soc.qase.bot.BasicBot;
 
 /**
  * This job reports bot's state changes.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class StateReporter extends Job {
 	

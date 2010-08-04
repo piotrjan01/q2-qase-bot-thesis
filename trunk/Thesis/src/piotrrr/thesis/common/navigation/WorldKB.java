@@ -17,7 +17,7 @@ import soc.qase.state.Entity;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class WorldKB {
 

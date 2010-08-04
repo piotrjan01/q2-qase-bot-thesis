@@ -18,7 +18,7 @@ import piotrrr.thesis.common.stats.BotStatistic.Reward;
 
 /**
  *
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public class StatsChartsFactory {
 

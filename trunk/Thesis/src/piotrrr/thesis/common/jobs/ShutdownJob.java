@@ -5,7 +5,7 @@ import piotrrr.thesis.bots.botbase.BotBase;
 /**
  * Used to call some methods, when the application is interrupted by 
  * for instance CTR+C
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  */
 public class ShutdownJob extends Job {
 

@@ -16,7 +16,7 @@ import piotrrr.thesis.common.combat.EnemyInfo;
  * 
  * TODO: list the commands in the comment!
  * 
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class BasicCommands extends Job {
 	

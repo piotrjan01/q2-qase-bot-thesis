@@ -7,7 +7,7 @@ import soc.qase.tools.vecmath.Vector3f;
  * This class expresses the explicit instructions on how the bot should move
  * in the next frame. It contains information like in which direction it 
  * should move and what speed and where should it aim.
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  */
 public class NavInstructions {
 

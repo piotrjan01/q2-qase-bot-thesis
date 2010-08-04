@@ -1,9 +1,9 @@
 package piotrrr.thesis.testing;
 
-import piotrrr.thesis.bots.smartbot.SmartBot;
+import piotrrr.thesis.bots.smartbot.ReferenceBot;
 import piotrrr.thesis.bots.tuning.NavConfig;
 
-public class SmartBotMock extends SmartBot {
+public class SmartBotMock extends ReferenceBot {
 
 	public SmartBotMock() {
 		super("MOCK", "none");

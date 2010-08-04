@@ -7,7 +7,7 @@ package piotrrr.thesis.common.fsm;
 
 /**
  *
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public interface StateBot {
 

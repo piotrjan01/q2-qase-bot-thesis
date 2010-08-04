@@ -1,4 +1,4 @@
-package piotrrr.thesis.bots.referencebot;
+package piotrrr.thesis.bots.referencebot22;
 
 import java.util.TreeSet;
 import java.util.Vector;
@@ -16,10 +16,10 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * The global navigation module of the MapBotBase.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  * @see MapBotBase
  */
-public class ReferenceBotGlobalNav implements GlobalNav {
+public class ReferenceBotGlobalNav222 implements GlobalNav {
 	
 	public static final double PLAN_TIME_PER_DIST = 0.1;
 	
@@ -28,10 +28,10 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 	@Override
 	public NavPlan establishNewPlan(MapBotBase referenceBot, NavPlan oldPlan) {
 		
-		ReferenceBot bot;
+		ReferenceBot22 bot;
 		
 		try {
-			bot = (ReferenceBot)referenceBot;
+			bot = (ReferenceBot22)referenceBot;
 		}
 		catch (Exception e) {
 			e.printStackTrace();

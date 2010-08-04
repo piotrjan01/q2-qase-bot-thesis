@@ -7,7 +7,7 @@ package piotrrr.thesis.common.stats;
 
 /**
  *
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public class StatsTools {
 

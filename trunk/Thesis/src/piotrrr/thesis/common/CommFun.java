@@ -4,7 +4,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * Common functions that may be used by bots.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class CommFun {
 	

@@ -16,7 +16,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  *
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public class BotStatistic implements Serializable {
     

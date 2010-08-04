@@ -5,7 +5,7 @@ import soc.qase.state.Entity;
 
 /**
  * Enumerates entity types recognized by program.
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  */
 public enum EntityType {
 	

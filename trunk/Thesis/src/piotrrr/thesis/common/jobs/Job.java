@@ -4,7 +4,7 @@ import piotrrr.thesis.bots.botbase.BotBase;
 
 /**
  * The Job is a special procedure, usually run periodically by the bot.
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  *
  */
 public abstract class Job extends Thread {

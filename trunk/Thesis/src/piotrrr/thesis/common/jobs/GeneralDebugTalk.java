@@ -5,7 +5,7 @@ import piotrrr.thesis.tools.Dbg;
 
 /**
  * Dummy job, that repeats some debug info with given period.
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  */
 public class GeneralDebugTalk extends Job {
 	

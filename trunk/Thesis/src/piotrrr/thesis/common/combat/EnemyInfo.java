@@ -8,7 +8,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * This class stores the information about the enemies in the game.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class EnemyInfo implements GameObject {
 	

@@ -6,7 +6,7 @@ import soc.qase.state.Entity;
 
 /**
  * This class encapsulates the path that the bot has planned to move along.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class NavPlan {
 

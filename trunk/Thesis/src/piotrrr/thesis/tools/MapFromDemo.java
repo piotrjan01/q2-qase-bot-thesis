@@ -9,7 +9,7 @@ import soc.qase.ai.waypoint.WaypointMapGenerator;
 /**
  * This is a simple tool that facilitates creating WaypointMaps from recorded demos
  * in DM2 format.
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  */
 public class MapFromDemo {
 
