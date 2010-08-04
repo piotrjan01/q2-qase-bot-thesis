@@ -1,4 +1,4 @@
-package piotrrr.thesis.bots.referencebot22;
+package piotrrr.thesis.bots.referencebot;
 
 import java.util.TreeSet;
 import java.util.Vector;
@@ -7,9 +7,9 @@ import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.entities.EntityDoublePair;
 import piotrrr.thesis.common.entities.EntityType;
-import piotrrr.thesis.common.entities.EntityTypeDoublePair;
 import piotrrr.thesis.common.navigation.GlobalNav;
 import piotrrr.thesis.common.navigation.NavPlan;
+import piotrrr.thesis.tools.Dbg;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
 import soc.qase.tools.vecmath.Vector3f;
@@ -19,31 +19,28 @@ import soc.qase.tools.vecmath.Vector3f;
  * @author Piotr Gwizdała
  * @see MapBotBase
  */
-public class ReferenceBotGlobalNav222 implements GlobalNav {
+public class ReferenceBotGlobalNav implements GlobalNav {
 	
 	public static final double PLAN_TIME_PER_DIST = 0.1;
 	
 	public static final int maximalDistance = 200;
 	
+	/**
+	 * Returns the new plan that the bot should follow
+	 * @param bot the bot for which the plan is being established
+	 * @param oldPlan the bot's old plan
+	 * @return the new plan for the bot (can be the same as the oldPlan)
+	 */
 	@Override
-	public NavPlan establishNewPlan(MapBotBase referenceBot, NavPlan oldPlan) {
+	public NavPlan establishNewPlan(MapBotBase smartBot, NavPlan oldPlan) {
 		
-		ReferenceBot22 bot;
-		
-		try {
-			bot = (ReferenceBot22)referenceBot;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		
+		ReferenceBot bot = (ReferenceBot)smartBot;
 	
 		/**
 		 * When do we change the plan?
 		 * + when we don't have plan
 		 * + when we accomplish the old one
-		 * + when the state was changed
+		 * - when the state was changed (fitness or firepower)
 		 * + when the bot is stuck
 		 * + when the decision times out....?
 		 * - when the enemy appears
@@ -53,20 +50,16 @@ public class ReferenceBotGlobalNav222 implements GlobalNav {
 		
 		boolean changePlan = false;
 		
-		String talk = "";
+//		String talk = "";
 		
 		if (oldPlan == null) {
 			changePlan = true;
-			talk = "plan change: no plan!";
+//			talk = "plan change: no plan!";
 		}
 		else if (oldPlan.done) {
 			changePlan = true;
 			bot.kb.addToBlackList(oldPlan.dest);
-			talk = "plan change: old plan is done!";
-		}
-		else if (bot.stateReporter.stateHasChanged) {
-			changePlan = true;
-			talk = "plan change: state changed";
+//			talk = "plan change: old plan is done!";
 		}
 		//if the bot is stuck
 		else if (bot.stuckDetector.isStuck) {
@@ -95,19 +88,9 @@ public class ReferenceBotGlobalNav222 implements GlobalNav {
 		//If no spontaneous plans available, we continue with old one...
 		if (! changePlan) return oldPlan;
 		
-		
-		//We construct the ranking of entities
-		TreeSet<EntityDoublePair> ranking = new TreeSet<EntityDoublePair>();
-		EntityTypeDoublePair [] ents = bot.fsm.getDesiredEntities();
-		for (EntityTypeDoublePair etdp : ents) {
-			Vector<Entity> items  = bot.kb.getActiveEntitiesByType(etdp.t, bot.getFrameNumber());
-			for (Entity item : items) {
-				double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), item.getObjectPosition());
-				if (distance == Double.MAX_VALUE) continue;
-				double rank = 10000*etdp.d / distance; //the weight divided by distance
-				ranking.add(new EntityDoublePair(item, rank));
-			}
-		}
+		//Get the entity ranking:
+		TreeSet<EntityDoublePair> ranking = ReferenceBotEntityRanking.getEntityRanking(bot);
+//		bot.dtalk.addToLog(SmartBotEntityRanking.getRankingDebugInfo(bot));
 		
 		while ((plan == null || plan.path == null)) {
 			
@@ -128,6 +111,7 @@ public class ReferenceBotGlobalNav222 implements GlobalNav {
 //					" et: "+EntityType.getEntityType(ranking.last().ent)+
 //					" dist: "+distance+" timeout: "+PLAN_TIME_PER_DIST*distance);
 			plan = new NavPlan(bot, ranking.last().ent, (int)(PLAN_TIME_PER_DIST*distance));
+			
 //			plan.path = bot.kb.findShortestPath(bot.getBotPosition(), plan.dest.getObjectPosition());
 			ranking.pollLast();
 			
@@ -140,7 +124,7 @@ public class ReferenceBotGlobalNav222 implements GlobalNav {
 	 * @param bot the bot for whom we search for the plan
 	 * @return the navigation plan with just wan waypoint that is close to the bot - so called spontaneous plan.
 	 */
-	static NavPlan getSpontaneousPlan(MapBotBase bot) {
+	static NavPlan getSpontaneousPlan(ReferenceBot bot) {
 		NavPlan newPlan = null;
 		
 		Vector<Entity> entries = bot.kb.getActiveEntitiesWithinTheRange(bot.getBotPosition(), maximalDistance, bot.getFrameNumber());
@@ -159,6 +143,9 @@ public class ReferenceBotGlobalNav222 implements GlobalNav {
 		}
 		
 		if (chosen == null) return null;
+		
+//		if ( ! CommFun.areOnTheSameHeight(chosen.wp.getPosition(), bot.getBotPosition())) Dbg.err("not the same height!!!");
+//		else Dbg.prn("bot h: "+bot.getBotPosition().z+" target h: "+chosen.wp.getPosition().z);
 		
 		bot.kb.addToBlackList(chosen);
 		
@@ -180,14 +167,15 @@ public class ReferenceBotGlobalNav222 implements GlobalNav {
 	 * @param bot
 	 * @return the random spontaneous decision.
 	 */
-	static NavPlan getSpontaneousAntiStuckPlan(MapBotBase bot) {
+	static NavPlan getSpontaneousAntiStuckPlan(ReferenceBot bot) {
 		Entity re = bot.kb.getRandomItem();
 		int timeout = (int)(80*PLAN_TIME_PER_DIST);
 		NavPlan ret = new NavPlan(bot, re, timeout);
 		ret.path = new Waypoint[1];
 		ret.path[0] = new Waypoint(re.getObjectPosition());
 		ret.isSpontaneos = true;
-//		double distance = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), re.getObjectPosition());
+//		int wpInd = bot.kb.map.indexOf(random.getNode());
+		double distance = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), re.getObjectPosition());
 //		bot.dtalk.addToLog("got new anti-stuck spontaneous plan: dist: "+distance+" timeout: "+timeout);
 		return ret;
 	}
@@ -200,7 +188,7 @@ public class ReferenceBotGlobalNav222 implements GlobalNav {
 	 * @return distance between from and to following the shortest path on the map. 
 	 * Double.MAX_VALUE is returned in case there is no path.
 	 */
-	static double getDistanceFollowingMap(MapBotBase bot, Vector3f from, Vector3f to) {
+	static double getDistanceFollowingMap(ReferenceBot bot, Vector3f from, Vector3f to) {
 		double distance = 0.0d;
 		Waypoint [] path = bot.kb.map.findShortestPath(from, to);
 		if (path == null) {
@@ -214,7 +202,5 @@ public class ReferenceBotGlobalNav222 implements GlobalNav {
 		}
 		return distance;
 	}
-	
-	
 	
 }

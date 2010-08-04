@@ -1,4 +1,4 @@
-package piotrrr.thesis.bots.smartbot;
+package piotrrr.thesis.bots.referencebot;
 
 
 import piotrrr.thesis.bots.tuning.NavConfig;
