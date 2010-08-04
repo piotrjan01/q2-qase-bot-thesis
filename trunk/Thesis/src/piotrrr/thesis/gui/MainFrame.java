@@ -35,10 +35,9 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import piotrrr.thesis.bots.AppConfig;
 import piotrrr.thesis.bots.botbase.BotBase;
-import piotrrr.thesis.bots.referencebot22.ReferenceBot22;
 import piotrrr.thesis.bots.rlbot.RLBot;
 
-import piotrrr.thesis.bots.smartbot.ReferenceBot;
+import piotrrr.thesis.bots.referencebot.ReferenceBot;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
@@ -80,11 +79,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLayeredPane1 = new javax.swing.JLayeredPane();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel7 = new javax.swing.JPanel();
-        panelRunBots = new javax.swing.JPanel();
-        nrBotsField = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        connectOthersButton = new javax.swing.JButton();
         jPanel9 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         connectedBotsList1 = new javax.swing.JList();
@@ -96,9 +90,9 @@ public class MainFrame extends javax.swing.JFrame {
         connectDebugedButton = new javax.swing.JButton();
         jPanel12 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        nrOfSmartBotsTextField2 = new javax.swing.JTextField();
+        nrOfRefBotsTextField2 = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        connectSmartBotsjButton1 = new javax.swing.JButton();
+        connectRefBotsjButton1 = new javax.swing.JButton();
         jPanel14 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         nrOfRLtBotsTextField3 = new javax.swing.JTextField();
@@ -192,47 +186,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        panelRunBots.setBorder(javax.swing.BorderFactory.createTitledBorder("Connect Reference bots"));
-
-        nrBotsField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        nrBotsField.setText("3");
-
-        jLabel1.setText("Connect");
-
-        jLabel2.setText("ReferenceBots");
-
-        connectOthersButton.setText("Connect them!");
-        connectOthersButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectOthersButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout panelRunBotsLayout = new javax.swing.GroupLayout(panelRunBots);
-        panelRunBots.setLayout(panelRunBotsLayout);
-        panelRunBotsLayout.setHorizontalGroup(
-            panelRunBotsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRunBotsLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(nrBotsField, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(connectOthersButton))
-        );
-        panelRunBotsLayout.setVerticalGroup(
-            panelRunBotsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRunBotsLayout.createSequentialGroup()
-                .addGroup(panelRunBotsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nrBotsField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(connectOthersButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Connected bots"));
 
         connectedBotsList1.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -314,20 +267,20 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel5.setText("Connect");
 
-        nrOfSmartBotsTextField2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        nrOfSmartBotsTextField2.setText("3");
-        nrOfSmartBotsTextField2.addActionListener(new java.awt.event.ActionListener() {
+        nrOfRefBotsTextField2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        nrOfRefBotsTextField2.setText("3");
+        nrOfRefBotsTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nrOfSmartBotsTextField2ActionPerformed(evt);
+                nrOfRefBotsTextField2ActionPerformed(evt);
             }
         });
 
         jLabel8.setText("SmartBots");
 
-        connectSmartBotsjButton1.setText("Connect them!");
-        connectSmartBotsjButton1.addActionListener(new java.awt.event.ActionListener() {
+        connectRefBotsjButton1.setText("Connect them!");
+        connectRefBotsjButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectSmartBotsjButton1ActionPerformed(evt);
+                connectRefBotsjButton1ActionPerformed(evt);
             }
         });
 
@@ -339,11 +292,11 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(nrOfSmartBotsTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(nrOfRefBotsTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8)
                 .addGap(18, 18, 18)
-                .addComponent(connectSmartBotsjButton1)
+                .addComponent(connectRefBotsjButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel12Layout.setVerticalGroup(
@@ -351,9 +304,9 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(nrOfSmartBotsTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nrOfRefBotsTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
-                    .addComponent(connectSmartBotsjButton1))
+                    .addComponent(connectRefBotsjButton1))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -522,8 +475,7 @@ public class MainFrame extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(jPanel7Layout.createSequentialGroup()
-                            .addComponent(panelRunBots, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGap(327, 327, 327)
                             .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -535,9 +487,7 @@ public class MainFrame extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelRunBots, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1194,16 +1144,6 @@ public class MainFrame extends javax.swing.JFrame {
         dbgBot = bot;
     }//GEN-LAST:event_connectDebugedButtonActionPerformed
 
-    private void connectOthersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectOthersButtonActionPerformed
-        int num = Integer.parseInt(nrBotsField.getText());
-        for (int i = 0; i < num; i++) {
-            ReferenceBot22 bot = new ReferenceBot22("ReferenceBot-" + i, AppConfig.skinName);
-            bot.dtalk.active = false;
-            bot.connect(AppConfig.serverIP, AppConfig.serverPort);
-            bots.add(bot);
-        }
-    }//GEN-LAST:event_connectOthersButtonActionPerformed
-
     private void pauseToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseToggleButtonActionPerformed
         dbgBot.botPaused = pauseToggleButton.isSelected();
     }//GEN-LAST:event_pauseToggleButtonActionPerformed
@@ -1308,15 +1248,15 @@ public class MainFrame extends javax.swing.JFrame {
         setReqList(v);
     }//GEN-LAST:event_enemyInfoRadioButton1ActionPerformed
 
-    private void connectSmartBotsjButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectSmartBotsjButton1ActionPerformed
-        int num = Integer.parseInt(nrOfSmartBotsTextField2.getText());
+    private void connectRefBotsjButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectRefBotsjButton1ActionPerformed
+        int num = Integer.parseInt(nrOfRefBotsTextField2.getText());
         for (int i = 0; i < num; i++) {
             ReferenceBot bot = new ReferenceBot("SmartBot-" + i, AppConfig.skinName);
             bot.dtalk.active = false;
             bot.connect(AppConfig.serverIP, AppConfig.serverPort);
             bots.add(bot);
         }
-    }//GEN-LAST:event_connectSmartBotsjButton1ActionPerformed
+    }//GEN-LAST:event_connectRefBotsjButton1ActionPerformed
 
     private void connectedBotsList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_connectedBotsList1ValueChanged
         int ind = connectedBotsList1.getSelectedIndex();
@@ -1389,9 +1329,9 @@ public class MainFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_refreshButtonActionPerformed
 
-    private void nrOfSmartBotsTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrOfSmartBotsTextField2ActionPerformed
+    private void nrOfRefBotsTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrOfRefBotsTextField2ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_nrOfSmartBotsTextField2ActionPerformed
+    }//GEN-LAST:event_nrOfRefBotsTextField2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
@@ -1481,7 +1421,7 @@ public class MainFrame extends javax.swing.JFrame {
         MapBotBase bot = null;
         if (option.equals("ReferenceBot")) {
             Dbg.prn("connecting rfrnc");
-            bot = new ReferenceBot22(option + "-" + nr, AppConfig.skinName);
+            bot = new ReferenceBot(option + "-" + nr, AppConfig.skinName);
 
         } else if (option.equals("RLBot")) {
             Dbg.prn("connecting rlbot learing");
@@ -1583,9 +1523,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField botMapsPathjTextField3;
     private javax.swing.JTextArea botStateInfoTextArea1;
     private javax.swing.JButton connectDebugedButton;
-    private javax.swing.JButton connectOthersButton;
     private javax.swing.JButton connectRLBotsjButton2;
-    private javax.swing.JButton connectSmartBotsjButton1;
+    private javax.swing.JButton connectRefBotsjButton1;
     private javax.swing.JList connectedBotsList1;
     private javax.swing.JPanel deathsByTypejPanel14;
     private javax.swing.JButton disconnectSelectedButton1;
@@ -1601,7 +1540,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -1612,7 +1550,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1656,11 +1593,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextArea messages;
     private javax.swing.JScrollPane messagesScrollPane1;
     private javax.swing.JRadioButton navPlanRadioButton;
-    private javax.swing.JTextField nrBotsField;
     private javax.swing.JList nrOfGamesList;
     private javax.swing.JTextField nrOfRLtBotsTextField3;
-    private javax.swing.JTextField nrOfSmartBotsTextField2;
-    private javax.swing.JPanel panelRunBots;
+    private javax.swing.JTextField nrOfRefBotsTextField2;
     private javax.swing.JToggleButton pauseAnotherBotsToggle;
     private javax.swing.JToggleButton pauseToggleButton;
     private javax.swing.JRadioButton pickupFailuresRadioButton1;

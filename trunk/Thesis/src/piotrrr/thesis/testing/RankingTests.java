@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import piotrrr.thesis.bots.smartbot.ReferenceBot;
-import piotrrr.thesis.bots.smartbot.ReferenceBotEntityRanking;
+import piotrrr.thesis.bots.referencebot.ReferenceBot;
+import piotrrr.thesis.bots.referencebot.ReferenceBotEntityRanking;
 import piotrrr.thesis.tools.Dbg;
 import soc.qase.state.Entity;
 

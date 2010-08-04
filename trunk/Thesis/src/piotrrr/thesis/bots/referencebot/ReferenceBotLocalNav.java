@@ -1,4 +1,4 @@
-package piotrrr.thesis.bots.referencebot22;
+package piotrrr.thesis.bots.referencebot;
 
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
@@ -9,12 +9,14 @@ import piotrrr.thesis.tools.Dbg;
 import soc.qase.state.PlayerMove;
 import soc.qase.tools.vecmath.Vector3f;
 
-public class ReferenceBotLocalNav22 implements LocalNav {
+public class ReferenceBotLocalNav implements LocalNav {
 	
 	public static final int acceptableDistance = 40;
 
 	@Override
-	public NavInstructions getNavigationInstructions(MapBotBase bot) {
+	public NavInstructions getNavigationInstructions(MapBotBase smartBot) {
+		
+		ReferenceBot bot = (ReferenceBot)smartBot;
 		
 		NavPlan plan = bot.plan;
 		

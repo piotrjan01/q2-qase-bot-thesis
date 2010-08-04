@@ -1,6 +1,6 @@
 package piotrrr.thesis.testing;
 
-import piotrrr.thesis.bots.smartbot.ReferenceBot;
+import piotrrr.thesis.bots.referencebot.ReferenceBot;
 import piotrrr.thesis.bots.tuning.NavConfig;
 
 public class SmartBotMock extends ReferenceBot {
