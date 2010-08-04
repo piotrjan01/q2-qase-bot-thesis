@@ -9,7 +9,7 @@ import piotrrr.thesis.common.entities.EntityTypeDoublePair;
 /**
  * The Finite State Machine that is used to determine how much the bot 
  * wants each type of entity in its current state.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class NeedsFSM {
 	

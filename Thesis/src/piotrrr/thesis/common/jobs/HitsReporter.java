@@ -8,7 +8,7 @@ import piotrrr.thesis.tools.Dbg;
 
 /**
  * This job reports bot's state changes.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class HitsReporter extends Job {
 

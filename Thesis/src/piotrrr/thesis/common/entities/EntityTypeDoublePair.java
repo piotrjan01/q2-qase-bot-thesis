@@ -3,7 +3,7 @@ package piotrrr.thesis.common.entities;
 /**
  * Class that encapsulates EntityType 
  * and double precision floating point number.
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  */
 public class EntityTypeDoublePair {
 	

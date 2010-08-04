@@ -35,10 +35,10 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import piotrrr.thesis.bots.AppConfig;
 import piotrrr.thesis.bots.botbase.BotBase;
-import piotrrr.thesis.bots.referencebot.ReferenceBot;
+import piotrrr.thesis.bots.referencebot22.ReferenceBot22;
 import piotrrr.thesis.bots.rlbot.RLBot;
 
-import piotrrr.thesis.bots.smartbot.SmartBot;
+import piotrrr.thesis.bots.smartbot.ReferenceBot;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
@@ -52,7 +52,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  *
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public class MainFrame extends javax.swing.JFrame {
 
@@ -1197,7 +1197,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void connectOthersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectOthersButtonActionPerformed
         int num = Integer.parseInt(nrBotsField.getText());
         for (int i = 0; i < num; i++) {
-            ReferenceBot bot = new ReferenceBot("ReferenceBot-" + i, AppConfig.skinName);
+            ReferenceBot22 bot = new ReferenceBot22("ReferenceBot-" + i, AppConfig.skinName);
             bot.dtalk.active = false;
             bot.connect(AppConfig.serverIP, AppConfig.serverPort);
             bots.add(bot);
@@ -1311,7 +1311,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void connectSmartBotsjButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectSmartBotsjButton1ActionPerformed
         int num = Integer.parseInt(nrOfSmartBotsTextField2.getText());
         for (int i = 0; i < num; i++) {
-            SmartBot bot = new SmartBot("SmartBot-" + i, AppConfig.skinName);
+            ReferenceBot bot = new ReferenceBot("SmartBot-" + i, AppConfig.skinName);
             bot.dtalk.active = false;
             bot.connect(AppConfig.serverIP, AppConfig.serverPort);
             bots.add(bot);
@@ -1481,7 +1481,7 @@ public class MainFrame extends javax.swing.JFrame {
         MapBotBase bot = null;
         if (option.equals("ReferenceBot")) {
             Dbg.prn("connecting rfrnc");
-            bot = new ReferenceBot(option + "-" + nr, AppConfig.skinName);
+            bot = new ReferenceBot22(option + "-" + nr, AppConfig.skinName);
 
         } else if (option.equals("RLBot")) {
             Dbg.prn("connecting rlbot learing");

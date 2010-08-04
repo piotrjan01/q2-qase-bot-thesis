@@ -7,7 +7,7 @@ import piotrrr.thesis.common.entities.EntityTypeDoublePair;
 
 /**
  * This state should be used by bot when it searches for some health packages.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 class HealingState extends State {
 	

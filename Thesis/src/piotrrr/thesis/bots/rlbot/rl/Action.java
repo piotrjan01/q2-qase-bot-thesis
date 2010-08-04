@@ -12,7 +12,7 @@ import java.util.Random;
 
 /**
  *
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public class Action {
 

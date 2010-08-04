@@ -6,7 +6,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * The aiming module
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class SimpleAimingModule {
 

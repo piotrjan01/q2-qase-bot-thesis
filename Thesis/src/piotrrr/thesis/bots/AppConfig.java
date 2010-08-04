@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 /**
  * The class encapsulating the basic configuration constants for the whole application.
  * Also contains methods to write and read it from the disk.
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public class AppConfig {
 

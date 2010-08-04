@@ -4,7 +4,7 @@ import javax.swing.JTextArea;
 
 /**
  * Some static debug methods
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class Dbg {
 	

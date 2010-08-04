@@ -11,7 +11,7 @@ import piotrrr.thesis.bots.rlbot.RLBot;
 
 /**
  *
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public class State {
 

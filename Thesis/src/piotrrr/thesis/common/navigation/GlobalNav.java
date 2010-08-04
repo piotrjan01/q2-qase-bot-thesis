@@ -4,7 +4,7 @@ import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 
 /**
  * The global navigation module of the MapBotBase.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  * @see MapBotBase
  */
 public interface GlobalNav {

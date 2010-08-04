@@ -10,7 +10,7 @@ import piotrrr.thesis.bots.botbase.BotBase;
 
 /**
  *
- * @author piotrrr
+ * @author Piotr Gwizdała
  */
 public class CountMyScoreJob extends Job {
 

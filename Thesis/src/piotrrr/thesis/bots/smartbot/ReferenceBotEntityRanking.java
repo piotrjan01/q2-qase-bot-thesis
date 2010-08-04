@@ -11,9 +11,9 @@ import piotrrr.thesis.common.entities.EntityDoublePair;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
 
-public class SmartBotEntityRanking {
+public class ReferenceBotEntityRanking {
 	
-	public static TreeSet<EntityDoublePair> getEntityRanking(SmartBot bot) {
+	public static TreeSet<EntityDoublePair> getEntityRanking(ReferenceBot bot) {
 		TreeSet<EntityDoublePair> ret = new TreeSet<EntityDoublePair>();
 		for (Entity e : bot.kb.getAllPickableEntities()) {
 			float rank = getRankForEntity(bot, e);
@@ -23,7 +23,7 @@ public class SmartBotEntityRanking {
 		return ret;
 	}
 	
-	public static String getRankingDebugInfo(SmartBot bot) {
+	public static String getRankingDebugInfo(ReferenceBot bot) {
 		TreeSet<EntityDoublePair> ranking = getEntityRanking(bot);
 		int count = 0;
 		String t = "\n";
@@ -74,7 +74,7 @@ public class SmartBotEntityRanking {
 	
 	
 	
-	public static float getRankForEntity(SmartBot bot, Entity e) {
+	public static float getRankForEntity(ReferenceBot bot, Entity e) {
 		NavConfig c = bot.nConfig;
 		float rank = c.healthWeight*getItemHealthBenefit(bot, e)*getBotHealthDeficiency(bot, 0);
 		rank += c.armorWeight*getItemArmorBenefit(bot, e)*getBotArmorDeficiency(bot, 0);
@@ -85,15 +85,15 @@ public class SmartBotEntityRanking {
 		return rank;
 	}
 	
-	public static float getDistanceFactor(SmartBot bot, Entity e) {
-		float dist = (float) SmartBotGlobalNav.getDistanceFollowingMap(bot, bot.getBotPosition(), e.getObjectPosition());
+	public static float getDistanceFactor(ReferenceBot bot, Entity e) {
+		float dist = (float) ReferenceBotGlobalNav.getDistanceFollowingMap(bot, bot.getBotPosition(), e.getObjectPosition());
 		float ret = dist / NavConfig.MAX_DISTANCE;
 		if (ret > 1) ret = 1;
 		// !!! increased by health deficiency percent
 		return ret*(1+getBotHealthDeficiency(bot, 0));
 	}
 	
-	public static float getEnemyCost(SmartBot bot, Entity e) {
+	public static float getEnemyCost(ReferenceBot bot, Entity e) {
 		float riskyDistance = 400;
 		float cost = 0;
 		
@@ -110,19 +110,19 @@ public class SmartBotEntityRanking {
 		return cost/costMax;
 	}
 	
-	public static float getBotHealthDeficiency(SmartBot bot, int addedHealth) {
+	public static float getBotHealthDeficiency(ReferenceBot bot, int addedHealth) {
 		float h = bot.getBotHealth() + addedHealth;
 		if (h > BotBase.maxHealth) h = BotBase.maxHealth;
 		return 1f - h / (float)BotBase.maxHealth;
 	}
 	
-	public static float getBotArmorDeficiency(SmartBot bot, int addedArmor) {
+	public static float getBotArmorDeficiency(ReferenceBot bot, int addedArmor) {
 		float a = bot.getBotArmor() + addedArmor;
 		if (a > BotBase.maxArmor) a = BotBase.maxArmor;
 		return 1f - a / (float)BotBase.maxArmor;
 	}
 	
-	public static float getBotWeaponDeficiency(SmartBot bot, int addedWeaponIndex) {
+	public static float getBotWeaponDeficiency(ReferenceBot bot, int addedWeaponIndex) {
 		/**
 		int BLASTER = 7, SHOTGUN = 8,
 		SUPER_SHOTGUN = 9, MACHINEGUN = 10, CHAINGUN = 11, GRENADES = 12,
@@ -155,7 +155,7 @@ public class SmartBotEntityRanking {
 		
 	}
 	
-	public static float getBotAmmoDeficiency(SmartBot bot, int addedAmmoIndex) {
+	public static float getBotAmmoDeficiency(ReferenceBot bot, int addedAmmoIndex) {
 		/**
 		int BLASTER = 7, SHOTGUN = 8,
 		SUPER_SHOTGUN = 9, MACHINEGUN = 10, CHAINGUN = 11, GRENADES = 12,
@@ -190,7 +190,7 @@ public class SmartBotEntityRanking {
 		
 	}
 	
-	public static float getItemHealthBenefit(SmartBot bot, Entity e) {
+	public static float getItemHealthBenefit(ReferenceBot bot, Entity e) {
 		
 		int growth = 0;
 		
@@ -208,7 +208,7 @@ public class SmartBotEntityRanking {
 		return (before - after);
 	}
 	
-	public static float getItemArmorBenefit(SmartBot bot, Entity e) {
+	public static float getItemArmorBenefit(ReferenceBot bot, Entity e) {
 		
 		int growth = 0;
 		
@@ -226,7 +226,7 @@ public class SmartBotEntityRanking {
 		return 0;
 	}
 	
-	public static float getItemWeaponBenefit(SmartBot bot, Entity e) {
+	public static float getItemWeaponBenefit(ReferenceBot bot, Entity e) {
 		
 		if (e.isWeaponEntity()) {
 			int ind = e.getInventoryIndex();
@@ -237,7 +237,7 @@ public class SmartBotEntityRanking {
 		return 0;
 	}
   	
-	public static float getItemAmmoBenefit(SmartBot bot, Entity e) {
+	public static float getItemAmmoBenefit(ReferenceBot bot, Entity e) {
 		//FIXME:
 		if (e.getType().equals(Entity.TYPE_AMMO)) {
 			int ind = e.getInventoryIndex();
@@ -254,7 +254,7 @@ public class SmartBotEntityRanking {
 	 * @param am
 	 * @return
 	 */
-	private static int getWeaponFromAmmoIndex(SmartBot bot, int am) {
+	private static int getWeaponFromAmmoIndex(ReferenceBot bot, int am) {
 		for (int i=0; i<WeaponConfig.ammoTable.length; i++) {
 			if (WeaponConfig.ammoTable[i] == am) return i;
 		}

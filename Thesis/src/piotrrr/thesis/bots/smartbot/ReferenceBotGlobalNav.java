@@ -16,10 +16,10 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * The global navigation module of the MapBotBase.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  * @see MapBotBase
  */
-public class SmartBotGlobalNav implements GlobalNav {
+public class ReferenceBotGlobalNav implements GlobalNav {
 	
 	public static final double PLAN_TIME_PER_DIST = 0.1;
 	
@@ -34,7 +34,7 @@ public class SmartBotGlobalNav implements GlobalNav {
 	@Override
 	public NavPlan establishNewPlan(MapBotBase smartBot, NavPlan oldPlan) {
 		
-		SmartBot bot = (SmartBot)smartBot;
+		ReferenceBot bot = (ReferenceBot)smartBot;
 	
 		/**
 		 * When do we change the plan?
@@ -89,7 +89,7 @@ public class SmartBotGlobalNav implements GlobalNav {
 		if (! changePlan) return oldPlan;
 		
 		//Get the entity ranking:
-		TreeSet<EntityDoublePair> ranking = SmartBotEntityRanking.getEntityRanking(bot);	
+		TreeSet<EntityDoublePair> ranking = ReferenceBotEntityRanking.getEntityRanking(bot);
 //		bot.dtalk.addToLog(SmartBotEntityRanking.getRankingDebugInfo(bot));
 		
 		while ((plan == null || plan.path == null)) {
@@ -124,7 +124,7 @@ public class SmartBotGlobalNav implements GlobalNav {
 	 * @param bot the bot for whom we search for the plan
 	 * @return the navigation plan with just wan waypoint that is close to the bot - so called spontaneous plan.
 	 */
-	static NavPlan getSpontaneousPlan(SmartBot bot) {
+	static NavPlan getSpontaneousPlan(ReferenceBot bot) {
 		NavPlan newPlan = null;
 		
 		Vector<Entity> entries = bot.kb.getActiveEntitiesWithinTheRange(bot.getBotPosition(), maximalDistance, bot.getFrameNumber());
@@ -167,7 +167,7 @@ public class SmartBotGlobalNav implements GlobalNav {
 	 * @param bot
 	 * @return the random spontaneous decision.
 	 */
-	static NavPlan getSpontaneousAntiStuckPlan(SmartBot bot) {
+	static NavPlan getSpontaneousAntiStuckPlan(ReferenceBot bot) {
 		Entity re = bot.kb.getRandomItem();
 		int timeout = (int)(80*PLAN_TIME_PER_DIST);
 		NavPlan ret = new NavPlan(bot, re, timeout);
@@ -188,7 +188,7 @@ public class SmartBotGlobalNav implements GlobalNav {
 	 * @return distance between from and to following the shortest path on the map. 
 	 * Double.MAX_VALUE is returned in case there is no path.
 	 */
-	static double getDistanceFollowingMap(SmartBot bot, Vector3f from, Vector3f to) {
+	static double getDistanceFollowingMap(ReferenceBot bot, Vector3f from, Vector3f to) {
 		double distance = 0.0d;
 		Waypoint [] path = bot.kb.map.findShortestPath(from, to);
 		if (path == null) {

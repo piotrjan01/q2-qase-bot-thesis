@@ -24,7 +24,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * This is a basic bot that uses WaypointMap and WorldKB to store knowledge.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class MapBotBase extends BotBase {
 	

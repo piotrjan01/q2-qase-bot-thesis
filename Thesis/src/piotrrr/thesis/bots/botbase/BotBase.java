@@ -6,7 +6,6 @@ import java.util.Vector;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
 import piotrrr.thesis.common.jobs.Job;
-import piotrrr.thesis.common.stats.BotStatistic;
 import soc.qase.bot.NoClipBot;
 import soc.qase.file.bsp.BSPParser;
 import soc.qase.state.PlayerGun;
@@ -16,7 +15,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * The bot that is used as super class for all the other bots.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class BotBase extends NoClipBot implements GameObject {
 
@@ -62,15 +61,28 @@ public class BotBase extends NoClipBot implements GameObject {
      * Direction where to look when paused.
      */
     protected Vector3f pausedLookDir = new Vector3f(0, 0, 0);
+    /**
+     * The maximum ammount of health it is established the bot has.
+     * It is used to calculate the percent of health. In a game, sometimes the bot
+     * may have more than 100% of health.
+     */
     public static final int maxHealth = 100;
+    /**
+     * The maximum armor the bot can have.
+     * @see BotBase#maxHealth
+     */
     public static final int maxArmor = 100;
+    /**
+     * The last frame that has been perceived by bot. If it is not smaller by 1 from
+     * actual frame, it means the bot has lost some frames.
+     */
     private int lastWorldFrame = 0;
     /**
      * Whether to shoot at players with the same name prefix as this bot
      */
     public boolean friendlyFire = false;
     /**
-     * If true, after respawn the bot will try to use 'give all' command.
+     * If true, after respawn the bot will try to obtain all weapons using cheats.
      */
     public boolean giveAllOnRespawn = true;
 
@@ -96,12 +108,12 @@ public class BotBase extends NoClipBot implements GameObject {
             }
 
             this.world = world;
+            //after getting the messages, they may not be availible, so here I
+            //get them all at once and save to check on them later.
             messages = world.getMessages();
 
-//                        System.out.println(getBotName()+": frame: "+world.getFrame());
-//                        System.out.flush();
-
             runBotJobs();
+            
             if (!botPaused) {
                 botLogic();
             } else {
@@ -250,6 +262,9 @@ public class BotBase extends NoClipBot implements GameObject {
         }
     }
 
+    /**
+     * Tries to get all the weapons using cheats.
+     */
     public void giveAllWeapons() {
         consoleCommand("give shotgun");
         consoleCommand("give super shotgun");

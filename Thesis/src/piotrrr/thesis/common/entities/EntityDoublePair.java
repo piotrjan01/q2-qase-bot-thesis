@@ -7,7 +7,7 @@ import soc.qase.tools.vecmath.Vector3f;
 /**
  * The class that encapsulates the Entity object with some Double value.
  * Is comparable.
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  */
 public class EntityDoublePair implements Comparable<EntityDoublePair>, GameObject {
 	

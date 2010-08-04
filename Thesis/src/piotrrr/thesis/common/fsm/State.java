@@ -5,7 +5,7 @@ import piotrrr.thesis.common.entities.EntityTypeDoublePair;
 
 /**
  * The interface of the state that can be used by NeedsFSM.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  * @see NeedsFSM
  */
 public class State {

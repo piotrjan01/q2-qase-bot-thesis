@@ -4,7 +4,7 @@ import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 
 /**
  * The local navigation module of the MapBotBase
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public interface LocalNav {
 

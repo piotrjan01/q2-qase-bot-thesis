@@ -8,7 +8,7 @@ import soc.qase.tools.vecmath.Vector3f;
 
 /**
  * This job detects when the bot got stuck.
- * @author Piotr Gwizda�a
+ * @author Piotr Gwizdała
  */
 public class StuckDetector extends Job {
 	

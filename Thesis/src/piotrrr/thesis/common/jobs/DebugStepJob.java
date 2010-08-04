@@ -5,7 +5,7 @@ import piotrrr.thesis.gui.MainFrame;
 
 /**
  * This job reports bot's state changes.
- * @author Piotr Gwizda≥a
+ * @author Piotr Gwizda≈Ça
  */
 public class DebugStepJob extends Job {
 	
