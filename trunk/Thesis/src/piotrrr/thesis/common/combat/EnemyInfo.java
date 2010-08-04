@@ -48,7 +48,12 @@ public class EnemyInfo implements GameObject {
 	 * body is visible from given point.
 	 */
 	public static int agentsHeight = 35;
-	
+
+        /**
+         * Creates the new enemy info
+         * @param ent the opponents entity object
+         * @param frame the frame at which it was observed
+         */
 	public EnemyInfo(Entity ent, long frame) {
 		this.ent = ent.deepCopy();
 		this.lastUpdateFrame = frame-1;
@@ -59,13 +64,19 @@ public class EnemyInfo implements GameObject {
 	public Vector3f getObjectPosition() {
 		return ent.getObjectPosition();
 	}
-	
+
+        /**
+         * @return the position of the opponent's head
+         */
 	public Vector3f getPositionHead() {
 		Vector3f r = new Vector3f(ent.getObjectPosition());
 		r.z += agentsHeight/2;
 		return r;
 	}
-	
+
+        /**
+         * @return the position of enemies feet
+         */
 	public Vector3f getPositionFeet() {
 		Vector3f r = new Vector3f(ent.getObjectPosition());
 		r.z -= agentsHeight/2;
@@ -90,7 +101,14 @@ public class EnemyInfo implements GameObject {
 				"old origin: "+ent.getOldOrigin();
 //				"effects string: "+getEffectsList();
 	}
-	
+
+        /**
+         * Updates enemy info
+         * @param e the entity with which we want to update it
+         * @param frameNumber the frame number at which we update
+         * @return if this enemy info cannot be updated with given entity - false.
+         * If updated successfully, returns true.
+         */
 	public boolean updateEnemyInfo(Entity e, long frameNumber) {
 		//If it is not the same entity, we exit
 		if (ent.getNumber() != e.getNumber()) return false;

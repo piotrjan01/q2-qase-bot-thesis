@@ -3,7 +3,6 @@ package piotrrr.thesis.common.jobs;
 import java.util.Vector;
 
 import piotrrr.thesis.bots.botbase.BotBase;
-import piotrrr.thesis.bots.tuning.FileLogger;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.stats.BotStatistic;
 
@@ -13,8 +12,6 @@ public class GlobalKillsStatsJob extends Job {
 		super(bot);
 	}
 	
-	FileLogger killsLog = null;
-	
 	
 	@Override
 	public void run() {
@@ -22,29 +19,6 @@ public class GlobalKillsStatsJob extends Job {
                 logKillsToStats();
 	}
 	
-
-	private void logKillsToFile() {
-                if (killsLog == null) {
-                    killsLog = new FileLogger("kills.csv");
-                    killsLog.addToLog("Starting the measurement,null,null\n");
-                }
-		Vector<String> commands = bot.getMessages("");
-		if (commands == null) return;
-		for (String cmd : commands) {
-			if (cmd.contains(" was ") && cmd.contains(" by ")) {
-                            	String t = ""+bot.getFrameNumber()/10+","; 
-				t += cmd.substring(0, cmd.indexOf(" was "));
-				t += ","+cmd.substring(cmd.indexOf(" by ")+4);
-				if (t.indexOf("'s") != -1)
-					t = t.substring(0, t.indexOf("'s"));
-//				t.substring(0, (t.indexOf("'s") == -1 ? t.length() : t.indexOf("'s")));
-				t += ","+cmd+"\n";
-//				Dbg.prn(t);
-				killsLog.addToLog(t);
-			}
-		}
-		
-	}
 
         private void logKillsToStats() {
 		Vector<String> commands = bot.getMessages("");
