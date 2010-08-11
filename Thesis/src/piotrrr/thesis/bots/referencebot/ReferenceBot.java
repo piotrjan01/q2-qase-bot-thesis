@@ -1,6 +1,8 @@
 package piotrrr.thesis.bots.referencebot;
 
 
+import piotrrr.thesis.common.navigation.ReferenceBotGlobalNav;
+import piotrrr.thesis.common.navigation.ReferenceBotLocalNav;
 import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.combat.FiringDecision;

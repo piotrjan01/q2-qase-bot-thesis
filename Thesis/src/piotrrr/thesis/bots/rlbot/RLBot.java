@@ -2,6 +2,8 @@ package piotrrr.thesis.bots.rlbot;
 
 import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
+import piotrrr.thesis.common.navigation.ReferenceBotGlobalNav;
+import piotrrr.thesis.common.navigation.ReferenceBotLocalNav;
 import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.combat.FiringInstructions;
 import piotrrr.thesis.common.jobs.CountMyScoreJob;
@@ -21,8 +23,8 @@ public class RLBot extends MapBotBase {
         scoreCounter = new CountMyScoreJob(this);
         addBotJob(scoreCounter);
 
-        globalNav = new RLBotGlobalNav();
-        localNav = new RLBotLocalNav();
+        globalNav = new ReferenceBotGlobalNav();
+        localNav = new ReferenceBotLocalNav();
     }
 
     @Override

@@ -2,9 +2,9 @@ package piotrrr.thesis.bots.rlbot;
 
 import java.util.Map;
 
-import piotrrr.thesis.bots.referencebot.ReferenceBotEntityRanking;
+import piotrrr.thesis.bots.referencebot.FuzzyEntityRanking;
 
-public class RLBotEntityRanking  extends ReferenceBotEntityRanking {
+public class RLBotEntityRanking  extends FuzzyEntityRanking {
 	
 	
 	
