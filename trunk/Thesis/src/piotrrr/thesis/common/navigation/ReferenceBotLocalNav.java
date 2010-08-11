@@ -1,4 +1,4 @@
-package piotrrr.thesis.bots.referencebot;
+package piotrrr.thesis.common.navigation;
 
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
@@ -14,9 +14,8 @@ public class ReferenceBotLocalNav implements LocalNav {
 	public static final int acceptableDistance = 40;
 
 	@Override
-	public NavInstructions getNavigationInstructions(MapBotBase smartBot) {
+	public NavInstructions getNavigationInstructions(MapBotBase bot) {
 		
-		ReferenceBot bot = (ReferenceBot)smartBot;
 		
 		NavPlan plan = bot.plan;
 		

@@ -1,5 +1,6 @@
-package piotrrr.thesis.bots.referencebot;
+package piotrrr.thesis.common.navigation;
 
+import piotrrr.thesis.bots.referencebot.*;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -36,10 +37,8 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 	 * @return the new plan for the bot (can be the same as the oldPlan)
 	 */
 	@Override
-	public NavPlan establishNewPlan(MapBotBase smartBot, NavPlan oldPlan) {
-		
-		ReferenceBot bot = (ReferenceBot)smartBot;
-	
+	public NavPlan establishNewPlan(MapBotBase bot, NavPlan oldPlan) {
+
 		/**
 		 * When do we change the plan?
 		 * + when we don't have plan
@@ -93,7 +92,7 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 		if (! changePlan) return oldPlan;
 		
 		//Get the entity ranking:
-		TreeSet<EntityDoublePair> ranking = ReferenceBotEntityRanking.getEntityFuzzyRanking(bot);
+		TreeSet<EntityDoublePair> ranking = FuzzyEntityRanking.getEntityFuzzyRanking(bot);
 //		bot.dtalk.addToLog(ReferenceBotEntityRanking.getRankingDebugInfo(bot));
 		
 		while ((plan == null || plan.path == null)) {
@@ -128,7 +127,7 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 	 * @param bot the bot for whom we search for the plan
 	 * @return the navigation plan with just wan waypoint that is close to the bot - so called spontaneous plan.
 	 */
-	static NavPlan getSpontaneousPlan(ReferenceBot bot) {
+	static NavPlan getSpontaneousPlan(MapBotBase bot) {
 		NavPlan newPlan = null;
 		
 		Vector<Entity> entries = bot.kb.getActiveEntitiesWithinTheRange(bot.getBotPosition(), maximalDistance, bot.getFrameNumber());
@@ -171,7 +170,7 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 	 * @param bot
 	 * @return the random spontaneous decision.
 	 */
-	static NavPlan getSpontaneousAntiStuckPlan(ReferenceBot bot) {
+	static NavPlan getSpontaneousAntiStuckPlan(MapBotBase bot) {
 		Entity re = bot.kb.getRandomItem();
 		int timeout = (int)(antiStuckDecisionTimeout);
 		NavPlan ret = new NavPlan(bot, re, timeout);
