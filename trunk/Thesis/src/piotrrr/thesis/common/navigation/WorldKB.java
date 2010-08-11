@@ -1,5 +1,6 @@
 package piotrrr.thesis.common.navigation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -36,20 +37,22 @@ public class WorldKB {
 	 * he shouldn't repeat this decision for some time, in case the thing can not be
 	 * picked up. 
 	 */
-	LinkedList<Entity> targetBlacklist;
+	LinkedList<Integer> targetBlacklist;
 	
 	/**
 	 * Stores information on the enemies
 	 */
 	public HashMap<Integer, EnemyInfo> enemyInformation = new HashMap<Integer, EnemyInfo>();
+
+        HashMap<Integer, Integer> entitySeenLastTime = new HashMap<Integer, Integer>();
 	
 	/**
 	 * The maximum size of pickupBlaclist
 	 */
-	static final int TARGET_BLACKLIST_MAX_SIZE = 15;
+	static final int TARGET_BLACKLIST_MAX_SIZE = 20;
 	
 	private WorldKB(WaypointMap map, MapBotBase bot) {
-		targetBlacklist = new LinkedList<Entity>();
+		targetBlacklist = new LinkedList<Integer>();
 		this.map = map;
 		this.bot = bot;
 	}
@@ -83,12 +86,13 @@ public class WorldKB {
 	 */
 	public Vector<Entity> getActiveEntitiesByType(EntityType et, long frameNumber) {
 		Vector<Entity> ret = new Vector<Entity>();
-		for (Object o : bot.getWorld().getEntities(true)) {
+		for (Object o : bot.getWorld().getEntities(false)) {
 			Entity e = (Entity)o;
 			EntityType itType = EntityType.getEntityType(e);
 			if ( ! et.equals(itType) ) continue;
+                        if ( ! isActive(e)) continue;
 			if (e.isPlayerEntity() && e.getName().equals(bot.getBotName())) continue;
-			if (targetBlacklist.contains(e)) continue;
+			if (targetBlacklist.contains(e.getNumber())) continue;
 //			if (getPickupFailureCount(e) > MAX_PICKUP_FAILURE_COUNT) continue;
 			if ( ! e.isReachable(bot)) continue;
 			ret.add(e);
@@ -105,10 +109,11 @@ public class WorldKB {
 	 */
 	public Vector<Entity> getActiveEntitiesWithinTheRange(Vector3f pos, int maxRange, long currentFrame) {			
 		Vector<Entity> ret = new Vector<Entity>();
-		for (Object o : bot.getWorld().getEntities(true)) {
+		for (Object o : bot.getWorld().getEntities(false)) {
 			Entity e = (Entity)o;
 			if ( ! isPickableType(e)) continue;
-			if (targetBlacklist.contains(e)) continue;
+                        if ( ! isActive(e)) continue;
+			if (targetBlacklist.contains(e.getNumber())) continue;
 //			if (getPickupFailureCount(e) > MAX_PICKUP_FAILURE_COUNT) continue;
 			if ( ! e.isReachable(bot)) continue;
 			double dist = CommFun.getDistanceBetweenPositions(pos, e.getObjectPosition());
@@ -159,10 +164,11 @@ public class WorldKB {
 	
 	public Vector<Entity> getAllPickableEntities() {
 		Vector<Entity> ret = new Vector<Entity>();
-		for (Object o : bot.getWorld().getEntities(true)) {
+		for (Object o : bot.getWorld().getEntities(false)) {
 			Entity e = (Entity)o;
+                        if ( ! isActive(e)) continue;
 			if ( ! isPickableType(e)) continue;
-			if (targetBlacklist.contains(e)) continue;
+			if (targetBlacklist.contains(e.getNumber())) continue;
 //			if (getPickupFailureCount(e) > MAX_PICKUP_FAILURE_COUNT) continue;
 			if ( ! e.isReachable(bot)) continue;
 			ret.add(e);
@@ -176,7 +182,7 @@ public class WorldKB {
 	 * @param e
 	 */
 	public void addToBlackList(Entity ent) {
-		targetBlacklist.add(ent);
+		targetBlacklist.add(ent.getNumber());
 		if (targetBlacklist.size() > TARGET_BLACKLIST_MAX_SIZE) targetBlacklist.pop();
 		return;
 	}
@@ -225,7 +231,21 @@ public class WorldKB {
 		   ) return true;
 		return false;
 	}
-	
+
+
+        public void updateSeenEntities() {
+            for (Entity e : getAllVisibleEntities()) {
+                entitySeenLastTime.put(e.getNumber(), bot.getFrameNumber());
+            }
+        }
+
+        public boolean isActive(Entity e) {
+            if (e.getActive()) return true; //if marked as active - ret true
+            if ( ! entitySeenLastTime.containsKey(e.getNumber())) return false; //if it wasnt seen - false
+            int rt = e.getRespawnTime(); // otherwise get respawn time            
+            return (bot.getFrameNumber() >= entitySeenLastTime.get(e.getNumber()) + rt ); //true if time has passed
+        }
+
 	/**
 	 * Updates the information on the enemies in the world
 	 */
@@ -294,7 +314,8 @@ public class WorldKB {
 				"enemy info size: "+getAllEnemyInformation().size()+"\n"+
 				"nodes on map: "+map.getAllNodes().length+"\n"+
 				"edges on map: "+edges+"\n"+
-				"pickup failures size: "+getAllEntsWithPickupFailure().size()+"\n";
+				"pickup failures size: "+getAllEntsWithPickupFailure().size()+"\n"+
+                                "seen ents size: "+entitySeenLastTime.size()+"\n";
 	}
 	
 	

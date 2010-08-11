@@ -116,6 +116,9 @@ public class CommFun {
                 else if (message.contains("rocket")) {
                     return "rocket launcher";
                 }
+                else if (message.contains("BFG")) {
+                    return "BFG10K";
+                }
                 else {
                     return "other";
                 }

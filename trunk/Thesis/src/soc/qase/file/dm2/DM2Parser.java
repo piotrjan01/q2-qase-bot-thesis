@@ -16,12 +16,12 @@ import soc.qase.tools.Utils;
 import soc.qase.com.message.*;
 
 /*-------------------------------------------------------------------*/
-/**	Quake 2’s inbuilt client, used by human players to connect
+/**	Quake 2's inbuilt client, used by human players to connect
  *	to the game server, facilitates the recording of matches from
  *	the perspective of each individual player. These demo or
  *	DM2 files contain an edited copy of the network packet
  *	stream received by the client during the game session,
- *	capturing the player’s actions and the state of all entities at
+ *	capturing the player's actions and the state of all entities at
  *	each discrete time step. The DM2Parser allows QASE to read and
  *	analyse such recordings; it treats the demo file as a virtual server,
  *	'connecting' to it and reading blocks of data in exactly the

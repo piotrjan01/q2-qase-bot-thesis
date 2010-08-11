@@ -4,6 +4,7 @@ package piotrrr.thesis.bots.mapbotbase;
 import piotrrr.thesis.bots.AppConfig;
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.tuning.CombatConfig;
+import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.bots.tuning.WeaponConfig;
 import piotrrr.thesis.common.combat.FiringInstructions;
 import piotrrr.thesis.common.jobs.BasicCommands;
@@ -85,6 +86,11 @@ public class MapBotBase extends BotBase {
 	 */
 	protected LocalNav localNav = null;
 
+        /**
+         * The navigation config of the bot.
+         */
+        public NavConfig nConfig = new NavConfig();
+
 	/**
 	 * Basic constructor.
 	 * @param botName the name of the bot to be created
@@ -117,6 +123,8 @@ public class MapBotBase extends BotBase {
 		}
 		
 		kb.updateEnemyInformation();
+
+                kb.updateSeenEntities();
 		
 		//MapBotBase doesn't do anything
 		

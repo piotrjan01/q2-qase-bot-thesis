@@ -80,7 +80,7 @@ public class BotBase extends NoClipBot implements GameObject {
     /**
      * Whether to shoot at players with the same name prefix as this bot
      */
-    public boolean friendlyFire = false;
+    public boolean friendlyFire = true;
     /**
      * If true, after respawn the bot will try to obtain all weapons using cheats.
      */
