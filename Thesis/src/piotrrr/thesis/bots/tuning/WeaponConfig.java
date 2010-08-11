@@ -73,7 +73,7 @@ public class WeaponConfig {
     /**
      * Weapon preference weight
      */
-    public int wpWRailgun = 90;
+    public int wpWRailgun = 99;
     /**
      * Weapon preference weight
      */

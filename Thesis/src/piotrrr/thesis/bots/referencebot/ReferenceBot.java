@@ -13,7 +13,7 @@ import piotrrr.thesis.tools.Dbg;
 
 public class ReferenceBot extends MapBotBase {
 	
-	public NavConfig nConfig = new NavConfig();
+	
 
 	public ReferenceBot(String botName, String skinName) {
 		super(botName, skinName);
@@ -40,11 +40,11 @@ public class ReferenceBot extends MapBotBase {
 		if ( ! noFire ) {
 			fd = SimpleCombatModule.getFiringDecision(this);
 			if (fd != null && getWeaponIndex() != fd.gunIndex) changeWeaponByInventoryIndex(fd.gunIndex);
-			else {
-				int justInCaseWeaponIndex = SimpleCombatModule.chooseWeapon(this, cConfig.maxShortDistance4WpChoice+0.1f);
-				if (getWeaponIndex() != justInCaseWeaponIndex)
-					changeWeaponByInventoryIndex(justInCaseWeaponIndex);
-			}
+//			else {
+//				int justInCaseWeaponIndex = SimpleCombatModule.chooseWeapon(this, cConfig.maxShortDistance4WpChoice+0.1f);
+//				if (getWeaponIndex() != justInCaseWeaponIndex)
+//					changeWeaponByInventoryIndex(justInCaseWeaponIndex);
+//			}
 		}
 		
 		FiringInstructions fi = SimpleAimingModule.getFiringInstructions(fd, this);

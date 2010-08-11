@@ -21,9 +21,13 @@ import soc.qase.tools.vecmath.Vector3f;
  */
 public class ReferenceBotGlobalNav implements GlobalNav {
 	
-	public static final double PLAN_TIME_PER_DIST = 0.1;
+	public static final double mainDecisionTimeout = 40;
+
+        public static final double spontDecisionTimeout = 20;
+
+        public static final double antiStuckDecisionTimeout = 10;
 	
-	public static final int maximalDistance = 200;
+	public static final int maximalDistance = 400;
 	
 	/**
 	 * Returns the new plan that the bot should follow
@@ -89,28 +93,28 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 		if (! changePlan) return oldPlan;
 		
 		//Get the entity ranking:
-		TreeSet<EntityDoublePair> ranking = ReferenceBotEntityRanking.getEntityRanking(bot);
-//		bot.dtalk.addToLog(SmartBotEntityRanking.getRankingDebugInfo(bot));
+		TreeSet<EntityDoublePair> ranking = ReferenceBotEntityRanking.getEntityFuzzyRanking(bot);
+//		bot.dtalk.addToLog(ReferenceBotEntityRanking.getRankingDebugInfo(bot));
 		
 		while ((plan == null || plan.path == null)) {
 			
 			if (ranking.size() == 0 || bot.stuckDetector.isStuck) {
 				Entity wp = bot.kb.getRandomItem();
-				double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), wp.getObjectPosition());
+//				double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), wp.getObjectPosition());
 //				bot.dtalk.addToLog("ranking size = 0, going for random item!");
-				plan = new NavPlan(bot, wp, (int)(PLAN_TIME_PER_DIST*distance));
+				plan = new NavPlan(bot, wp, (int)(mainDecisionTimeout));
 //				plan.path = bot.kb.findShortestPath(bot.getBotPosition(), plan.dest.getObjectPosition());
 				if (plan.path == null) return getSpontaneousAntiStuckPlan(bot);
 				return plan;
 			}
 		
-			double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), ranking.last().ent.getObjectPosition());
+//			double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), ranking.last().ent.getObjectPosition());
 //			int lower = (ranking.size() >= 2) ? (int)(ranking.lower(ranking.last()).dbl) : 0;
 //			bot.dtalk.addToLog("got new plan: rank: "+((int)ranking.last().dbl)+
 //					" > "+lower+
 //					" et: "+EntityType.getEntityType(ranking.last().ent)+
 //					" dist: "+distance+" timeout: "+PLAN_TIME_PER_DIST*distance);
-			plan = new NavPlan(bot, ranking.last().ent, (int)(PLAN_TIME_PER_DIST*distance));
+			plan = new NavPlan(bot, ranking.last().ent, (int)(mainDecisionTimeout));
 			
 //			plan.path = bot.kb.findShortestPath(bot.getBotPosition(), plan.dest.getObjectPosition());
 			ranking.pollLast();
@@ -149,7 +153,7 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 		
 		bot.kb.addToBlackList(chosen);
 		
-		newPlan = new NavPlan(bot, chosen, (int)(PLAN_TIME_PER_DIST*maximalDistance));
+		newPlan = new NavPlan(bot, chosen, (int)(spontDecisionTimeout));
 		newPlan.path = new Waypoint[1];
 		newPlan.path[0] = new Waypoint(chosen.getObjectPosition());
 		newPlan.isSpontaneos = true;
@@ -169,13 +173,13 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 	 */
 	static NavPlan getSpontaneousAntiStuckPlan(ReferenceBot bot) {
 		Entity re = bot.kb.getRandomItem();
-		int timeout = (int)(80*PLAN_TIME_PER_DIST);
+		int timeout = (int)(antiStuckDecisionTimeout);
 		NavPlan ret = new NavPlan(bot, re, timeout);
 		ret.path = new Waypoint[1];
 		ret.path[0] = new Waypoint(re.getObjectPosition());
 		ret.isSpontaneos = true;
 //		int wpInd = bot.kb.map.indexOf(random.getNode());
-		double distance = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), re.getObjectPosition());
+//		double distance = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), re.getObjectPosition());
 //		bot.dtalk.addToLog("got new anti-stuck spontaneous plan: dist: "+distance+" timeout: "+timeout);
 		return ret;
 	}
@@ -188,7 +192,7 @@ public class ReferenceBotGlobalNav implements GlobalNav {
 	 * @return distance between from and to following the shortest path on the map. 
 	 * Double.MAX_VALUE is returned in case there is no path.
 	 */
-	static double getDistanceFollowingMap(ReferenceBot bot, Vector3f from, Vector3f to) {
+	static double getDistanceFollowingMap(MapBotBase bot, Vector3f from, Vector3f to) {
 		double distance = 0.0d;
 		Waypoint [] path = bot.kb.map.findShortestPath(from, to);
 		if (path == null) {

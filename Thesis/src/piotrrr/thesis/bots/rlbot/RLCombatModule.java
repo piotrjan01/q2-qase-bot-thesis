@@ -27,7 +27,7 @@ public class RLCombatModule extends Perception {
 
     RLBot bot;
     double actionReward = 0;
-    int actionTime = 10;
+    int actionTime = 20;
     int actionEndFrame = -1;
     int actionFireMode = Action.NO_FIRE;
     public TreeMap<Integer, WeaponScore> weaponRanking = new TreeMap<Integer, WeaponScore>();
@@ -81,7 +81,11 @@ public class RLCombatModule extends Perception {
 
     public RLCombatModule(RLBot bot) {
         this.bot = bot;
-        brain = new Brain(this, actions);
+
+        int hiddenLayerNeurons = 5;
+        int [] hiddenLayers = new int [actions.length];
+        for (int i=0; i<hiddenLayers.length; i++) hiddenLayers[i] = hiddenLayerNeurons;
+        brain = new Brain(this, actions, hiddenLayers);
 
         brain.setAlpha(0.8); //learning rate
         brain.setGamma(0.3); //discounting rate
