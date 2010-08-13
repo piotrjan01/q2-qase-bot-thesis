@@ -37,5 +37,18 @@ public class NavPlan {
 		this.path = bot.kb.findShortestPath(bot.getBotPosition(), dest.getObjectPosition());
 		this.deadline = bot.getFrameNumber()+timeout;
 	}
+
+        /**
+         *
+         * @param bot
+         * @param destWp the waypoint to which the bot should go
+         * @param dest the destination entity, near the waypoint
+         * @param timeout
+         */
+        public NavPlan(MapBotBase bot, Waypoint destWp, Entity dest, long timeout) {
+		this.dest = dest;
+		this.path = bot.kb.findShortestPath(bot.getBotPosition(), dest.getObjectPosition());
+		this.deadline = bot.getFrameNumber()+timeout;
+	}
 	
 }

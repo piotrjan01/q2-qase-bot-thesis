@@ -188,7 +188,8 @@ public class MapBotBase extends BotBase {
 				"health: "+getBotHealth()+"\n"+
 				"armor: "+getBotArmor()+"\n"+
 				"frame nr: "+getFrameNumber()+"\n"+
-				"position: "+getBotPosition()+"\n"+
+				"position: "+getBotPosition()+"\n\n"+
+                                getTimersString()+"\n"+
 				kb.toString();
             }
 	}

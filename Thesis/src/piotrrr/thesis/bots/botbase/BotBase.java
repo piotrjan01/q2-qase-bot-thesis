@@ -1,11 +1,13 @@
 package piotrrr.thesis.bots.botbase;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
 
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
 import piotrrr.thesis.common.jobs.Job;
+import piotrrr.thesis.tools.Timer;
 import soc.qase.bot.NoClipBot;
 import soc.qase.file.bsp.BSPParser;
 import soc.qase.state.PlayerGun;
@@ -61,17 +63,8 @@ public class BotBase extends NoClipBot implements GameObject {
      * Direction where to look when paused.
      */
     protected Vector3f pausedLookDir = new Vector3f(0, 0, 0);
-    /**
-     * The maximum ammount of health it is established the bot has.
-     * It is used to calculate the percent of health. In a game, sometimes the bot
-     * may have more than 100% of health.
-     */
-    public static final int maxHealth = 100;
-    /**
-     * The maximum armor the bot can have.
-     * @see BotBase#maxHealth
-     */
-    public static final int maxArmor = 100;
+   
+
     /**
      * The last frame that has been perceived by bot. If it is not smaller by 1 from
      * actual frame, it means the bot has lost some frames.
@@ -87,17 +80,32 @@ public class BotBase extends NoClipBot implements GameObject {
     public boolean giveAllOnRespawn = true;
 
     /**
+     * last time used by AI to calculate. In nanoseconds.
+     */
+    public long lastAIComputingTime = 0l;
+
+    public HashMap<String, Timer> timers = new HashMap<String, Timer>();
+
+
+
+    /**
      * Basic constructor
      * @param botName name of the bot to be created.
      * @param skinName the name of the skin to be used with the bot.
      */
     public BotBase(String botName, String skinName) {
         super(botName, skinName);
+        timers.put("all-ai", new Timer("all-ai"));
+        timers.put("jobs", new Timer("jobs"));
+        timers.put("bot-logic", new Timer("bot-logic"));
     }
 
     @Override
     public void runAI(World world) {
         try {
+            resetTimers();
+            timers.get("all-ai").resume();
+
             if (world.getFrame() != 1 + lastWorldFrame) {
                 say("LOST FRAMES: " + (world.getFrame() - lastWorldFrame));
             }
@@ -112,14 +120,22 @@ public class BotBase extends NoClipBot implements GameObject {
             //get them all at once and save to check on them later.
             messages = world.getMessages();
 
+            timers.get("jobs").resume();
             runBotJobs();
-            
+            timers.get("jobs").pause();
+
+            timers.get("bot-logic").resume();
             if (!botPaused) {
                 botLogic();
             } else {
                 setBotMovement(new Vector3f(), pausedLookDir, PlayerMove.WALK_STOPPED, PlayerMove.POSTURE_NORMAL);
             }
             messages = null;
+            timers.get("bot-logic").pause();
+
+            timers.get("all-ai").pause();
+            saveTimersString();
+
         } catch (Exception e) {
             say("Runtime exception!");
             say(e.toString());
@@ -239,8 +255,9 @@ public class BotBase extends NoClipBot implements GameObject {
      * @return the number between 0 and 1 that tells how much ammo we have
      */
     public float getAmmunitionState(int gunIndex) {
+        if (world == null) return 0;
         int max = PlayerGun.getMaxAmmoByGun(gunIndex);
-        int ammo = world.getInventory().getCount(gunIndex);
+        int ammo = world.getInventory().getCount(PlayerGun.getAmmoInventoryIndexByGun(gunIndex));
         if (max == -1) {
             return 1;
         }
@@ -277,7 +294,18 @@ public class BotBase extends NoClipBot implements GameObject {
         consoleCommand("give bfg10k");
         consoleCommand("give cells");
         consoleCommand("give armor");
-        consoleCommand("give body armor");
+//        consoleCommand("give body armor");
+
+         for (int i=7; i<18; i++) {
+            world.getInventory().setCount(i, 1);
+        }
+
+        for (int i=18; i<23; i++) {
+            world.getInventory().setCount(i, PlayerGun.getMaxAmmo(i)/2);
+        }
+
+        
+
     }
 
     /**
@@ -419,4 +447,41 @@ public class BotBase extends NoClipBot implements GameObject {
     public Vector3f getObjectPosition() {
         return new Vector3f(getPosition());
     }
+
+    /**
+     *
+     * @return an average computing time consumed by AI in milis.
+     */
+    public long getLastAIComputingTimeNanos() {
+        return lastAIComputingTime;
+    }
+
+    public void saveTimersString() {
+        String s = "";
+        long max = -1;
+        for (Timer t : timers.values()) {
+            if (t.getElapsedTime() > max) max = t.getElapsedTime();
+        }
+        for (Timer t : timers.values()) {
+            s+=t.toStringAsPercentOf(max)+"\n";
+//            s+=t.toString()+"\n";
+        }
+        timersString = s;
+    }
+
+    String timersString = "";
+
+    public String getTimersString() {
+        return timersString;
+    }
+
+    public void resetTimers() {
+        if ( getFrameNumber() % 100 != 0) return;
+        for (Timer t : timers.values()) {
+            t.reset();
+        }
+    }
+
+
+
 }

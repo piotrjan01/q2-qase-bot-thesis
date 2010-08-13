@@ -2,13 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package piotrrr.thesis.bots.rlbot.rl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.Random;
+import piotrrr.thesis.bots.mapbotbase.MapBotBase;
+import soc.qase.state.PlayerGun;
 
 /**
  *
@@ -28,32 +29,25 @@ public class Action {
     public static final int WPN_HYPERBLASTER = 9;
     public static final int WPN_RAILGUN = 10;
     public static final int WPN_BFG10K = 11;
-
     public static final int NO_FIRE = 0;
     public static final int FIRE = 1;
     public static final int FIRE_PREDICTED = 2;
-
-    public static final int [] prohibitedWpnChngs = {WPN_GRENADES};
-
+    public static final int[] prohibitedWpnChngs = {WPN_GRENADES};
     public static final int minWpn = 0;
     public static final int maxWpn = 11;
-
     public static final int minSht = 0;
     public static final int maxSht = 2;
-
     public static final int actToInvShift = 6;
-    
-
     int wpnChange = NO_ACTION;
-
     int shootingMode = 0;
 
-    public Action(int action, int shootingMode) {
-        if (action < minWpn || action > maxWpn) action = minWpn;
+    public Action(int action) {
+        if (action < minWpn || action > maxWpn) {
+            action = minWpn;
+        }
         this.wpnChange = action;
-        this.shootingMode = shootingMode;
+//        this.shootingMode = shootingMode;
     }
-
 
     public static boolean isChangeWeaponAction(int action) {
         return (action >= WPN_BLASTER && action <= WPN_BFG10K);
@@ -64,10 +58,11 @@ public class Action {
     }
 
     public static int actionToInventoryIndex(int action) {
-        if ( ! isChangeWeaponAction(action)) action = WPN_BLASTER;
-        return action+actToInvShift;
+        if (!isChangeWeaponAction(action)) {
+            action = WPN_BLASTER;
+        }
+        return action + actToInvShift;
     }
-
 
     @Override
     public int hashCode() {
@@ -87,36 +82,50 @@ public class Action {
                         return f.getName();
                     }
                 } catch (Exception ex) {
-
                 }
             }
         }
         return "unknown action";
     }
 
-    public static Action [] getAllActionsArray() {
+    public static Action[] getAllActionsArray() {
         LinkedList<Action> list = new LinkedList<Action>();
-        for (int i=minWpn; i<=maxWpn; i++) {
-            for (int j=minSht; j<=maxSht; j++) {
-                list.add(new Action(i, j));
-            }
+        for (int i = minWpn; i <= maxWpn; i++) {
+//            for (int j=minSht; j<=maxSht; j++) {
+            list.add(new Action(i));
+//            }
         }
-        Action [] ret = new Action[list.size()];
-        for (int i=0; i<ret.length; i++) ret[i] = list.pop();
+        Action[] ret = new Action[list.size()];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = list.pop();
+        }
         return ret;
     }
 
     public static boolean isProhibited(Action action) {
         for (int a : prohibitedWpnChngs) {
-            if (a == action.wpnChange) return true;
+            if (a == action.wpnChange) {
+                return true;
+            }
         }
         return false;
     }
 
-    public int getShootingMode() {
-        return shootingMode;
+//    public int getShootingMode() {
+//        return shootingMode;
+//    }
+    public static boolean[] getActionsAvailability(MapBotBase b) {
+        Action[] acts = getAllActionsArray();
+        boolean[] ret = new boolean[acts.length];
+        for (int i = 0; i < ret.length; i++) {
+            int ind = acts[i].actionToInventoryIndex();
+            if (ind == 7) {
+                ret[i] = true;
+            } else {
+                ret[i] = b.botHasItem(ind) &&
+                        b.botHasItem(PlayerGun.getAmmoInventoryIndexByGun(ind));
+            }
+        }
+        return ret;
     }
-
-    
-
 }

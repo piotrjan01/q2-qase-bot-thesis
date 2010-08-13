@@ -45,6 +45,8 @@ public class WorldKB {
 	public HashMap<Integer, EnemyInfo> enemyInformation = new HashMap<Integer, EnemyInfo>();
 
         HashMap<Integer, Integer> entitySeenLastTime = new HashMap<Integer, Integer>();
+
+        HashMap<Integer, Boolean> entitiesReachability = new HashMap<Integer, Boolean>();
 	
 	/**
 	 * The maximum size of pickupBlaclist
@@ -94,7 +96,7 @@ public class WorldKB {
 			if (e.isPlayerEntity() && e.getName().equals(bot.getBotName())) continue;
 			if (targetBlacklist.contains(e.getNumber())) continue;
 //			if (getPickupFailureCount(e) > MAX_PICKUP_FAILURE_COUNT) continue;
-			if ( ! e.isReachable(bot)) continue;
+			if ( ! isEntityReachable(e, bot)) continue;
 			ret.add(e);
 		}
 		return ret;
@@ -115,7 +117,7 @@ public class WorldKB {
                         if ( ! isActive(e)) continue;
 			if (targetBlacklist.contains(e.getNumber())) continue;
 //			if (getPickupFailureCount(e) > MAX_PICKUP_FAILURE_COUNT) continue;
-			if ( ! e.isReachable(bot)) continue;
+			if ( ! isEntityReachable(e, bot)) continue;
 			double dist = CommFun.getDistanceBetweenPositions(pos, e.getObjectPosition());
 			if (dist > maxRange) continue;
 			ret.add(e);
@@ -170,7 +172,7 @@ public class WorldKB {
 			if ( ! isPickableType(e)) continue;
 			if (targetBlacklist.contains(e.getNumber())) continue;
 //			if (getPickupFailureCount(e) > MAX_PICKUP_FAILURE_COUNT) continue;
-			if ( ! e.isReachable(bot)) continue;
+			if ( ! isEntityReachable(e, bot)) continue;
 			ret.add(e);
 		}
 		return ret;
@@ -213,7 +215,7 @@ public class WorldKB {
 	public Vector<Entity> getAllEntsWithPickupFailure() {
 		Vector<Entity> ret = new Vector<Entity>();
 		for (Entity e : getAllItems()) {
-			if ( ! e.isReachable(bot)) ret.add(e);
+			if ( ! isEntityReachable(e, bot)) ret.add(e);
 		}
 		return ret;
 	}
@@ -317,7 +319,25 @@ public class WorldKB {
 				"pickup failures size: "+getAllEntsWithPickupFailure().size()+"\n"+
                                 "seen ents size: "+entitySeenLastTime.size()+"\n";
 	}
-	
+
+
+        public boolean isEntityReachable(Entity e, MapBotBase bot) {
+            Boolean b = entitiesReachability.get(e.getNumber());
+            if (b != null) return b;
+            
+            bot.timers.get("nav1").resume();
+            Waypoint wp = bot.kb.map.findClosestWaypoint(e.getObjectPosition());
+            float dist = CommFun.getDistanceBetweenPositions(wp.getObjectPosition(), e.getObjectPosition());
+            float obstDist = bot.getBsp().getObstacleDistance(wp.getObjectPosition(), e.getObjectPosition(), EnemyInfo.agentsHeight/6, 2*dist);
+            if (obstDist < dist) b = false;
+            else if (Math.abs(wp.getObjectPosition().z-e.getObjectPosition().z) > EnemyInfo.agentsHeight/3) b = false;
+            else b = true;
+
+            entitiesReachability.put(e.getNumber(), b);
+
+            bot.timers.get("nav1").pause();
+            return b;
+        }
 	
 	
 

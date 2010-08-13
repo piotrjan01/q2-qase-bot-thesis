@@ -1,4 +1,4 @@
-package piotrrr.thesis.bots.referencebot;
+package piotrrr.thesis.common.navigation;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -37,6 +37,7 @@ public class FuzzyEntityRanking {
         HashMap<MyVector, HashMap<MyVector, Double>> distCache = new HashMap<MyVector, HashMap<MyVector, Double>>();
         HashMap<MyVector, HashMap<MyVector, Waypoint[]>> pathCache = new HashMap<MyVector, HashMap<MyVector, Waypoint[]>>();
         int cacheUse = 0;
+        int fnCalls = 0;
     }
 
     private static class EntityFuzzyVals {
@@ -72,32 +73,42 @@ public class FuzzyEntityRanking {
         Maximums m = new Maximums();
 
         for (Entity ent : bot.kb.getAllPickableEntities()) {
+//            bot.timers.get("nav1").resume();
             float ec = getEnemyCostFuzzy(bot, ent, cache, 1);
             if (ec > m.maxEnCost) {
                 m.maxEnCost = ec;
             }
+//            bot.timers.get("nav1").pause();
+//            bot.timers.get("nav2").resume();
             float dist = getCloseDistanceFuzzy(bot, ent, cache, 1);
             if (dist > m.maxDist) {
                 m.maxDist = dist;
             }
+//            bot.timers.get("nav2").pause();
+//            bot.timers.get("nav3").resume();
             float benef = getBotBenefitFuzzy(bot, ent, cache, 1);
             if (benef > m.maxBenefit) {
                 m.maxBenefit = benef;
             }
+//            bot.timers.get("nav3").pause();
+//            bot.timers.get("nav4").resume();
             float need = getBotNeedFuzzy(bot, ent, cache, 1);
             if (need > m.maxNeed) {
                 m.maxNeed = need;
             }
+//            bot.timers.get("nav4").pause();
 
             tmpList.add(new EntityFuzzyVals(ec, dist, benef, need, ent));
         }
 
+//        bot.timers.get("nav0").resume();
         for (EntityFuzzyVals efv : tmpList) {
             efv.ec = 1 - efv.ec; //we negate the enemy cost, as we want it to be low
             float fuzzyVal = fuzzyLogicalAnd4(efv.benef, efv.dist, efv.ec, efv.need);
             ret.add(new EntityDoublePair(efv.e, fuzzyVal));
         }
-//        Dbg.prn("Cache use = "+cache.cacheUse);
+//        bot.timers.get("nav0").pause();
+//        Dbg.prn("Cache use = "+(100d*(double)cache.cacheUse) / (double)cache.fnCalls);
 //        Dbg.prn("Chosen ent: "+ret.last().ent.toString()+" rank: "+ret.last().dbl);
         return ret;
     }
@@ -235,9 +246,9 @@ public class FuzzyEntityRanking {
         }
         for (EnemyInfo en : bot.kb.getAllEnemyInformation()) {
             for (Waypoint w : path) {
-                if (!bot.getBsp().isVisible(w.getObjectPosition(), en.getObjectPosition())) {
-                    continue;
-                }
+//                if (!bot.getBsp().isVisible(w.getObjectPosition(), en.getObjectPosition())) {
+//                    continue; TOOOO SLOOWW !!!!!!!
+//                }
                 float dist = CommFun.getDistanceBetweenPositions(w.getObjectPosition(), en.getObjectPosition());
                 if (dist < riskyDistance) {
                     cost += 1 - dist / riskyDistance;
@@ -249,18 +260,18 @@ public class FuzzyEntityRanking {
 
     public static float getBotHealthDeficiency(MapBotBase bot, int addedHealth) {
         float h = bot.getBotHealth() + addedHealth;
-        if (h > BotBase.maxHealth) {
-            h = BotBase.maxHealth;
+        if (h > NavConfig.recommendedHealthLevel) {
+            h = NavConfig.recommendedHealthLevel;
         }
-        return 1f - h / (float) BotBase.maxHealth;
+        return 1f - h / (float) NavConfig.recommendedHealthLevel;
     }
 
     public static float getBotArmorDeficiency(MapBotBase bot, int addedArmor) {
         float a = bot.getBotArmor() + addedArmor;
-        if (a > BotBase.maxArmor) {
-            a = BotBase.maxArmor;
+        if (a > NavConfig.recommendedArmorLevel) {
+            a = NavConfig.recommendedArmorLevel;
         }
-        return 1f - a / (float) BotBase.maxArmor;
+        return 1f - a / (float) NavConfig.recommendedArmorLevel;
     }
 
     public static float getBotWeaponDeficiency(MapBotBase bot, int addedWeaponIndex) {
@@ -290,11 +301,15 @@ public class FuzzyEntityRanking {
             ownedWeapons += bot.wConfig.getWeaponWeightByInvIndex(addedWeaponIndex);
         }
 
-        float ret = 1f - ownedWeapons / (weightSum * NavConfig.weaponDeficiencyTolerance);
+        float ret = ownedWeapons / weightSum;
+//        Dbg.prn(bot.getBotName()+": ow = "+ownedWeapons+" ws = "+weightSum+" perc="+ret);
         if (ret < 0) {
             ret = 0;
         }
-        return ret;
+        if (ret > NavConfig.recommendedWeaponPercent) {
+            ret = NavConfig.recommendedWeaponPercent;
+        }
+        return 1f - ret / NavConfig.recommendedWeaponPercent;
 
     }
 
@@ -322,16 +337,19 @@ public class FuzzyEntityRanking {
         }
 
         if (addedAmmoIndex >= 18 && addedAmmoIndex <= 22) {
-            ownedAmmo += bot.wConfig.getAmmoWeightByInventoryIndex(addedAmmoIndex) *
-                    bot.getAmmunitionState(getWeaponFromAmmoIndex(bot, addedAmmoIndex));
+            ownedAmmo += bot.wConfig.getAmmoWeightByInventoryIndex(addedAmmoIndex) * 0.5;
         }
 
 //		Dbg.prn("owned ammo: "+ownedAmmo+" max ammo: "+maxAmmo);
-        float ret = 1f - ownedAmmo / maxAmmo;
+        float ret = ownedAmmo / maxAmmo;
+//        Dbg.prn(bot.getBotName() + ": oa = " + ownedAmmo + " ma = " + maxAmmo + " perc=" + ret);
         if (ret < 0) {
             ret = 0;
         }
-        return ret;
+        if (ret > NavConfig.recommendedAmmoPercent) {
+            ret = NavConfig.recommendedAmmoPercent;
+        }
+        return 1f - ret / NavConfig.recommendedAmmoPercent;
 
     }
 
@@ -429,13 +447,16 @@ public class FuzzyEntityRanking {
      * Double.MAX_VALUE is returned in case there is no path.
      */
     private static double getDistanceFollowingMap(MapBotBase bot, Vector3f vfrom, Vector3f vto, RankingCache cache) {
+        cache.fnCalls++;
         MyVector from = new MyVector(vfrom);
         MyVector to = new MyVector(vto);
 
-        if (cache.distCache.containsKey(from)) {
-            if (cache.distCache.get(from).containsKey(to)) {
+       HashMap<MyVector, Double> map = cache.distCache.get(from);
+        if (map != null) {
+            Double p = map.get(to);
+            if (p != null) {
                 cache.cacheUse++;
-                return cache.distCache.get(from).get(to);
+                return p;
             }
         }
 
@@ -451,31 +472,47 @@ public class FuzzyEntityRanking {
             pos = wp.getObjectPosition();
         }
 
-        if (!cache.distCache.containsKey(from)) {
-            cache.distCache.put(from, new HashMap<MyVector, Double>());
+       if ( map == null) {
+            map = new HashMap<MyVector, Double>();
+            cache.distCache.put(from, map);
         }
-        cache.distCache.get(from).put(to, distance);
+        map.put(to, distance);
 
         return distance;
     }
 
     private static Waypoint[] getShortestPath(MapBotBase bot, Vector3f vfrom, Vector3f vto, RankingCache cache) {
+        cache.fnCalls++;
         MyVector from = new MyVector(vfrom);
         MyVector to = new MyVector(vto);
 
-        if (cache.pathCache.containsKey(from)) {
-            if (cache.pathCache.get(from).containsKey(to)) {
+        HashMap<MyVector, Waypoint[]> map = cache.pathCache.get(from);
+        if (map != null) {
+            Waypoint [] p = map.get(to);
+            if (p != null) {
                 cache.cacheUse++;
-                return cache.pathCache.get(from).get(to);
+                return p;
             }
         }
+
         Waypoint[] path = bot.kb.findShortestPath(from, to);
-        if (!cache.pathCache.containsKey(from)) {
-            cache.pathCache.put(from, new HashMap<MyVector, Waypoint[]>());
+        
+        if ( map == null) {
+            map = new HashMap<MyVector, Waypoint[]>();
+            cache.pathCache.put(from, map);
         }
-        cache.pathCache.get(from).put(to, path);
+        map.put(to, path);
 
         return path;
 
     }
+
+    public static float getMaximalDeficiency(MapBotBase b) {
+        return Math.max(
+            Math.max(getBotAmmoDeficiency(b, 0), getBotArmorDeficiency(b, 0)),
+            Math.max(getBotHealthDeficiency(b, 0), getBotWeaponDeficiency(b, 0))
+        );
+    }
+
+
 }

@@ -9,7 +9,7 @@ import piotrrr.thesis.tools.Dbg;
 import soc.qase.state.PlayerMove;
 import soc.qase.tools.vecmath.Vector3f;
 
-public class ReferenceBotLocalNav implements LocalNav {
+public class SimpleLocalNav implements LocalNav {
 	
 	public static final int acceptableDistance = 40;
 
