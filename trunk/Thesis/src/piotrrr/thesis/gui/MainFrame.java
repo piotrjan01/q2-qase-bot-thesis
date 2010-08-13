@@ -1454,10 +1454,13 @@ public class MainFrame extends javax.swing.JFrame {
             sleep(3000);
             MapBotBase bot1 = connectBotByListOption(b1, i, AppConfig.serverPort + i);
             bot1.addBotJob(new GlobalKillsStatsJob(bot1));
+            bot1.dtalk.active = false;
             bots.add(bot1);
             sleep(1000);
             MapBotBase bot2 = connectBotByListOption(b2, i, AppConfig.serverPort + i);
+            bot2.dtalk.active = false;
             bots.add(bot2);
+
             sleep(1000);
         }
         Dbg.prn("gamesNr: " + gamesNr);

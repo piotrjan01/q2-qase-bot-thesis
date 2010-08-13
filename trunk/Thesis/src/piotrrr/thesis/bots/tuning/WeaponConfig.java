@@ -41,11 +41,11 @@ public class WeaponConfig {
     /**
      * Weapon preference weight
      */
-    public int wpWShotgun = 30;
+    public int wpWShotgun = 20;
     /**
      * Weapon preference weight
      */
-    public int wpWSuperShotgun = 40;
+    public int wpWSuperShotgun = 30;
     /**
      * Weapon preference weight
      */
@@ -53,7 +53,7 @@ public class WeaponConfig {
     /**
      * Weapon preference weight
      */
-    public int wpWChaingun = 60;
+    public int wpWChaingun = 50;
     /**
      * Weapon preference weight
      */
@@ -61,23 +61,23 @@ public class WeaponConfig {
     /**
      * Weapon preference weight
      */
-    public int wpWGrenadeLauncher = 0;
+    public int wpWGrenadeLauncher = 60;
     /**
      * Weapon preference weight
      */
-    public int wpWRocketLauncher = 50;
+    public int wpWRocketLauncher = 70;
     /**
      * Weapon preference weight
      */
-    public int wpWHyperblaster = 60;
+    public int wpWHyperblaster = 80;
     /**
      * Weapon preference weight
      */
-    public int wpWRailgun = 99;
+    public int wpWRailgun = 90;
     /**
      * Weapon preference weight
      */
-    public int wpWBFG10K = 40;
+    public int wpWBFG10K = 100;
 
     /**
      *
