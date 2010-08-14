@@ -154,6 +154,8 @@ public abstract class ObserverBot extends BasicBot implements Observer
 /*-------------------------------------------------------------------*/
 	public boolean connect(String host, int port, int ctfTeam, String recordDM2File)
 	{
+            System.out.println("Connecting to: "+host+" port: "+port);
+
 		if(!proxy.connect(host, (port <= 0 ? 27910 : port), recordDM2File))
 			return false;
 

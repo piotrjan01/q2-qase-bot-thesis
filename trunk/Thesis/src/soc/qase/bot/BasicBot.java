@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.Vector;
 
 import java.util.Observable;
+import piotrrr.thesis.gui.AppConfig;
 
 /*-------------------------------------------------------------------*/
 /**	An abstract class which provides all the base functionality needed
@@ -753,6 +754,7 @@ public abstract class BasicBot extends Thread implements Bot
 			vel = (walkState == 1 ? 110f : 300f);
 		else // moving, on land
 			vel = (walkState == 1 ? 200f : 300f);
+                vel *= AppConfig.timeScale;
 
 		setBotMovement(moveDir, aimDir, vel, postureState);
 	}

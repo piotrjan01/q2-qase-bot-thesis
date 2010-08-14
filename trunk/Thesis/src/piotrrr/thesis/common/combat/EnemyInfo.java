@@ -3,6 +3,7 @@ package piotrrr.thesis.common.combat;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
+import piotrrr.thesis.gui.AppConfig;
 import soc.qase.state.Entity;
 import soc.qase.tools.vecmath.Vector3f;
 
@@ -15,7 +16,7 @@ public class EnemyInfo implements GameObject {
 	/**
 	 * When enemy info is older than this, it is being removed.
 	 */
-	public static final int MAX_ENEMY_INFO_AGE = 200;
+	public static final int MAX_ENEMY_INFO_AGE = (int) (200);
 	
 	/**
 	 * The enemie's entity
@@ -185,7 +186,7 @@ public class EnemyInfo implements GameObject {
 	 * @return true if information is out of date
 	 */
 	public boolean isOutdated(long currentFrame) {
-		return (getInfoAge(currentFrame) > MAX_ENEMY_INFO_AGE);
+		return (getInfoAge(currentFrame) > MAX_ENEMY_INFO_AGE*AppConfig.timeScale);
 	}
 	
 	/**
