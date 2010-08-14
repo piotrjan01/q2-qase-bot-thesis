@@ -23,7 +23,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 
 import javax.swing.UIManager;
-import piotrrr.thesis.bots.AppConfig;
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.rlbot.RLBot;
 
@@ -37,6 +36,7 @@ import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.common.stats.StatsChartsFactory;
 
 import piotrrr.thesis.tools.Dbg;
+import soc.qase.state.Velocity;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
@@ -147,6 +147,10 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane8 = new javax.swing.JScrollPane();
         nrOfGamesList = new javax.swing.JList();
         jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        bot3List = new javax.swing.JList();
+        timescaleToggle = new javax.swing.JToggleButton();
         startExperimentButton = new javax.swing.JButton();
         jPanel13 = new javax.swing.JPanel();
         refreshButton = new javax.swing.JButton();
@@ -890,15 +894,32 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel18.setText("Bot2");
 
         nrOfGamesList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "1", "2", "3", "4", "5" };
+            String[] strings = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         nrOfGamesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        nrOfGamesList.setSelectedIndex(2);
         jScrollPane8.setViewportView(nrOfGamesList);
 
         jLabel19.setText("Nr of games");
+
+        jLabel20.setText("Bot3");
+
+        bot3List.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot", "none" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        bot3List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        bot3List.setSelectedIndex(3);
+        jScrollPane9.setViewportView(bot3List);
+
+        timescaleToggle.setText("timescale=10");
+        timescaleToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                timescaleToggleActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
@@ -918,9 +939,15 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel18))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel20))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane8)
-                    .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel19))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(timescaleToggle)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel17Layout.setVerticalGroup(
@@ -928,20 +955,27 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel17Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel17Layout.createSequentialGroup()
-                        .addComponent(jLabel19)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel17Layout.createSequentialGroup()
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel16)
-                            .addComponent(jLabel17)
-                            .addComponent(jLabel18))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane7)
-                            .addComponent(jScrollPane6)
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(timescaleToggle)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel17Layout.createSequentialGroup()
+                            .addComponent(jLabel19)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel17Layout.createSequentialGroup()
+                                .addComponent(jLabel20)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane9))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel17Layout.createSequentialGroup()
+                                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel16)
+                                    .addComponent(jLabel17)
+                                    .addComponent(jLabel18))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane7)
+                                    .addComponent(jScrollPane6)
+                                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -961,7 +995,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(startExperimentButton))
-                .addContainerGap(449, Short.MAX_VALUE))
+                .addContainerGap(264, Short.MAX_VALUE))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1150,8 +1184,10 @@ public class MainFrame extends javax.swing.JFrame {
             b.disconnect();
         }
         bots.clear();
-        
-        for (Process p : childProcesses) p.destroy();
+
+        for (Process p : childProcesses) {
+            p.destroy();
+        }
         childProcesses.clear();
 
         AppConfig.writeConfig();
@@ -1413,14 +1449,20 @@ public class MainFrame extends javax.swing.JFrame {
             Dbg.prn("connecting rlbot rubbing the mint");
             bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
             ((RLBot) bot).combatModule.brain.setAlpha(0.0);
-            ((RLBot) bot).combatModule.brain.setRandActions(0.99);
+            ((RLBot) bot).combatModule.brain.setRandActions(1);
+        } else {
+            return null;
         }
         bot.connect(AppConfig.serverIP, port);
         return bot;
     }
 
-    private void runLocalQ2Server(int port, String mapName) {
-        String cmd = AppConfig.quakePath + "\\quake2.exe +set dedicated 1 +set deathmatch 1 +set maxclients 32 +map "+mapName+" +set cheats 1 +set port " + port;
+    private void runLocalQ2Server(int port, String mapName, boolean timescaling) {
+        String timescale = ""+AppConfig.timeScale;
+        String quakeExec = (timescaling ? "quake2x10.exe" : "quake2.exe");
+        String cmd = AppConfig.quakePath + "\\"+quakeExec+" +set dedicated 1 +set deathmatch 1 +map " +
+                mapName + " +set cheats 1 +set port " + port + " +set timescale " + timescale+
+                " +set rcon_password qwe123"+" +set dmflags 1544";
         String batName = "run" + port + ".bat";
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(batName));
@@ -1442,29 +1484,50 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void startExperimentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startExperimentButtonActionPerformed
         int gamesNr = Integer.parseInt(nrOfGamesList.getSelectedValue().toString());
+
+        boolean timescale = timescaleToggle.isSelected();
+        if (timescale) {
+            AppConfig.timeScale = 10;
+        }
+        else AppConfig.timeScale = 1;
+
         String b1 = bot1List.getSelectedValue().toString();
         String b2 = bot2List.getSelectedValue().toString();
+        String b3 = bot3List.getSelectedValue().toString();
 
         String mapName = mapsList.getSelectedValue().toString();
 
         gameStats = BotStatistic.createNewInstance();
 
         for (int i = 0; i < gamesNr; i++) {
-            runLocalQ2Server(AppConfig.serverPort + i, mapName);
+            runLocalQ2Server(AppConfig.serverPort + i, mapName, timescale);
             sleep(3000);
             MapBotBase bot1 = connectBotByListOption(b1, i, AppConfig.serverPort + i);
             bot1.addBotJob(new GlobalKillsStatsJob(bot1));
-            bot1.dtalk.active = false;
+//            bot1.dtalk.active = false;
             bots.add(bot1);
             sleep(1000);
-            MapBotBase bot2 = connectBotByListOption(b2, i, AppConfig.serverPort + i);
-            bot2.dtalk.active = false;
-            bots.add(bot2);
+//            bot1.consoleCommand("rcon qwe123 sv_gravity "+(int)(800*AppConfig.timeScale));
+//            bot1.consoleCommand("rcon qwe123 dmflags 1544");
 
+            MapBotBase bot2 = connectBotByListOption(b2, i, AppConfig.serverPort + i);
+//            bot2.dtalk.active = false;
+            bots.add(bot2);
             sleep(1000);
+
+            MapBotBase bot3 = connectBotByListOption(b3, i, AppConfig.serverPort + i);
+            if (bot3 != null) {
+//                bot3.dtalk.active = false;
+                bots.add(bot3);
+                sleep(1000);
+            }
         }
         Dbg.prn("gamesNr: " + gamesNr);
     }//GEN-LAST:event_startExperimentButtonActionPerformed
+
+    private void timescaleToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timescaleToggleActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_timescaleToggleActionPerformed
 
     private void sleep(int milis) {
         try {
@@ -1505,6 +1568,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel avgRewardjPanel16;
     private javax.swing.JList bot1List;
     private javax.swing.JList bot2List;
+    private javax.swing.JList bot3List;
     private javax.swing.JTextField botMapsPathjTextField3;
     private javax.swing.JTextArea botStateInfoTextArea1;
     private javax.swing.JButton connectDebugedButton;
@@ -1535,6 +1599,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1568,6 +1633,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTextField jTextField1;
@@ -1598,6 +1664,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel statsSourcejLabel16;
     private javax.swing.JButton stepButton1;
     private javax.swing.JTextField stepSizeTextField2;
+    private javax.swing.JToggleButton timescaleToggle;
     private javax.swing.JRadioButton visibleEntsRadioButton2;
     private javax.swing.JRadioButton visibleWaypointsRadioButton2;
     private javax.swing.JPanel weaponsjPanel14;
@@ -1612,7 +1679,7 @@ public class MainFrame extends javax.swing.JFrame {
     private DebugStepJob stepJob = null;
     private MainFrameUpdater updater = null;
     private LinkedList<Process> childProcesses = new LinkedList<Process>();
-    
+
     public JTextArea getMessagesTextArea() {
         return messages;
     }

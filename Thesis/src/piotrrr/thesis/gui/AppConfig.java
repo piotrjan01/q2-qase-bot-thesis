@@ -1,4 +1,4 @@
-package piotrrr.thesis.bots;
+package piotrrr.thesis.gui;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,6 +12,11 @@ import java.io.PrintWriter;
  * @author Piotr Gwizdała
  */
 public class AppConfig {
+
+    /**
+     * Game speed. 1 is normal. Needs to be also set on server.
+     */
+    public static double timeScale = 10;
 
     /**
      * The name of the config file that will be used to save or read it

@@ -13,6 +13,7 @@ import piotrrr.thesis.common.entities.EntityDoublePair;
 import piotrrr.thesis.common.entities.EntityType;
 import piotrrr.thesis.common.navigation.GlobalNav;
 import piotrrr.thesis.common.navigation.NavPlan;
+import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.tools.Dbg;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
@@ -25,10 +26,10 @@ import soc.qase.tools.vecmath.Vector3f;
  */
 public class FuzzyGlobalNav implements GlobalNav {
 
-    public static final double mainDecisionTimeout = 40;
-    public static final double spontDecisionTimeout = 20;
-    public static final double antiStuckDecisionTimeout = 10;
-    public static final int maximalDistance = 400;
+    static double mainDecisionTimeout = 40;
+    static double spontDecisionTimeout = 20;
+    static double antiStuckDecisionTimeout = 10;
+    static int maximalDistance = 400;
 
     /**
      * Returns the new plan that the bot should follow
@@ -38,6 +39,11 @@ public class FuzzyGlobalNav implements GlobalNav {
      */
     @Override
     public NavPlan establishNewPlan(MapBotBase bot, NavPlan oldPlan) {
+
+        mainDecisionTimeout = 40*AppConfig.timeScale;
+        spontDecisionTimeout = 20*AppConfig.timeScale;
+        antiStuckDecisionTimeout = 10*AppConfig.timeScale;
+
         /**
          * When do we change the plan?
          * + when we don't have plan
@@ -51,20 +57,23 @@ public class FuzzyGlobalNav implements GlobalNav {
          */
         boolean changePlan = false;
 
-//		String talk = "";
+		String talk = "";
 
         if (oldPlan == null) {
             changePlan = true;
-//			talk = "plan change: no plan!";
+			talk = "plan change: no plan!";
         } else if (oldPlan.done) {
             changePlan = true;
             bot.kb.addToBlackList(oldPlan.dest);
-//			talk = "plan change: old plan is done!";
+			talk = "plan change: old plan is done!";
         } //if the bot is stuck
         else if (bot.stuckDetector.isStuck) {
+//            bot.dtalk.addToLog("plan change: bot is stuck !");
+            bot.stuckDetector.reset();
             return getSpontaneousAntiStuckPlan(bot);
         } //if we timed out with the plan
         else if (oldPlan.deadline <= bot.getFrameNumber()) {
+//            bot.dtalk.addToLog("plan change: old plan timed out!");
             changePlan = true;
         }
 
@@ -91,12 +100,12 @@ public class FuzzyGlobalNav implements GlobalNav {
             return oldPlan;
         }
 
-        
-        if (NavConfig.aggressiveness > FuzzyEntityRanking.getMaximalDeficiency(bot)) {
-            plan = getEnemyAttackingPlan(bot);
 
-//                    bot.dtalk.addToLog("GOING TO ATTTACK !!!");
+        if (NavConfig.aggressiveness > FuzzyEntityRanking.getMaximalDeficiency(bot)) {
+            plan = getEnemyAttackingPlan(bot, oldPlan);
+
             if (plan != null) {
+//                bot.dtalk.addToLog("GOING TO ATTTACK !!!");
                 return plan;
             }
         }
@@ -110,7 +119,7 @@ public class FuzzyGlobalNav implements GlobalNav {
         while ((plan == null || plan.path == null)) {
 
             if (ranking.size() == 0 || bot.stuckDetector.isStuck) {
-                Entity wp = bot.kb.getRandomItem();
+                Entity wp = bot.kb.getSomeItem();
 //				double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), wp.getObjectPosition());
 //				bot.dtalk.addToLog("ranking size = 0, going for random item!");
                 plan = new NavPlan(bot, wp, (int) (mainDecisionTimeout));
@@ -123,12 +132,12 @@ public class FuzzyGlobalNav implements GlobalNav {
                 return plan;
             }
 
-//			double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), ranking.last().ent.getObjectPosition());
-//			int lower = (ranking.size() >= 2) ? (int)(ranking.lower(ranking.last()).dbl) : 0;
+			double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), ranking.last().ent.getObjectPosition());
+			int lower = (ranking.size() >= 2) ? (int)(ranking.lower(ranking.last()).dbl) : 0;
 //			bot.dtalk.addToLog("got new plan: rank: "+((int)ranking.last().dbl)+
 //					" > "+lower+
 //					" et: "+EntityType.getEntityType(ranking.last().ent)+
-//					" dist: "+distance+" timeout: "+PLAN_TIME_PER_DIST*distance);
+//					" dist: "+distance+" timeout: "+mainDecisionTimeout);
             plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
 
 //			plan.path = bot.kb.findShortestPath(bot.getBotPosition(), plan.dest.getObjectPosition());
@@ -187,7 +196,7 @@ public class FuzzyGlobalNav implements GlobalNav {
         newPlan.isSpontaneos = true;
 
 //		double distance = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), chosen.getObjectPosition());
-//		bot.dtalk.addToLog("got new spontaneous plan: et: "+chosen.toString()+" dist: "+distance+" timeout: "+distance*PLAN_TIME_PER_DIST);
+//		bot.dtalk.addToLog("got new spontaneous plan: et: "+chosen.toString()+" dist: "+distance+" timeout: "+spontDecisionTimeout);
 
         bot.timers.get("nav0").pause();
         return newPlan;
@@ -198,20 +207,26 @@ public class FuzzyGlobalNav implements GlobalNav {
      * @param bot
      * @return a plan leading to closest known enemy position
      */
-    static NavPlan getEnemyAttackingPlan(MapBotBase bot) {
+    static NavPlan getEnemyAttackingPlan(MapBotBase bot, NavPlan oldPlan) {
         NavPlan ret = null;
         EnemyInfo e = null;
-        double minDist = Double.POSITIVE_INFINITY;
+        double minRisk = Double.POSITIVE_INFINITY;
         for (EnemyInfo ei : bot.kb.getAllEnemyInformation()) {
-            double dist = getDistanceFollowingMap(bot, bot.getBotPosition(), ei.getObjectPosition());
-            if (dist < minDist) {
-                minDist = dist;
+//            if (ei.lastUpdateFrame < bot.getFrameNumber() +);
+            double mapDist = getDistanceFollowingMap(bot, bot.getBotPosition(), ei.getObjectPosition());
+            double dist = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), ei.getObjectPosition());
+            if (oldPlan != null && ei.ent.getNumber() == oldPlan.dest.getNumber() && dist < 300) {
+                Dbg.err(bot.getBotName()+"> not going again for that guy... dist="+dist);
+                continue; //if we are close and enemy is not updated, it means it is a zombie :)
+            }
+            if (mapDist < minRisk) {
+                minRisk = mapDist;
                 e = ei;
             }
         }
         if (e != null) {
             Waypoint dw = bot.kb.map.findClosestWaypoint(e.getObjectPosition());
-            Waypoint dest = getRecursivelyRandomWaypointCloseToGiven(bot, dw, 4);
+            Waypoint dest = getRecursivelyRandomWaypointCloseToGiven(bot, dw, 3);
             ret = new NavPlan(bot, dest, e.ent, (long) mainDecisionTimeout);
         }
         return ret;
@@ -237,11 +252,16 @@ public class FuzzyGlobalNav implements GlobalNav {
      * @return the random spontaneous decision.
      */
     static NavPlan getSpontaneousAntiStuckPlan(MapBotBase bot) {
-        Entity re = bot.kb.getRandomItem();
+        Entity re = new Entity();
+        re.setNumber(-1);
+        Vector3f botPos = bot.getBotPosition();
+        Random r = new Random();
+        re.setOrigin(new Vector3f(botPos.x+r.nextInt(1000)-500, botPos.y+r.nextInt(1000)-500, botPos.z).toOrigin());
         int timeout = (int) (antiStuckDecisionTimeout);
         NavPlan ret = new NavPlan(bot, re, timeout);
-        ret.path = new Waypoint[1];
+        ret.path = new Waypoint[2];
         ret.path[0] = new Waypoint(re.getObjectPosition());
+        ret.path[1] = new Waypoint(re.getObjectPosition());
         ret.isSpontaneos = true;
 //		int wpInd = bot.kb.map.indexOf(random.getNode());
 //		double distance = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), re.getObjectPosition());

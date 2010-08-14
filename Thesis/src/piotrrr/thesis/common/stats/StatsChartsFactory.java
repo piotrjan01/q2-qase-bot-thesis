@@ -48,7 +48,7 @@ public class StatsChartsFactory {
         LinkedList<BotSeries> series = new LinkedList<BotSeries>();
 
         for (String botName : stats.getAllBotFamilies()) {
-            series.add(new BotSeries(new XYSeries(botName), 0, 0, botName));
+            series.add(new BotSeries(new XYSeries(botName, true), 0, 0, botName));
         }
 
         for (BotSeries s : series) {
@@ -60,7 +60,11 @@ public class StatsChartsFactory {
             for (BotSeries s : series) {
                 if (k.killer.startsWith(s.botName)) {
                     s.int1++;
-                    s.series.add(k.time / 10, (double) s.int1 / s.int2);
+                    double time = k.time / 10;
+                    if (time < s.d1) time = s.d1;
+//                    while (time < s.series.)
+                    s.series.add(time, (double) s.int1 / s.int2);
+                    s.d1 = time;
                 }
             }
         }
@@ -99,8 +103,11 @@ public class StatsChartsFactory {
         for (Kill k : stats.kills) {
             for (BotSeries s : series) {
                 if (k.victim.startsWith(s.botName)) {
+                    double time = k.time / 10;
+                    if (s.d1 > time) time = s.d1;
                     s.int1++;
-                    s.series.add(k.time / 10, (double) s.int1 / s.int2);
+                    s.series.add(time, (double) s.int1 / s.int2);
+                    s.d1 = time;
                 }
             }
         }

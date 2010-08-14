@@ -77,7 +77,7 @@ public class Brain implements Serializable {
     private static final double MAX_WEIGHT_DEFAULT = 1.0;
     /**
      * Probability with which random action is selected instead
-     * of being selected by the NN
+     * of being selected by the NN. from range [0; 1]
      */
     private double randActions;
     private static final double RAND_ACTIONS_DEFAULT = 0.0;
@@ -229,7 +229,7 @@ public class Brain implements Serializable {
         }
         System.out.println("a(" + a + ") != aMax(" + aMax + ") " + qstr);
         }*/
-        if (a == -1 || randActions != 0 && Rand.successWithPercent(randActions)) {
+        if (a == -1 || randActions != 0 && Rand.successWithPercent(100*randActions)) {
             a = Rand.i(Q.length);
         }
         Qmax = Q[a];

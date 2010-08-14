@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import piotrrr.thesis.bots.rlbot.rl.Action;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
+import piotrrr.thesis.bots.tuning.WeaponConfig;
 import piotrrr.thesis.common.combat.*;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.jobs.HitsReporter;
@@ -32,8 +33,6 @@ public class RLCombatModule extends Perception {
     int actionEndFrame = -1;
 //    int actionFireMode = Action.NO_FIRE;
     boolean blockReward = false;
-
-
     public TreeMap<Integer, WeaponScore> weaponRanking = new TreeMap<Integer, WeaponScore>();
 
     public static class WeaponScore implements Comparable<WeaponScore> {
@@ -95,7 +94,7 @@ public class RLCombatModule extends Perception {
 
         brain.setAlpha(0.6); //learning rate
         brain.setGamma(0.3); //discounting rate
-        brain.setLambda(0.1); //trace forgetting
+        brain.setLambda(0); //trace forgetting
 //        b.setUseBoltzmann(true);
 //        b.setTemperature(0.001);
         brain.setRandActions(0.1); //exploration
@@ -111,7 +110,7 @@ public class RLCombatModule extends Perception {
         for (int i = 7; i < 18; i++) {
             weaponRanking.put(i, new WeaponScore(0.5, 1));
         }
-        System.out.println(bot.getBotName()+"'s RLCombatModule started: actions="+actions.length);
+        System.out.println(bot.getBotName() + "'s RLCombatModule started: actions=" + actions.length);
 
     }
 
@@ -225,7 +224,9 @@ public class RLCombatModule extends Perception {
             actionEndFrame = bot.getFrameNumber() + actionTime;
 
             //count rewards:
-            if (blockReward) actionReward = -0.1;
+            if (blockReward) {
+                actionReward = -0.1;
+            }
             bot.rewardsCount++;
             if (actionReward <= 1 && actionReward >= -1) {
                 bot.totalReward += actionReward;
@@ -253,7 +254,7 @@ public class RLCombatModule extends Perception {
             blockReward = false;
             executeAction(actions[brain.getAction()]);
             actionReward = 0;
-            
+
         }
 
 //        return getFiringInstructionsAtHitpoint(fd, 1);
@@ -264,7 +265,7 @@ public class RLCombatModule extends Perception {
 //            case Action.FIRE:
 //                return getFastFiringInstructions(fd, bot);
 //            case Action.FIRE_PREDICTED:
-                return SimpleAimingModule.getNewPredictingFiringInstructions(bot, fd, bot.cConfig.getBulletSpeedForGivenGun(bot.getCurrentWeaponIndex()));
+        return SimpleAimingModule.getNewPredictingFiringInstructions(bot, fd, bot.cConfig.getBulletSpeedForGivenGun(bot.getCurrentWeaponIndex()));
 //            default:
 //            case Action.NO_FIRE:
 //                return SimpleAimingModule.getNoFiringInstructions(bot, noFiringLook);
@@ -296,8 +297,9 @@ public class RLCombatModule extends Perception {
         if (bot.getCurrentWeaponIndex() != wpind) {
             if (bot.botHasItem(wpind)) {
                 bot.changeWeaponToIndex(wpind);
+            } else {
+                blockReward = true;
             }
-            else blockReward = true;
 //            if (bot.botHasItem(wpind)) System.out.println("chng wpn to: "+CommFun.getGunName(wpind));
         }
     }
@@ -339,15 +341,22 @@ public class RLCombatModule extends Perception {
     @Override
     protected void updateInputValues() {
         setNextValue(actionDistance);
-//        for (int i = 7; i < 18; i++) {
-//            float ammState = bot.getAmmunitionState(i);
-//            if ( ! bot.botHasItem(i)) ammState = 0;
-//            if (ammState > 1) {
-//                ammState = 1;
-//            }
-//            setNextValue(ammState);
+//        float ownedWpnWeights = 0;
+        for (int i = 7; i < 18; i++) {
+            float ammState = bot.getAmmunitionState(i);
+            if ( ! bot.botHasItem(i)) ammState = 0;
+            if (ammState > 1) {
+                ammState = 1;
+            }
+            setNextValue(ammState);
+//-----------------------------
 //            boolean b = bot.botHasItem(i) && bot.botHasItem(PlayerGun.getAmmoInventoryIndexByGun(i));
 //            setNextValue(b);
-//        }
+//------------------------------
+//            if (bot.botHasItem(i) && bot.botHasItem(PlayerGun.getAmmoInventoryIndexByGun(i))) {
+//                ownedWpnWeights += bot.wConfig.getWeaponWeightByInvIndex(i);
+//            }
+        }
+//        setNextValue(ownedWpnWeights);
     }
 }

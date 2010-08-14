@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.common.CommFun;
+import piotrrr.thesis.common.DeathMsgsParser;
 import piotrrr.thesis.common.stats.BotStatistic;
 
 public class GlobalKillsStatsJob extends Job {
@@ -20,13 +21,11 @@ public class GlobalKillsStatsJob extends Job {
 
     public static void main(String[] arg) {
         String cmd = "xxx couldn't hide from yyy's BFG";
-        String victim = cmd.substring(0, cmd.indexOf(" could"));
-        String killer = cmd.substring(cmd.indexOf("hide from ") + 10, cmd.indexOf(" BFG"));
-        if (killer.indexOf("'s") != -1) {
-            killer = killer.substring(0, killer.indexOf("'s"));
-        }
-        System.out.println(killer);
-        System.out.println(victim);
+        String [] res = DeathMsgsParser.parseMessage(cmd);
+        System.out.print("[ ");
+        for (String s : res)
+            System.out.print(s+" ");
+        System.out.print("]\n");
     }
 
     private void logKillsToStats() {
@@ -35,59 +34,14 @@ public class GlobalKillsStatsJob extends Job {
             return;
         }
         for (String cmd : commands) {
-            if (cmd.contains(" was ") && cmd.contains(" by ")) {
-                String victim = cmd.substring(0, cmd.indexOf(" was "));
-                String killer = cmd.substring(cmd.indexOf(" by ") + 4);
-                if (killer.indexOf("'s") != -1) {
-                    killer = killer.substring(0, killer.indexOf("'s"));
-                }
+            String [] res = DeathMsgsParser.parseMessage(cmd);
+
+            if (res[0] != null && ( ! res[0].equals(res[1]))) {
                 BotStatistic.getInstance().addKill(
                         bot.getFrameNumber(),
-                        killer,
-                        victim,
-                        CommFun.getGunName(cmd));
-                if (CommFun.getGunName(cmd).equals(CommFun.getGunName("xxx"))) {
-                    System.out.println("Unrecognized kill log: " + cmd);
-                }
-            } else if (cmd.contains("rocket") && cmd.contains("ate")) {
-                String victim = cmd.substring(0, cmd.indexOf(" ate "));
-                String killer = cmd.substring(cmd.indexOf(" ate ") + 5);
-                if (killer.indexOf("'s") != -1) {
-                    killer = killer.substring(0, killer.indexOf("'s"));
-                }
-                BotStatistic.getInstance().addKill(
-                        bot.getFrameNumber(),
-                        killer,
-                        victim,
-                        CommFun.getGunName(cmd));
-                if (CommFun.getGunName(cmd).equals(CommFun.getGunName("xxx"))) {
-                    System.out.println("Unrecognized kill log: " + cmd);
-                }
-            } else if (cmd.contains("rocket") && cmd.contains("dodged")) {
-                String victim = cmd.substring(0, cmd.indexOf(" almost "));
-                String killer = cmd.substring(cmd.indexOf(" dodged ") + 8);
-                if (killer.indexOf("'s") != -1) {
-                    killer = killer.substring(0, killer.indexOf("'s"));
-                }
-                BotStatistic.getInstance().addKill(
-                        bot.getFrameNumber(),
-                        killer,
-                        victim,
-                        CommFun.getGunName(cmd));
-                if (CommFun.getGunName(cmd).equals(CommFun.getGunName("xxx"))) {
-                    System.out.println("Unrecognized kill log: " + cmd);
-                }
-            } else if (cmd.contains("hide from") && cmd.contains("BFG")) {
-                String victim = cmd.substring(0, cmd.indexOf(" could"));
-                String killer = cmd.substring(cmd.indexOf("hide from ") + 10, cmd.indexOf(" BFG"));
-                if (killer.indexOf("'s") != -1) {
-                    killer = killer.substring(0, killer.indexOf("'s"));
-                }
-                BotStatistic.getInstance().addKill(
-                        bot.getFrameNumber(),
-                        killer,
-                        victim,
-                        CommFun.getGunName(cmd));
+                        res[0],
+                        res[1],
+                        res[2]);
                 if (CommFun.getGunName(cmd).equals(CommFun.getGunName("xxx"))) {
                     System.out.println("Unrecognized kill log: " + cmd);
                 }

@@ -1,7 +1,7 @@
 package piotrrr.thesis.bots.mapbotbase;
 
 
-import piotrrr.thesis.bots.AppConfig;
+import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.tuning.CombatConfig;
 import piotrrr.thesis.bots.tuning.NavConfig;

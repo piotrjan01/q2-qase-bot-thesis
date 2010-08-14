@@ -4,9 +4,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
 import piotrrr.thesis.common.jobs.Job;
+import piotrrr.thesis.gui.AppConfig;
+import piotrrr.thesis.gui.MyPopUpDialog;
 import piotrrr.thesis.tools.Timer;
 import soc.qase.bot.NoClipBot;
 import soc.qase.file.bsp.BSPParser;
@@ -139,6 +143,19 @@ public class BotBase extends NoClipBot implements GameObject {
         } catch (Exception e) {
             say("Runtime exception!");
             say(e.toString());
+            String stack = e.toString();
+            int count = 0;
+            for (StackTraceElement te : e.getStackTrace()) {
+                stack += "\n"+te.toString();
+                count++;
+                if (count >= 20) break;
+            }
+            JOptionPane.showMessageDialog(
+                            null,
+                            stack,
+                            getBotName(),
+                            JOptionPane.ERROR_MESSAGE);
+            MyPopUpDialog.showMyDialogBox(getBotName(), stack, MyPopUpDialog.error);
             e.printStackTrace();
             disconnect();
         }
@@ -466,6 +483,9 @@ public class BotBase extends NoClipBot implements GameObject {
             s+=t.toStringAsPercentOf(max)+"\n";
 //            s+=t.toString()+"\n";
         }
+        double div = getFrameNumber() % 100;
+        s += "\ntotal AI time: "+timers.get("all-ai").getElapsedTime()/(div*1000000)+"ms";
+        s += "\nframe time = "+100/AppConfig.timeScale+"\n";
         timersString = s;
     }
 
