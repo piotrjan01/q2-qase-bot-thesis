@@ -6,23 +6,22 @@ import piotrrr.thesis.common.navigation.FuzzyGlobalNav;
 import piotrrr.thesis.common.navigation.SimpleLocalNav;
 import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.combat.FiringInstructions;
-import piotrrr.thesis.common.jobs.CountMyScoreJob;
+
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.tools.Timer;
 
 public class RLBot extends MapBotBase {
 
     public NavConfig nConfig = new NavConfig();
-    public CountMyScoreJob scoreCounter;
     public RLCombatModule combatModule = new RLCombatModule(this);
     public int lastBotScore = 0;
     public double totalReward = 0;
     public double rewardsCount = 0;
 
+    FiringDecision fd = null;
+
     public RLBot(String botName, String skinName) {
         super(botName, skinName);
-        scoreCounter = new CountMyScoreJob(this);
-        addBotJob(scoreCounter);
 
         timers.put("glob-nav", new Timer("glob-nav"));
         timers.put("rank", new Timer("rank"));
@@ -55,7 +54,7 @@ public class RLBot extends MapBotBase {
             assert plan != null;
             ni = localNav.getNavigationInstructions(this);
         }
-        FiringDecision fd = null;
+        fd = null;
 
         
 

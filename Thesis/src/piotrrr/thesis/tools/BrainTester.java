@@ -30,7 +30,7 @@ public class BrainTester {
         RLBot bot = new RLBot("tmp", "");
         RLCombatModule cm = new RLCombatModule(bot);
 //        brain = new Brain(cm, actions, hiddenLayers);
-        brain = new Brain(cm, actions);
+        brain = new Brain(cm.perception, actions);
         try {
             brain.load("RLBot-0-b1");
         } catch (Exception ex) {

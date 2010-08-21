@@ -12,9 +12,13 @@ import javax.swing.JOptionPane;
  */
 public class MyPopUpDialog implements Runnable {
 
+    public static int dialogsCount = 0;
+    private static int maxDialogsCount = 10;
+
     public static final int error = JOptionPane.ERROR_MESSAGE;
     public static final int warning = JOptionPane.WARNING_MESSAGE;
     public static final int info = JOptionPane.INFORMATION_MESSAGE;
+
     String title;
     String message;
     int type;
@@ -26,6 +30,8 @@ public class MyPopUpDialog implements Runnable {
     }
 
     public static void showMyDialogBox(String title, String message, int type) {
+        if (dialogsCount >= maxDialogsCount) return;
+        dialogsCount++;
         MyPopUpDialog mdb = new MyPopUpDialog(title, message, type);
         new Thread(mdb).start();
     }

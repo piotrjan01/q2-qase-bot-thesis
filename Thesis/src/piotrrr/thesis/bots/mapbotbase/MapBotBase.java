@@ -9,8 +9,8 @@ import piotrrr.thesis.bots.tuning.WeaponConfig;
 import piotrrr.thesis.common.combat.FiringInstructions;
 import piotrrr.thesis.common.jobs.BasicCommands;
 import piotrrr.thesis.common.jobs.GeneralDebugTalk;
-import piotrrr.thesis.common.jobs.HitsReporter;
 import piotrrr.thesis.common.jobs.StuckDetector;
+import piotrrr.thesis.common.navigation.FuzzyEntityRanking;
 import piotrrr.thesis.common.navigation.GlobalNav;
 import piotrrr.thesis.common.navigation.LocalNav;
 import piotrrr.thesis.common.navigation.NavInstructions;
@@ -45,10 +45,6 @@ public class MapBotBase extends BotBase {
 	 */
 	public StuckDetector stuckDetector;
 
-        /**
-         * Gathers information when the bot was hit
-         */
-        public HitsReporter hitsReporter;
 	
 	/**
 	 * The job that handles basic commands.
@@ -103,11 +99,11 @@ public class MapBotBase extends BotBase {
 		
 		stuckDetector = new StuckDetector(this, 5);
 		basicCommands = new BasicCommands(this, "Player");
-                hitsReporter = new HitsReporter(this);
+
 		addBotJob(dtalk);
 		addBotJob(basicCommands);
 		addBotJob(stuckDetector);
-                addBotJob(hitsReporter);
+
 		
 	}
 
@@ -184,11 +180,34 @@ public class MapBotBase extends BotBase {
             synchronized (this) {
                 if (kb == null) return "";
 
+                String fuzzyState="";
+                fuzzyState += " wd="+FuzzyEntityRanking.getBotWeaponDeficiency(this, 0);
+//                    say += " ammd="+FuzzyEntityRanking.getBotAmmoDeficiency(b, 0);
+//                    say += " hd="+FuzzyEntityRanking.getBotHealthDeficiency(b, 0);
+//                    say += " armd="+FuzzyEntityRanking.getBotArmorDeficiency(b, 0);
+                    fuzzyState+= " maxDef="+FuzzyEntityRanking.getMaximalDeficiency(this);
+
+                    fuzzyState+=" wpns=";
+                    for (int i=7; i<18; i++) {
+                        if (botHasItem(i)) fuzzyState+="1";
+                        else fuzzyState+="0";
+                    }
+
+                    fuzzyState+=" ammos=";
+                    for (int i=18; i<23; i++) {
+                        if (botHasItem(i)) fuzzyState+="1";
+                        else fuzzyState+="0";
+                    }
+
 		return "Bot name: "+getBotName()+"\n"+
+                        "Thread name: "+getName()+"\n"+
 				"health: "+getBotHealth()+"\n"+
 				"armor: "+getBotArmor()+"\n"+
 				"frame nr: "+getFrameNumber()+"\n"+
-				"position: "+getBotPosition()+"\n\n"+
+				"position: "+getBotPosition()+"\n"+
+                                "alive: "+isAlive()+"\n"+
+                                "connected: "+isConnected()+"\n"+
+                                "state: "+fuzzyState+"\n\n"+
                                 getTimersString()+"\n"+
 				kb.toString();
             }

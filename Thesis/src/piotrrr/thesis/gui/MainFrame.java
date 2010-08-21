@@ -899,6 +899,7 @@ public class MainFrame extends javax.swing.JFrame {
             public Object getElementAt(int i) { return strings[i]; }
         });
         nrOfGamesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        nrOfGamesList.setSelectedIndex(0);
         jScrollPane8.setViewportView(nrOfGamesList);
 
         jLabel19.setText("Nr of games");
@@ -906,15 +907,15 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel20.setText("Bot3");
 
         bot3List.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot", "none" };
+            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot", "NoDistRL", "none" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         bot3List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        bot3List.setSelectedIndex(3);
+        bot3List.setSelectedIndex(4);
         jScrollPane9.setViewportView(bot3List);
 
-        timescaleToggle.setText("timescale=10");
+        timescaleToggle.setText("speed up");
         timescaleToggle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 timescaleToggleActionPerformed(evt);
@@ -995,7 +996,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(startExperimentButton))
-                .addContainerGap(264, Short.MAX_VALUE))
+                .addContainerGap(284, Short.MAX_VALUE))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1445,7 +1446,12 @@ public class MainFrame extends javax.swing.JFrame {
             Dbg.prn("connecting rlbot learing");
             bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
 
-        } else if (option.equals("NoRLBot")) {
+        } else if (option.equals("NoDistRL")) {
+            Dbg.prn("connecting rlbot learing without distance in state");
+            bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
+            ((RLBot) bot).combatModule.perception.useDistance = false;
+
+        }else if (option.equals("NoRLBot")) {
             Dbg.prn("connecting rlbot rubbing the mint");
             bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
             ((RLBot) bot).combatModule.brain.setAlpha(0.0);
@@ -1459,7 +1465,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void runLocalQ2Server(int port, String mapName, boolean timescaling) {
         String timescale = ""+AppConfig.timeScale;
-        String quakeExec = (timescaling ? "quake2x10.exe" : "quake2.exe");
+        String quakeExec = "quake2.exe";
         String cmd = AppConfig.quakePath + "\\"+quakeExec+" +set dedicated 1 +set deathmatch 1 +map " +
                 mapName + " +set cheats 1 +set port " + port + " +set timescale " + timescale+
                 " +set rcon_password qwe123"+" +set dmflags 1544";
@@ -1487,7 +1493,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         boolean timescale = timescaleToggle.isSelected();
         if (timescale) {
-            AppConfig.timeScale = 10;
+            AppConfig.timeScale = 9;
         }
         else AppConfig.timeScale = 1;
 
@@ -1507,7 +1513,9 @@ public class MainFrame extends javax.swing.JFrame {
 //            bot1.dtalk.active = false;
             bots.add(bot1);
             sleep(1000);
-//            bot1.consoleCommand("rcon qwe123 sv_gravity "+(int)(800*AppConfig.timeScale));
+//            bot1.consoleCommand("rcon \tqwe123 \tsv_gravity "+(int)(800*AppConfig.timeScale));
+//            bot1.consoleCommand("\"rcon\" \"qwe123\" \"sv_gravity\" "+(int)(800*AppConfig.timeScale));
+//            bot1.consoleCommand("/rcon qwe123 sv_gravity "+(int)(800*AppConfig.timeScale));
 //            bot1.consoleCommand("rcon qwe123 dmflags 1544");
 
             MapBotBase bot2 = connectBotByListOption(b2, i, AppConfig.serverPort + i);

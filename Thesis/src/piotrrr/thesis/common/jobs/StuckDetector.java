@@ -4,6 +4,7 @@ import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.gui.AppConfig;
+import piotrrr.thesis.gui.MyPopUpDialog;
 import piotrrr.thesis.tools.Dbg;
 import soc.qase.tools.vecmath.Vector3f;
 
@@ -22,10 +23,12 @@ public class StuckDetector extends Job {
      */
     Vector3f lastPos = null;
     Vector3f lastlastPos = null;
+    int consequentStucks = 0;
+    int maxConseqStucks = 50;
 
     public StuckDetector(BotBase bot, int period) {
         super(bot);
-        this.period = period;
+        this.period = (int) (period);
         this.lastFrame = bot.getFrameNumber();
         //lastPos = ((MapBotBase)bot).getBotPosition();
         //lastlastPos = lastPos;
@@ -77,9 +80,17 @@ public class StuckDetector extends Job {
 
         if (distance <= EPSILON) {
             ((MapBotBase) bot).dtalk.addToLog("I'm stuck!");
+            consequentStucks++;
             isStuck = true;
         } else {
+            consequentStucks = 0;
             isStuck = false;
+        }
+
+        if (consequentStucks > maxConseqStucks) {
+            consequentStucks = 0;
+            bot.consoleCommand("die");
+            MyPopUpDialog.showMyDialogBox("Bot removed", "The bot " + bot.getBotName() + " was killed, because it was stuck for too long time.", MyPopUpDialog.info);
         }
 
     }

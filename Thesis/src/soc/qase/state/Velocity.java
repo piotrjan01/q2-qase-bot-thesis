@@ -23,10 +23,9 @@ public class Velocity
 	private int right = -1;
 	private int up = -1;
 
-        public static final double timeScale = AppConfig.timeScale;
-
+        
 	public static final int FORWARD = 0, RIGHT = 1, UP = 2;
-	public static final int STOP = 0, WALK = (int)(timeScale*110), RUN = (int)(timeScale*400);
+	public static final int STOP = 0, WALK = (int)(110), RUN = (int)(400);
 
 /*-------------------------------------------------------------------*/
 /**	Constructor. Negative values correspond to the opposite 

@@ -186,7 +186,7 @@ public class EnemyInfo implements GameObject {
 	 * @return true if information is out of date
 	 */
 	public boolean isOutdated(long currentFrame) {
-		return (getInfoAge(currentFrame) > MAX_ENEMY_INFO_AGE*AppConfig.timeScale);
+		return (getInfoAge(currentFrame) > MAX_ENEMY_INFO_AGE);
 	}
 	
 	/**

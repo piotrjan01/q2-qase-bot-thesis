@@ -635,6 +635,7 @@ public class Proxy extends ServerMessageHandler implements Runnable
 		
 			while(connected)
 			{
+//                            long before = System.currentTimeMillis();
 				if(world != null)
 					lastFrameNum = world.getFrame();
 
@@ -660,6 +661,7 @@ public class Proxy extends ServerMessageHandler implements Runnable
 					sendMove();
 
 				Thread.yield();
+//                                System.err.println("Proxy time: "+(System.currentTimeMillis()-before)+"ms");
 			}
 
 			if(communicator.isConnected())
