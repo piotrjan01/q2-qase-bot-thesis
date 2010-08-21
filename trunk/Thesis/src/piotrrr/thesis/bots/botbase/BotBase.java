@@ -1,5 +1,6 @@
 package piotrrr.thesis.bots.botbase;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -11,8 +12,11 @@ import piotrrr.thesis.common.GameObject;
 import piotrrr.thesis.common.jobs.Job;
 import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.gui.MyPopUpDialog;
+import piotrrr.thesis.tools.Dbg;
 import piotrrr.thesis.tools.Timer;
 import soc.qase.bot.NoClipBot;
+import soc.qase.bot.ObserverBot;
+import soc.qase.bot.PollingBot;
 import soc.qase.file.bsp.BSPParser;
 import soc.qase.state.PlayerGun;
 import soc.qase.state.PlayerMove;
@@ -23,7 +27,7 @@ import soc.qase.tools.vecmath.Vector3f;
  * The bot that is used as super class for all the other bots.
  * @author Piotr Gwizdała
  */
-public class BotBase extends NoClipBot implements GameObject {
+public class BotBase extends ObserverBot implements GameObject, UncaughtExceptionHandler {
 
     /**
      * Stores all the jobs of the bot, that he runs every frame.
@@ -67,8 +71,6 @@ public class BotBase extends NoClipBot implements GameObject {
      * Direction where to look when paused.
      */
     protected Vector3f pausedLookDir = new Vector3f(0, 0, 0);
-   
-
     /**
      * The last frame that has been perceived by bot. If it is not smaller by 1 from
      * actual frame, it means the bot has lost some frames.
@@ -79,18 +81,19 @@ public class BotBase extends NoClipBot implements GameObject {
      */
     public boolean friendlyFire = true;
     /**
+     * 
+     */
+    private int lostFramesCount = 0;
+    /**
      * If true, after respawn the bot will try to obtain all weapons using cheats.
      */
     public boolean giveAllOnRespawn = true;
-
     /**
      * last time used by AI to calculate. In nanoseconds.
      */
     public long lastAIComputingTime = 0l;
-
     public HashMap<String, Timer> timers = new HashMap<String, Timer>();
-
-
+    long startTime = System.currentTimeMillis();
 
     /**
      * Basic constructor
@@ -99,6 +102,9 @@ public class BotBase extends NoClipBot implements GameObject {
      */
     public BotBase(String botName, String skinName) {
         super(botName, skinName);
+//        setHighThreadSafety(true);
+//        setAutoInventoryRefresh(true);
+        setUncaughtExceptionHandler(this);
         timers.put("all-ai", new Timer("all-ai"));
         timers.put("jobs", new Timer("jobs"));
         timers.put("bot-logic", new Timer("bot-logic"));
@@ -106,16 +112,23 @@ public class BotBase extends NoClipBot implements GameObject {
 
     @Override
     public void runAI(World world) {
+        if (world == null) {
+            return;
+        }
         try {
             resetTimers();
             timers.get("all-ai").resume();
 
             if (world.getFrame() != 1 + lastWorldFrame) {
-                say("LOST FRAMES: " + (world.getFrame() - lastWorldFrame));
+                lostFramesCount++;
             }
+
             lastWorldFrame = world.getFrame();
 
             if (firstFrameNumber == -1) {
+                if (giveAllOnRespawn) {
+                    giveAllWeapons();
+                }
                 firstFrameNumber = world.getFrame();
             }
 
@@ -146,15 +159,17 @@ public class BotBase extends NoClipBot implements GameObject {
             String stack = e.toString();
             int count = 0;
             for (StackTraceElement te : e.getStackTrace()) {
-                stack += "\n"+te.toString();
+                stack += "\n" + te.toString();
                 count++;
-                if (count >= 20) break;
+                if (count >= 20) {
+                    break;
+                }
             }
             JOptionPane.showMessageDialog(
-                            null,
-                            stack,
-                            getBotName(),
-                            JOptionPane.ERROR_MESSAGE);
+                    null,
+                    stack,
+                    getBotName(),
+                    JOptionPane.ERROR_MESSAGE);
             MyPopUpDialog.showMyDialogBox(getBotName(), stack, MyPopUpDialog.error);
             e.printStackTrace();
             disconnect();
@@ -272,7 +287,9 @@ public class BotBase extends NoClipBot implements GameObject {
      * @return the number between 0 and 1 that tells how much ammo we have
      */
     public float getAmmunitionState(int gunIndex) {
-        if (world == null) return 0;
+        if (world == null) {
+            return 0;
+        }
         int max = PlayerGun.getMaxAmmoByGun(gunIndex);
         int ammo = world.getInventory().getCount(PlayerGun.getAmmoInventoryIndexByGun(gunIndex));
         if (max == -1) {
@@ -300,6 +317,10 @@ public class BotBase extends NoClipBot implements GameObject {
      * Tries to get all the weapons using cheats.
      */
     public void giveAllWeapons() {
+        if (world == null) {
+            return;
+        }
+
         consoleCommand("give shotgun");
         consoleCommand("give super shotgun");
         consoleCommand("give machinegun");
@@ -307,21 +328,33 @@ public class BotBase extends NoClipBot implements GameObject {
         consoleCommand("give grenade launcher");
         consoleCommand("give rocket launcher");
         consoleCommand("give hyperblaster");
-        consoleCommand("give railgun");
-        consoleCommand("give bfg10k");
+//        consoleCommand("give railgun");
+//        consoleCommand("give bfg10k");
         consoleCommand("give cells");
         consoleCommand("give armor");
 //        consoleCommand("give body armor");
 
-         for (int i=7; i<18; i++) {
+        /**
+        BLASTER = 7, SHOTGUN = 8,
+        SUPER_SHOTGUN = 9, MACHINEGUN = 10, CHAINGUN = 11, GRENADES = 12,
+        GRENADE_LAUNCHER = 13, ROCKET_LAUNCHER = 14, HYPERBLASTER = 15,
+        RAILGUN = 16, BFG10K = 17, SHELLS = 18, BULLETS = 19, CELLS = 20,
+        ROCKETS = 21, SLUGS = 22;
+         **/
+        for (int i = 7; i < 18; i++) {
+            if (i == 16 || i == 17) {
+                continue;
+            }
             world.getInventory().setCount(i, 1);
+
         }
 
-        for (int i=18; i<23; i++) {
-            world.getInventory().setCount(i, PlayerGun.getMaxAmmo(i)/2);
+        for (int i = 18; i < 23; i++) {
+            if (i==22) continue;
+            world.getInventory().setCount(i, PlayerGun.getMaxAmmo(i) / 2);
         }
 
-        
+
 
     }
 
@@ -447,7 +480,10 @@ public class BotBase extends NoClipBot implements GameObject {
      * @param dst the position where the bot should move.
      */
     public void goToPositionWithNoClipCheating(Vector3f dst) {
-        clipToPosition(dst);
+//        clipToPosition(dst);
+        MyPopUpDialog.showMyDialogBox("Can't do it", "BotBase was changed to inherit from PollingBot. \n" +
+                "In order to allow noClip movement, \n" +
+                "change inheritance to ObserverBot.", MyPopUpDialog.error);
     }
 
     @Override
@@ -477,18 +513,26 @@ public class BotBase extends NoClipBot implements GameObject {
         String s = "";
         long max = -1;
         for (Timer t : timers.values()) {
-            if (t.getElapsedTime() > max) max = t.getElapsedTime();
+            if (t.getElapsedTime() > max) {
+                max = t.getElapsedTime();
+            }
         }
         for (Timer t : timers.values()) {
-            s+=t.toStringAsPercentOf(max)+"\n";
+            s += t.toStringAsPercentOf(max) + "\n";
 //            s+=t.toString()+"\n";
         }
         double div = getFrameNumber() % 100;
-        s += "\ntotal AI time: "+timers.get("all-ai").getElapsedTime()/(div*1000000)+"ms";
-        s += "\nframe time = "+100/AppConfig.timeScale+"\n";
+        double aitime = timers.get("all-ai").getElapsedTime() / (div * 1000000);
+        s += "\ntotal AI time: " + aitime + "ms";
+        int fps = (int) ((1000 * getFrameNumber()) / (System.currentTimeMillis() - startTime));
+        s += "\nframes per second = " + fps + "\n";
+        if (fps != 0) {
+            s += "each frame ms = " + 1000 / fps + "\n";
+//            s += "max bots num = "+ (1000/fps)/aitime;
+            s += "lost frames percent: " + (100 * lostFramesCount / getFrameNumber()) + "%\n";
+        }
         timersString = s;
     }
-
     String timersString = "";
 
     public String getTimersString() {
@@ -496,12 +540,30 @@ public class BotBase extends NoClipBot implements GameObject {
     }
 
     public void resetTimers() {
-        if ( getFrameNumber() % 100 != 0) return;
+        if (getFrameNumber() % 100 != 0) {
+            return;
+        }
         for (Timer t : timers.values()) {
             t.reset();
         }
     }
 
-
-
+    public void uncaughtException(Thread t, Throwable e) {
+        String stack = e.toString();
+        int count = 0;
+        for (StackTraceElement te : e.getStackTrace()) {
+            stack += "\n" + te.toString();
+            count++;
+            if (count >= 20) {
+                break;
+            }
+        }
+        JOptionPane.showMessageDialog(
+                null,
+                stack,
+                getBotName(),
+                JOptionPane.ERROR_MESSAGE);
+        MyPopUpDialog.showMyDialogBox(getBotName(), stack, MyPopUpDialog.error);
+        e.printStackTrace();
+    }
 }

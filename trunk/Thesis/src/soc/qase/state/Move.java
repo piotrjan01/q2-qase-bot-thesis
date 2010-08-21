@@ -6,6 +6,7 @@
 
 package soc.qase.state;
 
+import piotrrr.thesis.gui.AppConfig;
 import soc.qase.tools.Utils;
 
 /*-------------------------------------------------------------------*/
@@ -31,7 +32,7 @@ public class Move
 		this.angles = angles;
 		this.velocity = velocity;
 		this.action = action;
-		this.deltaTime = deltaTime;
+		this.deltaTime = deltaTime*AppConfig.timeScale;
 	}
 	
 /*-------------------------------------------------------------------*/

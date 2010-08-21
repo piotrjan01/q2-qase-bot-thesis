@@ -18,7 +18,6 @@ import java.io.*;
 import java.util.Vector;
 
 import java.util.Observable;
-import piotrrr.thesis.gui.AppConfig;
 
 /*-------------------------------------------------------------------*/
 /**	An abstract class which provides all the base functionality needed
@@ -37,6 +36,9 @@ import piotrrr.thesis.gui.AppConfig;
 /*-------------------------------------------------------------------*/
 public abstract class BasicBot extends Thread implements Bot
 {
+
+    int rate = 65535;
+
 	private User user = null;
 	protected Proxy proxy = null;
 
@@ -68,7 +70,7 @@ public abstract class BasicBot extends Thread implements Bot
 /*-------------------------------------------------------------------*/
 	public BasicBot()
 	{
-		user = new User("QASE_Bot", "female/athena", 65535, 1, 90, User.HAND_RIGHT, "");
+		user = new User("QASE_Bot", "female/athena", rate, 1, 90, User.HAND_RIGHT, "");
 		commonSetup(false, true);
 	}
 
@@ -80,7 +82,7 @@ public abstract class BasicBot extends Thread implements Bot
 /*-------------------------------------------------------------------*/
 	public BasicBot(String botName, String botSkin)
 	{
-		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), 65535, 1, 90, User.HAND_RIGHT, "");
+		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), rate, 1, 90, User.HAND_RIGHT, "");
 		commonSetup(false, true);
 	}
 
@@ -93,7 +95,7 @@ public abstract class BasicBot extends Thread implements Bot
 /*-------------------------------------------------------------------*/
 	public BasicBot(String botName, String botSkin, boolean trackInv)
 	{
-		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), 65535, 1, 90, User.HAND_RIGHT, "");
+		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), rate, 1, 90, User.HAND_RIGHT, "");
 		commonSetup(false, trackInv);
 	}
 
@@ -108,7 +110,7 @@ public abstract class BasicBot extends Thread implements Bot
 /*-------------------------------------------------------------------*/
 	public BasicBot(String botName, String botSkin, boolean highThreadSafety, boolean trackInv)
 	{
-		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), 65535, 1, 90, User.HAND_RIGHT, "");
+		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), rate, 1, 90, User.HAND_RIGHT, "");
 		commonSetup(highThreadSafety, trackInv);
 	}
 
@@ -124,7 +126,7 @@ public abstract class BasicBot extends Thread implements Bot
 /*-------------------------------------------------------------------*/
 	public BasicBot(String botName, String botSkin, String password, boolean highThreadSafety, boolean trackInv)
 	{
-		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), 65535, 1, 90, User.HAND_RIGHT, password);
+		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), rate, 1, 90, User.HAND_RIGHT, password);
 		commonSetup(highThreadSafety, trackInv);
 	}
 
@@ -146,7 +148,7 @@ public abstract class BasicBot extends Thread implements Bot
 /*-------------------------------------------------------------------*/
 	public BasicBot(String botName, String botSkin, int recvRate, int msgLevel, int fov, int hand, String password, boolean highThreadSafety, boolean trackInv)
 	{
-		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), (recvRate < 0 ? 65535 : recvRate), (msgLevel < 0 ? 1 : msgLevel), (fov < 0 ? 90 : fov), (hand < 0 ? User.HAND_RIGHT : hand), (password == null ? "" : password));
+		user = new User((botName == null ? "QASE_BasicBot" : botName), (botSkin == null ? "female/athena" : botSkin), (recvRate < 0 ? rate : recvRate), (msgLevel < 0 ? 1 : msgLevel), (fov < 0 ? 90 : fov), (hand < 0 ? User.HAND_RIGHT : hand), (password == null ? "" : password));
 		commonSetup(highThreadSafety, trackInv);
 	}
 
@@ -754,7 +756,6 @@ public abstract class BasicBot extends Thread implements Bot
 			vel = (walkState == 1 ? 110f : 300f);
 		else // moving, on land
 			vel = (walkState == 1 ? 200f : 300f);
-                vel *= AppConfig.timeScale;
 
 		setBotMovement(moveDir, aimDir, vel, postureState);
 	}

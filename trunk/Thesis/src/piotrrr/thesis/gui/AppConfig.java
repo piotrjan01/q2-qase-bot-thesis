@@ -16,7 +16,7 @@ public class AppConfig {
     /**
      * Game speed. 1 is normal. Needs to be also set on server.
      */
-    public static double timeScale = 10;
+    public static int timeScale = 1;
 
     /**
      * The name of the config file that will be used to save or read it

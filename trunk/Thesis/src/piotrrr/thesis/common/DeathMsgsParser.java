@@ -22,25 +22,32 @@ public class DeathMsgsParser {
         init();
         String[] ret = new String[4];
 
+        int matchLength = 0;
+
         for (String k : suicides.keySet()) {
-            if (msg.contains(k)) {
+            if (msg.contains(k) && k.length() > matchLength) {
                 ret[1] = msg.substring(0, msg.indexOf(k));
                 ret[0] = ret[0];
                 ret[2] = suicides.get(k);
+                matchLength = k.length();
             }
         }
-
-        for (String k : kills.keySet()) {
-            if (msg.contains(k)) {
-                ret[1] = msg.substring(0, msg.indexOf(k));
-                ret[0] = msg.substring(msg.indexOf(k)+k.length());
-                if (ret[0].contains(" ")) {
-                    ret[0] = ret[0].substring(0, ret[0].indexOf(" "));
+        matchLength = 0;
+        
+        if (ret[0] == null) {
+            for (String k : kills.keySet()) {
+                if (msg.contains(k) && k.length() > matchLength) {
+                    ret[1] = msg.substring(0, msg.indexOf(k));
+                    ret[0] = msg.substring(msg.indexOf(k) + k.length());
+                    if (ret[0].contains(" ")) {
+                        ret[0] = ret[0].substring(0, ret[0].indexOf(" "));
+                    }
+                    if (ret[0].contains("'")) {
+                        ret[0] = ret[0].substring(0, ret[0].indexOf("'"));
+                    }
+                    ret[2] = kills.get(k);
+                    matchLength = k.length();
                 }
-                if (ret[0].contains("'")) {
-                    ret[0] = ret[0].substring(0, ret[0].indexOf("'"));
-                }
-                ret[2] = kills.get(k);
             }
         }
 
@@ -49,15 +56,14 @@ public class DeathMsgsParser {
         return ret;
     }
 
-    private static void doDbgOnResult(String [] res, String msg) {
-        if ((res[0] != null && (res[0].contains("the") || res[0].contains("lead")))
-                ||
-            (res[1] != null && (res[1].contains("the") || res[1].contains("lead"))) ) {
+    private static void doDbgOnResult(String[] res, String msg) {
+        if ((res[0] != null && (res[0].contains("the") || res[0].contains("lead"))) ||
+                (res[1] != null && (res[1].contains("the") || res[1].contains("lead")))) {
 
-            MyPopUpDialog.showMyDialogBox("Possible bad kill recognition!", msg, MyPopUpDialog.warning);
+            MyPopUpDialog.showMyDialogBox("Possible bad kill recognition!",
+                    msg + "\n" + CommFun.getArrayAsString(res), MyPopUpDialog.warning);
         }
     }
-
 
     public static void init() {
         if (ready) {

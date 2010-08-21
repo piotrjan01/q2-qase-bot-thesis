@@ -40,9 +40,9 @@ public class FuzzyGlobalNav implements GlobalNav {
     @Override
     public NavPlan establishNewPlan(MapBotBase bot, NavPlan oldPlan) {
 
-        mainDecisionTimeout = 40*AppConfig.timeScale;
-        spontDecisionTimeout = 20*AppConfig.timeScale;
-        antiStuckDecisionTimeout = 10*AppConfig.timeScale;
+        mainDecisionTimeout = 40;
+        spontDecisionTimeout = 20;
+        antiStuckDecisionTimeout = 10;
 
         /**
          * When do we change the plan?
