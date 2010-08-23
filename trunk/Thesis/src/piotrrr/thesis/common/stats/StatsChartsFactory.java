@@ -4,6 +4,7 @@
  */
 package piotrrr.thesis.common.stats;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import org.jfree.chart.ChartFactory;
@@ -23,7 +24,7 @@ import piotrrr.thesis.common.stats.BotStatistic.Reward;
 public class StatsChartsFactory {
 
     public static int rewardsChartSegments = 500;
-    public static int avgRewardsChartSegments = 10;
+    public static int avgRewardsWindowSize = 500;
 
     private static class BotSeries {
 
@@ -251,6 +252,7 @@ public class StatsChartsFactory {
     public static ChartPanel getWeaponUseageByBotBarChart(BotStatistic stat) {
         synchronized (stat) {
             TreeMap<String, TreeMap<String, Integer>> map = new TreeMap<String, TreeMap<String, Integer>>();
+            TreeMap<String, Integer> tKills = new TreeMap<String, Integer>();
 
             DefaultCategoryDataset ds = new DefaultCategoryDataset();
 
@@ -269,10 +271,20 @@ public class StatsChartsFactory {
                 }
             }
 
+            for (String b : map.keySet()) {
+                int cnt = 0;
+                TreeMap<String, Integer> usgs = map.get(b);
+                for (String w : usgs.keySet()) {
+                    cnt += usgs.get(w);
+                }
+                tKills.put(b, cnt);
+            }
+
             for (String bn : map.keySet()) {
                 TreeMap<String, Integer> usage = map.get(bn);
                 for (String wpn : usage.keySet()) {
-                    ds.addValue((Number) usage.get(wpn), wpn, bn);
+                    double nr = (double) usage.get(wpn) / (double) tKills.get(bn);
+                    ds.addValue((Number) nr, wpn, bn);
                 }
             }
 
@@ -355,30 +367,31 @@ public class StatsChartsFactory {
                 int botsNum = stats.getAllRewardedBotNames().size();
                 series.add(new BotSeries(new XYSeries(allName), 0, 0, allName));
 
-                int segmentSize = stats.rewards.size() / rewardsChartSegments;
-                if (segmentSize < 1) {
-                    segmentSize = 1;
-                }
+//                int segmentSize = stats.rewards.size() / rewardsChartSegments;
+//                if (segmentSize < 1) {
+//                    segmentSize = 1;
+//                }
 
-                int i = 0;
+//                int i = 0;
 
                 for (BotStatistic.Reward k : stats.rewards) {
                     for (BotSeries s : series) {
-                        if (k.reward != 0 && s.botName.equals(k.botName)) {
+                        if (s.botName.equals(k.botName)) {
                             s.d1 += k.reward;
-                            s.int1 = k.time;
+                            s.int1++;
+                            s.series.add(s.int1, s.d1);
                             break;
                         }
                     }
                     BotSeries as = series.getLast();
                     as.d1 += k.reward / botsNum;
 
-                    i++;
-                    if (i % segmentSize == 0) {
-                        for (BotSeries s : series) {
-                            s.series.add(s.int1 / 10, s.d1);
-                        }
-                    }
+//                    i++;
+//                    if (i % segmentSize == 0) {
+//                        for (BotSeries s : series) {
+//                            s.series.add(s.int1, s.d1);
+//                        }
+//                    }
 
 
                 }
@@ -389,8 +402,8 @@ public class StatsChartsFactory {
             }
 
             JFreeChart c = ChartFactory.createXYLineChart(
-                    "Rewards by each bot in time",
-                    "time [s]",
+                    "Rewards by each bot",
+                    "action",
                     "rewards",
                     ds,
                     PlotOrientation.VERTICAL,
@@ -411,56 +424,57 @@ public class StatsChartsFactory {
             XYSeriesCollection ds = new XYSeriesCollection();
 
             LinkedList<BotSeries> series = new LinkedList<BotSeries>();
+            HashMap<String, LinkedList<Double>> localRewards = new HashMap<String, LinkedList<Double>>();
 
             for (String botName : stats.getAllRewardedBotNames()) {
                 series.add(new BotSeries(new XYSeries(botName), 0, 0, botName));
+                localRewards.put(botName, new LinkedList<Double>());
+            }
+
+            for (BotSeries s : series) {
+                s.int1 = avgRewardsWindowSize;
             }
 
             String allName = "all RL";
-            int botsNum = stats.getAllRewardedBotNames().size();
             series.add(new BotSeries(new XYSeries(allName), 0, 0, allName));
 
-            int segmentSize = stats.rewards.size() / avgRewardsChartSegments;
-            if (segmentSize < 1) {
-                segmentSize = 1;
-            }
-
             int i = 0;
-
             for (Reward k : stats.rewards) {
-                for (BotSeries s : series) {
-                    if (k.botName.equals(s.botName)) {
-                        s.d1 += k.reward;
-                    }
-                }
-
                 i++;
-
-                if (i % segmentSize == 0) {
-                    BotSeries as = series.getLast();
-                    for (BotSeries s : series) {
-                        if (s.botName.equals(as.botName)) {
-                            continue;
-                        }
-                        s.series.add(k.time - segmentSize / 2 / 10, s.d1 / segmentSize);
-                        as.d1 += s.d1;
-                        s.d1 = 0;
+                LinkedList<Double> br = localRewards.get(k.botName);
+                br.add(k.reward);
+                if (br.size() >= avgRewardsWindowSize) {
+                    double sum = 0;
+                    for (Double d : br) {
+                        sum += d;
                     }
-                    as.series.add(k.time - segmentSize / 2 / 10, as.d1 / (botsNum * segmentSize));
-                    as.d1 = 0;
+                    for (BotSeries s : series) {
+                        if (k.botName.equals(s.botName)) {
+                            s.int1++;
+                            s.series.add(s.int1, sum / avgRewardsWindowSize);
+                            break;
+                        }
+                    }
+                    br.removeFirst();
                 }
-
 
             }
+            System.out.println("cnt = " + i);
+            i = 0;
+            for (BotSeries s : series) {
+                System.out.println(s.botName + " = " + s.int1);
+                i += s.int1;
+            }
+            System.out.println("cnt = " + i);
 
             for (BotSeries s : series) {
                 ds.addSeries(s.series);
             }
 
             JFreeChart c = ChartFactory.createXYLineChart(
-                    "avg reward gaining speed",
-                    "time [s]",
-                    "avg reward gaining speed",
+                    "vbhjm",
+                    "te [s]",
+                    "avg  speed",
                     ds,
                     PlotOrientation.VERTICAL,
                     true, true, true);

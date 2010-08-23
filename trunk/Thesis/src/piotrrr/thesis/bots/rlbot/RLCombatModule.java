@@ -6,8 +6,11 @@ import piotrrr.thesis.bots.rlbot.rl.Action;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.combat.*;
 import piotrrr.thesis.common.CommFun;
+import piotrrr.thesis.common.navigation.FuzzyGlobalNav;
 import piotrrr.thesis.common.stats.BotStatistic;
+import piotrrr.thesis.tools.Dbg;
 import pl.gdan.elsy.qconf.Brain;
+import soc.qase.state.PlayerGun;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
@@ -20,10 +23,14 @@ import soc.qase.tools.vecmath.Vector3f;
  */
 public class RLCombatModule {
 
-    public static final int episodeTime = 25;
-    int currentEpisodeTime = 0;
-    RLBot bot;
+    public static int count = 0;
 
+    public static final int actionTime = 20;
+    public Action currentAction = null;
+    int currentActionTime = 0;
+    int hiddenLayerNeurons = 6;
+    RLBot bot;
+    int lastEnemyId = -1;
     public RLBotPerception perception;
 //    double actionReward = 0;
 //    int actionFireMode = Action.NO_FIRE;
@@ -34,7 +41,8 @@ public class RLCombatModule {
     public RLCombatModule(RLBot bot) {
         this.bot = bot;
 
-        int hiddenLayerNeurons = 4;
+        count++;
+//        hiddenLayerNeurons = (int) getRandParam(4, 10, 2);
         int[] hiddenLayers = new int[actions.length];
         for (int i = 0; i < hiddenLayers.length; i++) {
             hiddenLayers[i] = hiddenLayerNeurons;
@@ -42,16 +50,19 @@ public class RLCombatModule {
         perception = new RLBotPerception(bot);
         brain = new Brain(perception, actions, hiddenLayers);
 
-        brain.setAlpha(0.6); //learning rate
-        brain.setGamma(0.3); //discounting rate
-        brain.setLambda(0); //trace forgetting
+//        if (count == 1)
+//            brain.setAlpha(0.1); //learning rate
+//        else
+        brain.setAlpha(0.7);
+        brain.setGamma(0.1); //discounting rate
+        brain.setLambda(0.9); //trace forgetting
 //        b.setUseBoltzmann(true);
 //        b.setTemperature(0.001);
         brain.setRandActions(0.1); //exploration
 
-//        brain.setAlpha(getRandParam(0.1, 0.8, 0.1)); //learning rate
-//        brain.setGamma(getRandParam(0, 0.9, 0.2)); //discounting rate
-//        brain.setLambda(getRandParam(0, 0.9, 0.2)); //trace forgetting
+//        brain.setAlpha(getRandParam(0.4, 0.8, 0.2)); //learning rate
+//        brain.setGamma(getRandParam(0.5, 0.9, 0.2)); //discounting rate
+//        brain.setLambda(getRandParam(0.2, 0.9, 0.2)); //trace forgetting
 ////        b.setUseBoltzmann(true);
 ////        b.setTemperature(0.001);
 //        brain.setRandActions(getRandParam(0.01, 0.4, 0.1)); //exploration
@@ -70,7 +81,7 @@ public class RLCombatModule {
     @Override
     public String toString() {
         String s = "alpha=" + brain.getAlpha() + " gamma=" + brain.getGamma() +
-                "\nlambda=" + brain.getLambda() + " rand=" + brain.getRandActions() + "\n";
+                "\nlambda=" + brain.getLambda() + " rand=" + brain.getRandActions() + "\n"+"hl-size="+hiddenLayerNeurons+"\n";
         return s;
     }
 
@@ -130,15 +141,17 @@ public class RLCombatModule {
         if (fd == null || fd.enemyInfo == null) {
             return null;
         }
-
+        
+        currentActionTime++;
         boolean reloading = bot.getWorld().getPlayer().getPlayerGun().isCoolingDown();
         Vector3f noFiringLook = fd.enemyInfo.predictedPos == null ? fd.enemyInfo.getObjectPosition() : fd.enemyInfo.predictedPos;
         if (reloading) {
             return SimpleAimingModule.getNoFiringInstructions(bot, noFiringLook);
         }
 
-        if (currentEpisodeTime >= episodeTime) {
-            currentEpisodeTime = 0;
+        if (currentActionTime >= actionTime || fd.enemyInfo.ent.getNumber() != lastEnemyId) {
+            currentActionTime = 0;
+
 
             bot.rewardsCount++;
             bot.totalReward += perception.getReward();
@@ -147,13 +160,20 @@ public class RLCombatModule {
                 BotStatistic.getInstance().addReward(bot.getBotName(), perception.getReward(), bot.getFrameNumber());
             }
 
+            //if the enemy changed, we end the episode
+            if (fd.enemyInfo.ent.getNumber() != lastEnemyId) {
+                lastEnemyId = fd.enemyInfo.ent.getNumber();
+                currentAction = null;
+                brain.reset();
+            }
             //choose new action and execute it
             perception.perceive(); //calls updateInputValues
             brain.count(Action.getActionsAvailability(bot)); //chooses action and updates with last reward.
-            executeAction(actions[brain.getAction()]);
+            currentAction = actions[brain.getAction()];
+            executeAction(currentAction);
+
             perception.resetReward();
         }
-        else currentEpisodeTime++;
 //        return getFiringInstructionsAtHitpoint(fd, 1);
 //        return getNewPredictingFiringInstructions(bot, fd, bot.cConfig.getBulletSpeedForGivenGun(bot.getCurrentWeaponIndex()));
 //        switch (actionFireMode) {
@@ -184,19 +204,46 @@ public class RLCombatModule {
 
     private void executeAction(Action action) {
 //        actionFireMode = action.getShootingMode();
-
-        if (Action.isProhibited(action)) {
-            return;
+        String say = "";
+        say += "wpns=";
+        for (int i = 7; i < 18; i++) {
+            if (bot.botHasItem(i)) {
+                if (bot.botHasItem(PlayerGun.getAmmoInventoryIndexByGun(i))) {
+                    say += "1";
+                } else {
+                    say += "A";
+                }
+            } else {
+                say += "0";
+            }
         }
+//        System.out.println("===================================> executing action: " + action.toString() + " (" + say + ")");
 
         int wpind = action.actionToInventoryIndex();
 
         if (bot.getCurrentWeaponIndex() != wpind) {
-            if (bot.botHasItem(wpind)) {
+            if (bot.botHasItem(wpind) && !Action.isProhibited(action)) {
                 bot.changeWeaponToIndex(wpind);
             }
+            else bot.changeWeaponToIndex(7); //blaster
 //            if (bot.botHasItem(wpind)) System.out.println("chng wpn to: "+CommFun.getGunName(wpind));
 
         }
+
+        switch (action.getCombatMove()) {
+            case Action.CB_RETREAT:
+                bot.plan = FuzzyGlobalNav.getEnemyRetreatPlan(bot);
+//                Dbg.prn(bot.getBotName() + ">----------> RETREAT!");
+                break;
+            case Action.CB_DISTANT:
+                bot.plan = FuzzyGlobalNav.getEnemyDistPosPlan(bot, bot.fd);
+//                Dbg.prn(bot.getBotName() + ">----------> FROM DISTANCE!");
+                break;
+            case Action.CB_CLOSER:
+            default:
+                bot.plan = FuzzyGlobalNav.getEnemyEngagingPlan(bot, bot.plan);
+//                Dbg.prn(bot.getBotName() + ">----------> ENGAGING!");
+        }
+
     }
 }

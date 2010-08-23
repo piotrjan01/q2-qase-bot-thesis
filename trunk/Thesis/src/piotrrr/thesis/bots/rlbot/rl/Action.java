@@ -17,7 +17,6 @@ import soc.qase.state.PlayerGun;
  */
 public class Action {
 
-    public static final int NO_ACTION = 0;
     public static final int WPN_BLASTER = 1;
     public static final int WPN_SHOTGUN = 2;
     public static final int WPN_SUPER_SHOTGUN = 3;
@@ -29,24 +28,24 @@ public class Action {
     public static final int WPN_HYPERBLASTER = 9;
     public static final int WPN_RAILGUN = 10;
     public static final int WPN_BFG10K = 11;
-    public static final int NO_FIRE = 0;
-    public static final int FIRE = 1;
-    public static final int FIRE_PREDICTED = 2;
+    public static final int CB_CLOSER = 12;
+    public static final int CB_DISTANT = 13;
+    public static final int CB_RETREAT = 14;
     public static final int[] prohibitedWpnChngs = {WPN_GRENADES};
-    public static final int minWpn = 0;
+    public static final int minWpn = 1;
     public static final int maxWpn = 11;
-    public static final int minSht = 0;
-    public static final int maxSht = 2;
+    public static final int minCmbtMov = 12;
+    public static final int maxCmbtMov = 14;
     public static final int actToInvShift = 6;
-    int wpnChange = NO_ACTION;
-    int shootingMode = 0;
+    int wpnChange = WPN_BLASTER;
+    int combatMove = CB_DISTANT;
 
-    public Action(int action) {
+    public Action(int action, int combatMove) {
         if (action < minWpn || action > maxWpn) {
             action = minWpn;
         }
         this.wpnChange = action;
-//        this.shootingMode = shootingMode;
+        this.combatMove = combatMove;
     }
 
     public static boolean isChangeWeaponAction(int action) {
@@ -64,36 +63,45 @@ public class Action {
         return action + actToInvShift;
     }
 
+    public int getCombatMove() {
+        return combatMove;
+    }
+
     @Override
     public int hashCode() {
         return wpnChange % 256;
     }
 
-    public int getWpnChange() {
-        return wpnChange;
-    }
-
     @Override
     public String toString() {
+        String wpn = "WPN_UNKNOWN";
+        String cmb = "CB_UNKNOWN";
         for (Field f : this.getClass().getFields()) {
             if (Modifier.isStatic(f.getModifiers())) {
                 try {
-                    if ((Integer) f.get(this) == this.wpnChange) {
-                        return f.getName();
+                    if (f.getName().startsWith("WPN")) {
+                        if ((Integer) f.get(this) == this.wpnChange) {
+                            wpn = f.getName();
+                        }
+                    }
+                    if (f.getName().startsWith("CB")) {
+                        if ((Integer) f.get(this) == this.combatMove) {
+                            cmb = f.getName();
+                        }
                     }
                 } catch (Exception ex) {
                 }
             }
         }
-        return "unknown action";
+        return cmb + " : " + wpn;
     }
 
     public static Action[] getAllActionsArray() {
         LinkedList<Action> list = new LinkedList<Action>();
         for (int i = minWpn; i <= maxWpn; i++) {
-//            for (int j=minSht; j<=maxSht; j++) {
-            list.add(new Action(i));
-//            }
+            for (int j = minCmbtMov; j <= maxCmbtMov; j++) {
+                list.add(new Action(i, j));
+            }
         }
         Action[] ret = new Action[list.size()];
         for (int i = 0; i < ret.length; i++) {

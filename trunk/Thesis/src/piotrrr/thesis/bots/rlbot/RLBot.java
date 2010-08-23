@@ -17,7 +17,6 @@ public class RLBot extends MapBotBase {
     public int lastBotScore = 0;
     public double totalReward = 0;
     public double rewardsCount = 0;
-
     FiringDecision fd = null;
 
     public RLBot(String botName, String skinName) {
@@ -41,9 +40,21 @@ public class RLBot extends MapBotBase {
     protected void botLogic() {
         super.botLogic();
 
+        FiringInstructions fi = null;
+        fd = null;
+        if (!noFire) {
+            timers.get("fd").resume();
+            fd = combatModule.getFiringDecision();
+            timers.get("fd").pause();
+
+
+            timers.get("aim").resume();
+            fi = combatModule.getFiringInstructions(fd);
+            timers.get("aim").pause();
+        }
+
         NavInstructions ni = null;
         if (!noMove) {
-
             timers.get("glob-nav").resume();
             plan = globalNav.establishNewPlan(this, plan);
             timers.get("glob-nav").pause();
@@ -51,23 +62,9 @@ public class RLBot extends MapBotBase {
 //                Dbg.prn("plan is null....");
                 return;
             }
-            assert plan != null;
             ni = localNav.getNavigationInstructions(this);
+//            assert plan != null;            
         }
-        fd = null;
-
-        
-
-        if (!noFire) {
-            timers.get("fd").resume();
-            fd = combatModule.getFiringDecision();
-            timers.get("fd").pause();
-        }
-
-        timers.get("aim").resume();
-        FiringInstructions fi = combatModule.getFiringInstructions(fd);
-        timers.get("aim").pause();
-
         executeInstructions(ni, fi);
     }
 
@@ -77,13 +74,4 @@ public class RLBot extends MapBotBase {
         s += combatModule.toString();
         return s;
     }
-
-    @Override
-    public void respawn() {
-        super.respawn();
-        combatModule.brain.reset();
-    }
-
-
-
 }

@@ -26,6 +26,22 @@ public class StatsTools {
         }
     }
 
+    public static int getBotDeaths(String botName, BotStatistic stats) {
+        if (stats == null) {
+            return 0;
+        }
+        synchronized (stats) {
+
+            int ret = 0;
+            for (BotStatistic.Kill k : stats.kills) {
+                if (k.victim.equals(botName)) {
+                    ret++;
+                }
+            }
+            return ret;
+        }
+    }
+
     public static int countBotsOfGivenFamilly(String family, BotStatistic stats) {
         synchronized (stats) {
             int cnt = 0;
