@@ -1129,7 +1129,7 @@
                           <Component id="jPanel17" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="startExperimentButton" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="284" max="32767" attributes="0"/>
+                      <EmptySpace pref="259" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1185,8 +1185,11 @@
                               <Component id="jLabel19" alignment="0" min="-2" max="-2" attributes="1"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="timescaleToggle" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="timescaleTextField2" max="32767" attributes="1"/>
+                              <Component id="jLabel1" alignment="0" max="32767" attributes="1"/>
+                          </Group>
+                          <EmptySpace pref="66" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1195,7 +1198,12 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="timescaleToggle" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="timescaleTextField2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                              </Group>
                               <Group type="103" alignment="0" groupAlignment="1" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="jLabel19" min="-2" max="-2" attributes="0"/>
@@ -1364,23 +1372,26 @@
                             <StringItem index="0" value="ReferenceBot"/>
                             <StringItem index="1" value="RLBot"/>
                             <StringItem index="2" value="NoRLBot"/>
-                            <StringItem index="3" value="NoDistRL"/>
+                            <StringItem index="3" value="AccWpnRL"/>
                             <StringItem index="4" value="none"/>
                           </StringArray>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
-                        <Property name="selectedIndex" type="int" value="4"/>
+                        <Property name="selectedIndex" type="int" value="2"/>
                       </Properties>
                     </Component>
                   </SubComponents>
                 </Container>
-                <Component class="javax.swing.JToggleButton" name="timescaleToggle">
+                <Component class="javax.swing.JTextField" name="timescaleTextField2">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="speed up"/>
+                    <Property name="horizontalAlignment" type="int" value="4"/>
+                    <Property name="text" type="java.lang.String" value="1"/>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="timescaleToggleActionPerformed"/>
-                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Timescale"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

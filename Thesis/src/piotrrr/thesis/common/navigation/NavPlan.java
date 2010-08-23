@@ -25,6 +25,8 @@ public class NavPlan {
 	public int pathIndex = 0;
 	
 	public boolean isSpontaneos = false;
+
+        public boolean isCombat = false;
 	
 	/**
 	 * The array that represents the path chosen. The first element is the source

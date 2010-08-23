@@ -150,7 +150,8 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         jScrollPane9 = new javax.swing.JScrollPane();
         bot3List = new javax.swing.JList();
-        timescaleToggle = new javax.swing.JToggleButton();
+        timescaleTextField2 = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
         startExperimentButton = new javax.swing.JButton();
         jPanel13 = new javax.swing.JPanel();
         refreshButton = new javax.swing.JButton();
@@ -907,20 +908,18 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel20.setText("Bot3");
 
         bot3List.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot", "NoDistRL", "none" };
+            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot", "AccWpnRL", "none" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         bot3List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        bot3List.setSelectedIndex(4);
+        bot3List.setSelectedIndex(2);
         jScrollPane9.setViewportView(bot3List);
 
-        timescaleToggle.setText("speed up");
-        timescaleToggle.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                timescaleToggleActionPerformed(evt);
-            }
-        });
+        timescaleTextField2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        timescaleTextField2.setText("1");
+
+        jLabel1.setText("Timescale");
 
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
@@ -948,15 +947,21 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane8)
                     .addComponent(jLabel19))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(timescaleToggle)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(timescaleTextField2)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel17Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(timescaleToggle)
+                    .addGroup(jPanel17Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(timescaleTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel17Layout.createSequentialGroup()
                             .addComponent(jLabel19)
@@ -996,7 +1001,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(startExperimentButton))
-                .addContainerGap(284, Short.MAX_VALUE))
+                .addContainerGap(259, Short.MAX_VALUE))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1446,10 +1451,10 @@ public class MainFrame extends javax.swing.JFrame {
             Dbg.prn("connecting rlbot learing");
             bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
 
-        } else if (option.equals("NoDistRL")) {
-            Dbg.prn("connecting rlbot learing without distance in state");
+        } else if (option.equals("AccWpnRL")) {
+            Dbg.prn("connecting rlbot learing with accumulated wpn info in state");
             bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
-            ((RLBot) bot).combatModule.perception.useDistance = false;
+            ((RLBot) bot).combatModule.perception.useAccumulatedGuns = false;
 
         }else if (option.equals("NoRLBot")) {
             Dbg.prn("connecting rlbot rubbing the mint");
@@ -1463,7 +1468,7 @@ public class MainFrame extends javax.swing.JFrame {
         return bot;
     }
 
-    private void runLocalQ2Server(int port, String mapName, boolean timescaling) {
+    private void runLocalQ2Server(int port, String mapName) {
         String timescale = ""+AppConfig.timeScale;
         String quakeExec = "quake2.exe";
         String cmd = AppConfig.quakePath + "\\"+quakeExec+" +set dedicated 1 +set deathmatch 1 +map " +
@@ -1491,11 +1496,14 @@ public class MainFrame extends javax.swing.JFrame {
     private void startExperimentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startExperimentButtonActionPerformed
         int gamesNr = Integer.parseInt(nrOfGamesList.getSelectedValue().toString());
 
-        boolean timescale = timescaleToggle.isSelected();
-        if (timescale) {
-            AppConfig.timeScale = 9;
+        try {
+            int timescale = Integer.parseInt(timescaleTextField2.getText());
+            AppConfig.timeScale = timescale;
+            System.out.println("Timescale: "+timescale);
         }
-        else AppConfig.timeScale = 1;
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         String b1 = bot1List.getSelectedValue().toString();
         String b2 = bot2List.getSelectedValue().toString();
@@ -1506,7 +1514,7 @@ public class MainFrame extends javax.swing.JFrame {
         gameStats = BotStatistic.createNewInstance();
 
         for (int i = 0; i < gamesNr; i++) {
-            runLocalQ2Server(AppConfig.serverPort + i, mapName, timescale);
+            runLocalQ2Server(AppConfig.serverPort + i, mapName);
             sleep(3000);
             MapBotBase bot1 = connectBotByListOption(b1, i, AppConfig.serverPort + i);
             bot1.addBotJob(new GlobalKillsStatsJob(bot1));
@@ -1532,10 +1540,6 @@ public class MainFrame extends javax.swing.JFrame {
         }
         Dbg.prn("gamesNr: " + gamesNr);
     }//GEN-LAST:event_startExperimentButtonActionPerformed
-
-    private void timescaleToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timescaleToggleActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_timescaleToggleActionPerformed
 
     private void sleep(int milis) {
         try {
@@ -1597,6 +1601,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -1672,7 +1677,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel statsSourcejLabel16;
     private javax.swing.JButton stepButton1;
     private javax.swing.JTextField stepSizeTextField2;
-    private javax.swing.JToggleButton timescaleToggle;
+    private javax.swing.JTextField timescaleTextField2;
     private javax.swing.JRadioButton visibleEntsRadioButton2;
     private javax.swing.JRadioButton visibleWaypointsRadioButton2;
     private javax.swing.JPanel weaponsjPanel14;

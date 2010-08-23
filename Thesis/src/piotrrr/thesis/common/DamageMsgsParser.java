@@ -41,7 +41,8 @@ public class DamageMsgsParser {
             return attacker.hashCode();
         }
     }
-    public static HashMap<String, Damage> dmgs = new HashMap<String, DamageMsgsParser.Damage>();
+    public static HashMap<String, Damage> inflictedDmgs = new HashMap<String, DamageMsgsParser.Damage>();
+    public static HashMap<String, Damage> receivedDmgs = new HashMap<String, DamageMsgsParser.Damage>();
 
     /**
      * Remembers a damage inflicted by given bot. It is remembered until the reset() method is called
@@ -58,13 +59,21 @@ public class DamageMsgsParser {
         int h = Integer.parseInt(msg.substring(msg.indexOf(", h=") + 4, msg.indexOf(" a=")));
         int a = Integer.parseInt(msg.substring(msg.indexOf(" a=") + 3));
         Damage nd = new Damage(at, vi, h, a, frameNumber);
-        Damage od = dmgs.get(at);
+        Damage od = inflictedDmgs.get(at);
         if (od != null) {
             od.lostHealth += nd.lostHealth;
             od.lostArmor += nd.lostArmor;
             od.frameNumberOfLastUpdate = nd.frameNumberOfLastUpdate;
         }
-        else dmgs.put(at, nd);
+        else inflictedDmgs.put(at, nd);
+        od = null;
+        od = receivedDmgs.get(vi);
+        if (od != null) {
+            od.lostHealth += nd.lostHealth;
+            od.lostArmor += nd.lostArmor;
+            od.frameNumberOfLastUpdate = nd.frameNumberOfLastUpdate;
+        }
+        else receivedDmgs.put(vi, nd);
         
         return true;
     }
@@ -76,7 +85,17 @@ public class DamageMsgsParser {
      */
     public static int[] getInflictedDamage(String attacker) {
         int[] r = new int[2];
-        Damage d = dmgs.get(attacker);
+        Damage d = inflictedDmgs.get(attacker);
+        if (d != null) {
+            r[0] = d.lostHealth;
+            r[1] = d.lostArmor;
+        }
+        return r;
+    }
+    
+    public static int[] getReceivedDamage(String victim) {
+        int[] r = new int[2];
+        Damage d = receivedDmgs.get(victim);
         if (d != null) {
             r[0] = d.lostHealth;
             r[1] = d.lostArmor;
@@ -84,8 +103,11 @@ public class DamageMsgsParser {
         return r;
     }
 
+
+
     public static void reset(String attacker) {
-        dmgs.remove(attacker);
+        inflictedDmgs.remove(attacker);
+        receivedDmgs.remove(attacker);
     }
 
     /**

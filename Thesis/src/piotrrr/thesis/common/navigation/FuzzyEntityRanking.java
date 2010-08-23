@@ -113,6 +113,35 @@ public class FuzzyEntityRanking {
         return ret;
     }
 
+    public static TreeSet<EntityDoublePair> getEnemyRetreatFuzzyRanking(MapBotBase bot) {
+        TreeSet<EntityDoublePair> ret = new TreeSet<EntityDoublePair>();
+        LinkedList<EntityFuzzyVals> tmpList = new LinkedList<EntityFuzzyVals>();
+        RankingCache cache = new RankingCache();
+
+        Maximums m = new Maximums();
+
+        for (Entity ent : bot.kb.getAllPickableEntities()) {
+
+            float ec = getEnemyCostFuzzy(bot, ent, cache, 1);
+            if (ec > m.maxEnCost) {
+                m.maxEnCost = ec;
+            }
+
+            tmpList.add(new EntityFuzzyVals(ec, 0f, 0f, 0f, ent));
+        }
+
+//        bot.timers.get("nav0").resume();
+        for (EntityFuzzyVals efv : tmpList) {
+            efv.ec = 1 - efv.ec; //we negate the enemy cost, as we want it to be low
+            float fuzzyVal = efv.ec;
+            ret.add(new EntityDoublePair(efv.e, fuzzyVal));
+        }
+//        bot.timers.get("nav0").pause();
+//        Dbg.prn("Cache use = "+(100d*(double)cache.cacheUse) / (double)cache.fnCalls);
+//        Dbg.prn("Chosen ent: "+ret.last().ent.toString()+" rank: "+ret.last().dbl);
+        return ret;
+    }
+
     public static float fuzzyLogicalAnd4(float a, float b, float c, float d) {
         return Math.min(a, Math.min(b, Math.min(c, d)));
     }
@@ -451,7 +480,7 @@ public class FuzzyEntityRanking {
         MyVector from = new MyVector(vfrom);
         MyVector to = new MyVector(vto);
 
-       HashMap<MyVector, Double> map = cache.distCache.get(from);
+        HashMap<MyVector, Double> map = cache.distCache.get(from);
         if (map != null) {
             Double p = map.get(to);
             if (p != null) {
@@ -472,7 +501,7 @@ public class FuzzyEntityRanking {
             pos = wp.getObjectPosition();
         }
 
-       if ( map == null) {
+        if (map == null) {
             map = new HashMap<MyVector, Double>();
             cache.distCache.put(from, map);
         }
@@ -488,7 +517,7 @@ public class FuzzyEntityRanking {
 
         HashMap<MyVector, Waypoint[]> map = cache.pathCache.get(from);
         if (map != null) {
-            Waypoint [] p = map.get(to);
+            Waypoint[] p = map.get(to);
             if (p != null) {
                 cache.cacheUse++;
                 return p;
@@ -496,8 +525,8 @@ public class FuzzyEntityRanking {
         }
 
         Waypoint[] path = bot.kb.findShortestPath(from, to);
-        
-        if ( map == null) {
+
+        if (map == null) {
             map = new HashMap<MyVector, Waypoint[]>();
             cache.pathCache.put(from, map);
         }
@@ -509,10 +538,7 @@ public class FuzzyEntityRanking {
 
     public static float getMaximalDeficiency(MapBotBase b) {
         return Math.max(
-            Math.max(getBotAmmoDeficiency(b, 0), getBotArmorDeficiency(b, 0)),
-            Math.max(getBotHealthDeficiency(b, 0), getBotWeaponDeficiency(b, 0))
-        );
+                Math.max(getBotAmmoDeficiency(b, 0), getBotArmorDeficiency(b, 0)),
+                Math.max(getBotHealthDeficiency(b, 0), getBotWeaponDeficiency(b, 0)));
     }
-
-
 }

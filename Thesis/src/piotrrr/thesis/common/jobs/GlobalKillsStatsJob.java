@@ -44,10 +44,10 @@ public class GlobalKillsStatsJob extends Job {
                 System.out.println("msg> " + cmd);
             }
             else if (DamageMsgsParser.parseMessage(cmd, bot.getFrameNumber())) {
-                System.out.println("msg> " + cmd);
+                System.out.print(".");
             }
             else {
-                System.out.println("unknown-msg> " + cmd);
+//                System.out.println("unknown-msg> " + cmd);
             }
         }
 

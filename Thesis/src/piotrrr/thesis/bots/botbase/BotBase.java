@@ -322,16 +322,55 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
         }
 
         consoleCommand("give shotgun");
+        world.getInventory().setCount(8, 1);
+
         consoleCommand("give super shotgun");
+        world.getInventory().setCount(9, 1);
+
         consoleCommand("give machinegun");
+        world.getInventory().setCount(10, 1);
+
         consoleCommand("give chaingun");
+        world.getInventory().setCount(11, 1);
+
         consoleCommand("give grenade launcher");
+        world.getInventory().setCount(13, 1);
+
         consoleCommand("give rocket launcher");
+        world.getInventory().setCount(14, 1);
+
         consoleCommand("give hyperblaster");
-//        consoleCommand("give railgun");
+        world.getInventory().setCount(15, 1);
+
+        consoleCommand("give railgun");
+        world.getInventory().setCount(16, 1);
+
 //        consoleCommand("give bfg10k");
-        consoleCommand("give cells");
-        consoleCommand("give armor");
+//        world.getInventory().setCount(17, 1);
+
+        
+        consoleCommand("give cells 60");
+        world.getInventory().setCount(20, 60);
+
+        consoleCommand("give slugs 3");
+        world.getInventory().setCount(22, 3);
+
+        consoleCommand("give shells 999");
+        world.getInventory().setCount(18, 999);
+
+        consoleCommand("give bullets 200");
+        world.getInventory().setCount(19, 200);
+
+        consoleCommand("give rockets 999");
+        world.getInventory().setCount(21, 999);
+
+        consoleCommand("give grenades 0");
+        world.getInventory().setCount(12, 0);
+
+//        consoleCommand("give armor");
+
+
+
 //        consoleCommand("give body armor");
 
         /**
@@ -341,18 +380,19 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
         RAILGUN = 16, BFG10K = 17, SHELLS = 18, BULLETS = 19, CELLS = 20,
         ROCKETS = 21, SLUGS = 22;
          **/
-        for (int i = 7; i < 18; i++) {
-            if (i == 16 || i == 17) {
-                continue;
-            }
-            world.getInventory().setCount(i, 1);
-
-        }
-
-        for (int i = 18; i < 23; i++) {
-            if (i==22) continue;
-            world.getInventory().setCount(i, PlayerGun.getMaxAmmo(i) / 2);
-        }
+//
+//        for (int i = 7; i < 18; i++) {
+//            if (i == 16 || i == 17) {
+//                continue;
+//            }
+//            world.getInventory().setCount(i, 1);
+//
+//        }
+//
+//        for (int i = 18; i < 23; i++) {
+//            if (i==22) continue;
+//            world.getInventory().setCount(i, PlayerGun.getMaxAmmo(i) / 2);
+//        }
 
 
 

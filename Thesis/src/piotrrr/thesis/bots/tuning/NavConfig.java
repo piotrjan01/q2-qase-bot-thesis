@@ -5,7 +5,7 @@ public class NavConfig {
     /**
      * What defitiency we agree to when we attack the enemy
      */
-    public static float aggressiveness = 0.3f;
+    public static float aggressiveness = 0.5f;
     /**
      * The recommended ammount of health it is established the bot should have.
      * It is used to calculate the deficiency of health.
