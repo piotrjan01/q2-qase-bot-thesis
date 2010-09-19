@@ -54,8 +54,8 @@ public class RLCombatModule {
 //            brain.setAlpha(0.1); //learning rate
 //        else
         brain.setAlpha(0.7);
-        brain.setGamma(0.1); //discounting rate
-        brain.setLambda(0.9); //trace forgetting
+        brain.setGamma(0.3); //discounting rate
+        brain.setLambda(0.2); //trace forgetting
 //        b.setUseBoltzmann(true);
 //        b.setTemperature(0.001);
         brain.setRandActions(0.1); //exploration

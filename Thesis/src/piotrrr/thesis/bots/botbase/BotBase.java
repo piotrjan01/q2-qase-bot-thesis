@@ -345,21 +345,21 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
         consoleCommand("give railgun");
         world.getInventory().setCount(16, 1);
 
-//        consoleCommand("give bfg10k");
-//        world.getInventory().setCount(17, 1);
+        consoleCommand("give bfg10k");
+        world.getInventory().setCount(17, 1);
 
         
         consoleCommand("give cells 60");
-        world.getInventory().setCount(20, 60);
+        world.getInventory().setCount(20, 50);
 
         consoleCommand("give slugs 3");
-        world.getInventory().setCount(22, 3);
+        world.getInventory().setCount(22, 2);
 
         consoleCommand("give shells 999");
         world.getInventory().setCount(18, 999);
 
         consoleCommand("give bullets 200");
-        world.getInventory().setCount(19, 200);
+        world.getInventory().setCount(19, 300);
 
         consoleCommand("give rockets 999");
         world.getInventory().setCount(21, 999);
