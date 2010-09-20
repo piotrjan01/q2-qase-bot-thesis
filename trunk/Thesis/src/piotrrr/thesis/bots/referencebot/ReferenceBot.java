@@ -10,9 +10,15 @@ import piotrrr.thesis.common.combat.SimpleAimingModule;
 import piotrrr.thesis.common.combat.SimpleCombatModule;
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.tools.Dbg;
+import piotrrr.thesis.tools.FileLogger;
 import piotrrr.thesis.tools.Timer;
 
 public class ReferenceBot extends MapBotBase {
+
+    FileLogger csv = new FileLogger("ref-wpns.csv");
+    int lastWp = -1;
+    int lastWp2 = -1;
+    int lastWp3 = -1;
 
     public ReferenceBot(String botName, String skinName) {
         super(botName, skinName);
@@ -27,6 +33,9 @@ public class ReferenceBot extends MapBotBase {
 //        timers.put("nav2", new Timer("nav2"));
 //        timers.put("nav3", new Timer("nav3"));
 //        timers.put("nav4", new Timer("nav4"));
+
+        csv.addToLog("t0;t1;t2;t3\n");
+
 
     }
 
@@ -68,5 +77,15 @@ public class ReferenceBot extends MapBotBase {
         timers.get("aim").pause();
 
         executeInstructions(ni, fi);
+
+        int currWp = kb.map.indexOf(kb.map.findClosestWaypoint(getBotPosition()));
+        if (lastWp3 != -1 && lastWp != currWp) {
+            csv.addToLog(""+lastWp3+";"+lastWp2+";"+lastWp+";"+currWp+"\n");
+        }
+        lastWp3 = lastWp2;
+        lastWp2 = lastWp;
+        lastWp = currWp;
+
+
     }
 }

@@ -9,6 +9,7 @@ import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.navigation.FuzzyGlobalNav;
 import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.tools.Dbg;
+import piotrrr.thesis.tools.FileLogger;
 import pl.gdan.elsy.qconf.Brain;
 import soc.qase.state.PlayerGun;
 import soc.qase.tools.vecmath.Vector3f;
@@ -38,8 +39,13 @@ public class RLCombatModule {
     public Brain brain;
     boolean unipolar = true;
 
+    FileLogger flog = null;
+
     public RLCombatModule(RLBot bot) {
         this.bot = bot;
+
+//        flog = new FileLogger("cb-log-"+bot.getBotName()+".csv");
+//        flog.addToLog("asd;");
 
         count++;
 //        hiddenLayerNeurons = (int) getRandParam(4, 10, 2);
@@ -155,6 +161,8 @@ public class RLCombatModule {
 
             bot.rewardsCount++;
             bot.totalReward += perception.getReward();
+
+//            flog.addToLog(currentAction.toString()+";"+perception.getReward());
 
             if (BotStatistic.getInstance() != null) {
                 BotStatistic.getInstance().addReward(bot.getBotName(), perception.getReward(), bot.getFrameNumber());
