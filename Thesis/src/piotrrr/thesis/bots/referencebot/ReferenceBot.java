@@ -2,8 +2,8 @@ package piotrrr.thesis.bots.referencebot;
 
 import piotrrr.thesis.common.navigation.FuzzyGlobalNav;
 import piotrrr.thesis.common.navigation.SimpleLocalNav;
-import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
+import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.combat.FiringInstructions;
 import piotrrr.thesis.common.combat.SimpleAimingModule;
@@ -12,13 +12,11 @@ import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.tools.Dbg;
 import piotrrr.thesis.tools.FileLogger;
 import piotrrr.thesis.tools.Timer;
+import soc.qase.tools.vecmath.Vector3f;
 
 public class ReferenceBot extends MapBotBase {
 
-    FileLogger csv = new FileLogger("ref-wpns.csv");
-    int lastWp = -1;
-    int lastWp2 = -1;
-    int lastWp3 = -1;
+    FileLogger fLog = null;
 
     public ReferenceBot(String botName, String skinName) {
         super(botName, skinName);
@@ -34,8 +32,8 @@ public class ReferenceBot extends MapBotBase {
 //        timers.put("nav3", new Timer("nav3"));
 //        timers.put("nav4", new Timer("nav4"));
 
-        csv.addToLog("t0;t1;t2;t3\n");
-
+        fLog = new FileLogger(botName + "-aim.csv");
+        fLog.addToLog("wpn;d0;d1;bx;by;bz;hx;hy;hz\n");
 
     }
 
@@ -49,7 +47,7 @@ public class ReferenceBot extends MapBotBase {
             timers.get("glob-nav").resume();
             plan = globalNav.establishNewPlan(this, plan);
             timers.get("glob-nav").pause();
-            
+
             if (plan == null) {
                 Dbg.prn("plan is null....");
                 return;
@@ -76,16 +74,25 @@ public class ReferenceBot extends MapBotBase {
         FiringInstructions fi = SimpleAimingModule.getFiringInstructions(fd, this);
         timers.get("aim").pause();
 
+        if (fi != null && fi.doFire) {
+            Vector3f bc = CommFun.getNormalizedDirectionVector(getBotPosition(), fd.enemyInfo.getObjectPosition());
+            Vector3f bp = CommFun.getNormalizedDirectionVector(getBotPosition(), fd.enemyInfo.predictedPos);
+            bp.sub(bc);
+            Vector3f hp = CommFun.getNormalizedDirectionVector(getBotPosition(), SimpleAimingModule.getHitPoint(this, fd, cConfig.getBulletSpeedForGivenGun(fd.gunIndex)));
+            hp.sub(bc);
+            saveDataToFile(bp, hp, CommFun.getGunName(fd.gunIndex),
+                    CommFun.getDistanceBetweenPositions(getBotPosition(), fd.enemyInfo.getObjectPosition()),
+                    CommFun.getDistanceBetweenPositions(getBotPosition(), fd.enemyInfo.predictedPos));
+        }
+
         executeInstructions(ni, fi);
 
-        int currWp = kb.map.indexOf(kb.map.findClosestWaypoint(getBotPosition()));
-        if (lastWp3 != -1 && lastWp != currWp) {
-            csv.addToLog(""+lastWp3+";"+lastWp2+";"+lastWp+";"+currWp+"\n");
-        }
-        lastWp3 = lastWp2;
-        lastWp2 = lastWp;
-        lastWp = currWp;
 
+    }
 
+    protected void saveDataToFile(Vector3f bv, Vector3f hv, String wpn, float d0, float d1) {
+        //"dist;wpn;mx;my;mz;hx;hy;hz\n"
+        //wpn;d0;d1;bx;by;bz;hx;hy;hz\n
+        fLog.addToLog(wpn + ";" + d0 + ";" + d1 + ";" + bv.x + ";" + bv.y + ";" + bv.z + ";" + hv.x + ";" + hv.y + ";" + hv.z + "\n");
     }
 }

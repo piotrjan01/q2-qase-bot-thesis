@@ -20,7 +20,7 @@ import soc.qase.state.PlayerGun;
  */
 public class RLBotPerception extends Perception {
 
-    public boolean useAccumulatedGuns = true;
+    public boolean singleState = false;
     RLBot bot;
     int lastBotScore = 0;
     int lastBotDeaths = 0;
@@ -85,6 +85,10 @@ public class RLBotPerception extends Perception {
     @Override
     protected void updateInputValues() {
 
+        if (singleState) {
+            setNextValue(true);
+            return;
+        }
         //DIST TO ENEMY
         double dist;
         //for brain constructor call
