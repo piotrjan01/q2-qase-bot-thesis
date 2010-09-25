@@ -45,6 +45,12 @@ public class SimpleAimingModule {
     public static FiringInstructions getNewPredictingFiringInstructions(MapBotBase bot,
             FiringDecision fd, float bulletSpeed) {
         Vector3f playerPos = bot.getBotPosition();
+
+        return new FiringInstructions(CommFun.getNormalizedDirectionVector(playerPos, getHitPoint(bot, fd, bulletSpeed)));
+    }
+
+    public static Vector3f getHitPoint(MapBotBase bot, FiringDecision fd, float bulletSpeed) {
+        Vector3f playerPos = bot.getBotPosition();
         Vector3f enemyPos = fd.enemyInfo.getBestVisibleEnemyPart(bot);
 
         //Calculate the time to hit
@@ -59,8 +65,7 @@ public class SimpleAimingModule {
         Vector3f movement = CommFun.getMovementBetweenVectors(fd.enemyInfo.getObjectPosition(), fd.enemyInfo.predictedPos);
         movement = CommFun.multiplyVectorByScalar(movement, (float) timeToHit);
         hitPoint.add(movement);
-
-        return new FiringInstructions(CommFun.getNormalizedDirectionVector(playerPos, hitPoint));
+        return hitPoint;
     }
 
    

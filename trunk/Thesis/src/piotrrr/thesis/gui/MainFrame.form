@@ -1372,7 +1372,7 @@
                             <StringItem index="0" value="ReferenceBot"/>
                             <StringItem index="1" value="RLBot"/>
                             <StringItem index="2" value="NoRLBot"/>
-                            <StringItem index="3" value="AccWpnRL"/>
+                            <StringItem index="3" value="SSRLBot"/>
                             <StringItem index="4" value="none"/>
                           </StringArray>
                         </Property>

@@ -29,7 +29,7 @@ public class RLCombatModule {
     public static final int actionTime = 20;
     public Action currentAction = null;
     int currentActionTime = 0;
-    int hiddenLayerNeurons = 6;
+    int hiddenLayerNeurons = 11;
     RLBot bot;
     int lastEnemyId = -1;
     public RLBotPerception perception;

@@ -908,7 +908,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel20.setText("Bot3");
 
         bot3List.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot", "AccWpnRL", "none" };
+            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot", "SSRLBot", "none" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -1451,10 +1451,10 @@ public class MainFrame extends javax.swing.JFrame {
             Dbg.prn("connecting rlbot learing");
             bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
 
-        } else if (option.equals("AccWpnRL")) {
+        } else if (option.equals("SSRLBot")) {
             Dbg.prn("connecting rlbot learing with accumulated wpn info in state");
             bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
-            ((RLBot) bot).combatModule.perception.useAccumulatedGuns = false;
+            ((RLBot) bot).combatModule.perception.singleState = true;
 
         }else if (option.equals("NoRLBot")) {
             Dbg.prn("connecting rlbot rubbing the mint");
