@@ -24,7 +24,7 @@ import javax.swing.JTextArea;
 
 import javax.swing.UIManager;
 import piotrrr.thesis.bots.botbase.BotBase;
-import piotrrr.thesis.bots.rlbot.RLBot;
+import piotrrr.thesis.bots.learnbot.LearnBot;
 
 import piotrrr.thesis.bots.referencebot.ReferenceBot;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
@@ -87,7 +87,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         nrOfRLtBotsTextField3 = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        connectRLBotsjButton2 = new javax.swing.JButton();
+        connectLearnBotsjButton2 = new javax.swing.JButton();
         jPanel15 = new javax.swing.JPanel();
         quakePathjTextField2 = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
@@ -249,7 +249,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel11Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(connectDebugedButton)
-                .addContainerGap(248, Short.MAX_VALUE))
+                .addContainerGap(263, Short.MAX_VALUE))
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -305,7 +305,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Connect RLBots"));
+        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Connect LearnBots"));
 
         jLabel9.setText("Connect");
 
@@ -317,12 +317,12 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel10.setText("RLBots");
+        jLabel10.setText("LearnBots");
 
-        connectRLBotsjButton2.setText("Connect them!");
-        connectRLBotsjButton2.addActionListener(new java.awt.event.ActionListener() {
+        connectLearnBotsjButton2.setText("Connect them!");
+        connectLearnBotsjButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectRLBotsjButton2ActionPerformed(evt);
+                connectLearnBotsjButton2ActionPerformed(evt);
             }
         });
 
@@ -338,7 +338,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel10)
                 .addGap(34, 34, 34)
-                .addComponent(connectRLBotsjButton2))
+                .addComponent(connectLearnBotsjButton2))
         );
         jPanel14Layout.setVerticalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -347,7 +347,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel9)
                     .addComponent(nrOfRLtBotsTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10)
-                    .addComponent(connectRLBotsjButton2))
+                    .addComponent(connectLearnBotsjButton2))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -875,21 +875,19 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel17.setText("Bot1");
 
         bot1List.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot" };
+            String[] strings = { "ReferenceBot", "LearnBot" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         bot1List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        bot1List.setSelectedIndex(0);
         jScrollPane6.setViewportView(bot1List);
 
         bot2List.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot" };
+            String[] strings = { "ReferenceBot", "LearnBot" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         bot2List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        bot2List.setSelectedIndex(1);
         jScrollPane7.setViewportView(bot2List);
 
         jLabel18.setText("Bot2");
@@ -908,12 +906,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel20.setText("Bot3");
 
         bot3List.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "ReferenceBot", "RLBot", "NoRLBot", "SSRLBot", "none" };
+            String[] strings = { "ReferenceBot", "LearnBot", "none" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         bot3List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        bot3List.setSelectedIndex(2);
         jScrollPane9.setViewportView(bot3List);
 
         timescaleTextField2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
@@ -1157,7 +1154,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (dbgBot != null) {
             return;
         }
-        RLBot bot = new RLBot("RLBot-dbg", AppConfig.altSkinName);
+        LearnBot bot = new LearnBot("LearnBot-dbg", AppConfig.altSkinName);
         bot.connect(AppConfig.serverIP, AppConfig.serverPort);
         stepJob = new DebugStepJob(bot, this);
         bot.addBotJob(stepJob);
@@ -1386,15 +1383,15 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_nrOfRLtBotsTextField3ActionPerformed
 
-    private void connectRLBotsjButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectRLBotsjButton2ActionPerformed
+    private void connectLearnBotsjButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectLearnBotsjButton2ActionPerformed
         int num = Integer.parseInt(nrOfRLtBotsTextField3.getText());
         for (int i = 0; i < num; i++) {
-            RLBot bot = new RLBot("RLBot-" + i, AppConfig.altSkinName);
+            LearnBot bot = new LearnBot("LearnBot-" + i, AppConfig.altSkinName);
             bot.dtalk.active = false;
             bot.connect(AppConfig.serverIP, AppConfig.serverPort);
             bots.add(bot);
         }
-    }//GEN-LAST:event_connectRLBotsjButton2ActionPerformed
+    }//GEN-LAST:event_connectLearnBotsjButton2ActionPerformed
 
     private void quakePathjTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quakePathjTextField2ActionPerformed
     }//GEN-LAST:event_quakePathjTextField2ActionPerformed
@@ -1447,16 +1444,9 @@ public class MainFrame extends javax.swing.JFrame {
             Dbg.prn("connecting rfrnc");
             bot = new ReferenceBot(option + "-" + nr, AppConfig.skinName);
 
-        } else if (option.equals("RLBot")) {
+        } else if (option.equals("LearnBot")) {
             Dbg.prn("connecting rlbot learing");
-            bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
-
-        } else if (option.equals("SSRLBot")) {
-            Dbg.prn("sorry...");
-
-        }else if (option.equals("NoRLBot")) {
-            Dbg.prn("sorry...");
-            
+            bot = new LearnBot(option + "-" + nr, AppConfig.altSkinName);
         } else {
             return null;
         }
@@ -1580,7 +1570,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField botMapsPathjTextField3;
     private javax.swing.JTextArea botStateInfoTextArea1;
     private javax.swing.JButton connectDebugedButton;
-    private javax.swing.JButton connectRLBotsjButton2;
+    private javax.swing.JButton connectLearnBotsjButton2;
     private javax.swing.JButton connectRefBotsjButton1;
     private javax.swing.JList connectedBotsList1;
     private javax.swing.JPanel deathsByTypejPanel14;
@@ -1679,7 +1669,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel weaponsjPanel14;
     private javax.swing.JPanel whoKillsWhomjPanel14;
     // End of variables declaration//GEN-END:variables
-    private RLBot dbgBot = null;
+    private LearnBot dbgBot = null;
     private BotStatistic currentStats = null;
     private BotStatistic gameStats = null;
     private BotStatistic loadedStats = null;
