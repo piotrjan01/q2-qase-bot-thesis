@@ -22,7 +22,8 @@ public class SimpleAimingModule {
         }
 
         boolean reloading = bot.getWorld().getPlayer().getPlayerGun().isCoolingDown();
-        Vector3f noFiringLook = fd.enemyInfo.predictedPos == null ? fd.enemyInfo.getObjectPosition() : fd.enemyInfo.predictedPos;
+        Vector3f noFiringLook = fd.enemyInfo.predictedPos == null ? 
+            fd.enemyInfo.getObjectPosition() : getHitPoint(bot, fd, bot.cConfig.getBulletSpeedForGivenGun(fd.gunIndex));
         if (reloading) {
             return getNoFiringInstructions(bot, noFiringLook);
         }
