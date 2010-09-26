@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
-import piotrrr.thesis.bots.rlbot.RLBot;
 import piotrrr.thesis.common.combat.EnemyInfo;
 
 /**
