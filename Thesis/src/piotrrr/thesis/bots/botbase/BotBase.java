@@ -6,17 +6,12 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
 import piotrrr.thesis.common.jobs.Job;
-import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.gui.MyPopUpDialog;
-import piotrrr.thesis.tools.Dbg;
 import piotrrr.thesis.tools.Timer;
 import soc.qase.bot.NoClipBot;
-import soc.qase.bot.ObserverBot;
-import soc.qase.bot.PollingBot;
 import soc.qase.file.bsp.BSPParser;
 import soc.qase.state.PlayerGun;
 import soc.qase.state.PlayerMove;
@@ -27,7 +22,7 @@ import soc.qase.tools.vecmath.Vector3f;
  * The bot that is used as super class for all the other bots.
  * @author Piotr Gwizdała
  */
-public class BotBase extends ObserverBot implements GameObject, UncaughtExceptionHandler {
+public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionHandler {
 
     /**
      * Stores all the jobs of the bot, that he runs every frame.
@@ -85,15 +80,10 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
      */
     private int lostFramesCount = 0;
     /**
-     * If true, after respawn the bot will try to obtain all weapons using cheats.
+     * If true, after respawn the bot will try to obtain weapons using cheats.
      */
-    public boolean giveAllOnRespawn = true;
-    /**
-     * last time used by AI to calculate. In nanoseconds.
-     */
-    public long lastAIComputingTime = 0l;
-    public HashMap<String, Timer> timers = new HashMap<String, Timer>();
-    long startTime = System.currentTimeMillis();
+    public boolean cheatOnRespawn = true;
+
 
     /**
      * Basic constructor
@@ -105,9 +95,6 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
 //        setHighThreadSafety(true);
 //        setAutoInventoryRefresh(true);
         setUncaughtExceptionHandler(this);
-        timers.put("all-ai", new Timer("all-ai"));
-        timers.put("jobs", new Timer("jobs"));
-        timers.put("bot-logic", new Timer("bot-logic"));
     }
 
     @Override
@@ -116,8 +103,6 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
             return;
         }
         try {
-            resetTimers();
-            timers.get("all-ai").resume();
 
             if (world.getFrame() != 1 + lastWorldFrame) {
                 lostFramesCount++;
@@ -126,7 +111,7 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
             lastWorldFrame = world.getFrame();
 
             if (firstFrameNumber == -1) {
-                if (giveAllOnRespawn) {
+                if (cheatOnRespawn) {
                     giveAllWeapons();
                 }
                 firstFrameNumber = world.getFrame();
@@ -137,21 +122,14 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
             //get them all at once and save to check on them later.
             messages = world.getMessages();
 
-            timers.get("jobs").resume();
             runBotJobs();
-            timers.get("jobs").pause();
 
-            timers.get("bot-logic").resume();
             if (!botPaused) {
                 botLogic();
             } else {
                 setBotMovement(new Vector3f(), pausedLookDir, PlayerMove.WALK_STOPPED, PlayerMove.POSTURE_NORMAL);
             }
             messages = null;
-            timers.get("bot-logic").pause();
-
-            timers.get("all-ai").pause();
-            saveTimersString();
 
         } catch (Exception e) {
             say("Runtime exception!");
@@ -305,7 +283,7 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
         super.respawn();
         deathsNumber++;
 
-        if (giveAllOnRespawn) {
+        if (cheatOnRespawn) {
             giveAllWeapons();
             say("I came back after dieing for " + deathsNumber + " times. Give all!");
         } else {
@@ -520,10 +498,7 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
      * @param dst the position where the bot should move.
      */
     public void goToPositionWithNoClipCheating(Vector3f dst) {
-//        clipToPosition(dst);
-        MyPopUpDialog.showMyDialogBox("Can't do it", "BotBase was changed to inherit from PollingBot. \n" +
-                "In order to allow noClip movement, \n" +
-                "change inheritance to ObserverBot.", MyPopUpDialog.error);
+        clipToPosition(dst);        
     }
 
     @Override
@@ -539,53 +514,6 @@ public class BotBase extends ObserverBot implements GameObject, UncaughtExceptio
     @Override
     public Vector3f getObjectPosition() {
         return new Vector3f(getPosition());
-    }
-
-    /**
-     *
-     * @return an average computing time consumed by AI in milis.
-     */
-    public long getLastAIComputingTimeNanos() {
-        return lastAIComputingTime;
-    }
-
-    public void saveTimersString() {
-        String s = "";
-        long max = -1;
-        for (Timer t : timers.values()) {
-            if (t.getElapsedTime() > max) {
-                max = t.getElapsedTime();
-            }
-        }
-        for (Timer t : timers.values()) {
-            s += t.toStringAsPercentOf(max) + "\n";
-//            s+=t.toString()+"\n";
-        }
-        double div = getFrameNumber() % 100;
-        double aitime = timers.get("all-ai").getElapsedTime() / (div * 1000000);
-        s += "\ntotal AI time: " + aitime + "ms";
-        int fps = (int) ((1000 * getFrameNumber()) / (System.currentTimeMillis() - startTime));
-        s += "\nframes per second = " + fps + "\n";
-        if (fps != 0) {
-            s += "each frame ms = " + 1000 / fps + "\n";
-//            s += "max bots num = "+ (1000/fps)/aitime;
-            s += "lost frames percent: " + (100 * lostFramesCount / getFrameNumber()) + "%\n";
-        }
-        timersString = s;
-    }
-    String timersString = "";
-
-    public String getTimersString() {
-        return timersString;
-    }
-
-    public void resetTimers() {
-        if (getFrameNumber() % 100 != 0) {
-            return;
-        }
-        for (Timer t : timers.values()) {
-            t.reset();
-        }
     }
 
     public void uncaughtException(Thread t, Throwable e) {

@@ -113,9 +113,7 @@ public class FuzzyGlobalNav implements GlobalNav {
         }
 
         //Get the entity ranking:
-        bot.timers.get("rank").resume();
         TreeSet<EntityDoublePair> ranking = FuzzyEntityRanking.getEntityFuzzyRanking(bot);
-        bot.timers.get("rank").pause();
 //		bot.dtalk.addToLog(ReferenceBotEntityRanking.getRankingDebugInfo(bot));
 
         while ((plan == null || plan.path == null)) {
@@ -155,7 +153,6 @@ public class FuzzyGlobalNav implements GlobalNav {
      * @return the navigation plan with just wan waypoint that is close to the bot - so called spontaneous plan.
      */
     static NavPlan getSpontaneousPlan(MapBotBase bot) {
-        bot.timers.get("nav0").resume();
         NavPlan newPlan = null;
 
         Vector<Entity> entries = bot.kb.getActiveEntitiesWithinTheRange(bot.getBotPosition(), maximalDistance, bot.getFrameNumber());
@@ -183,7 +180,6 @@ public class FuzzyGlobalNav implements GlobalNav {
         }
 
         if (chosen == null) {
-            bot.timers.get("nav0").pause();
             return null;
         }
 
@@ -200,7 +196,6 @@ public class FuzzyGlobalNav implements GlobalNav {
 //		double distance = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), chosen.getObjectPosition());
 //		bot.dtalk.addToLog("got new spontaneous plan: et: "+chosen.toString()+" dist: "+distance+" timeout: "+spontDecisionTimeout);
 
-        bot.timers.get("nav0").pause();
         return newPlan;
     }
 

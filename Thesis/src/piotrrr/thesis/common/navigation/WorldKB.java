@@ -366,8 +366,6 @@ public class WorldKB {
         if (b != null) {
             return b;
         }
-
-        bot.timers.get("nav1").resume();
         Waypoint wp = bot.kb.map.findClosestWaypoint(e.getObjectPosition());
         float dist = CommFun.getDistanceBetweenPositions(wp.getObjectPosition(), e.getObjectPosition());
         float obstDist = bot.getBsp().getObstacleDistance(wp.getObjectPosition(), e.getObjectPosition(), EnemyInfo.agentsHeight / 6, 2 * dist);
@@ -380,8 +378,6 @@ public class WorldKB {
         }
 
         entitiesReachability.put(e.getNumber(), b);
-
-        bot.timers.get("nav1").pause();
         return b;
     }
 }
