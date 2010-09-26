@@ -1,18 +1,20 @@
 package piotrrr.thesis.bots.rlbot;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.LinkedList;
-import java.util.Random;
-import piotrrr.thesis.bots.rlbot.rl.Action;
-import piotrrr.thesis.bots.mapbotbase.MapBotBase;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import piotrrr.thesis.common.combat.*;
 import piotrrr.thesis.common.CommFun;
-import piotrrr.thesis.common.navigation.FuzzyGlobalNav;
-import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.tools.Dbg;
-import piotrrr.thesis.tools.FileLogger;
-import pl.gdan.elsy.qconf.Brain;
-import soc.qase.state.PlayerGun;
 import soc.qase.tools.vecmath.Vector3f;
+import weka.classifiers.meta.AdditiveRegression;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
 
 /**
  * TODO:
@@ -24,71 +26,44 @@ import soc.qase.tools.vecmath.Vector3f;
  */
 public class RLCombatModule {
 
-    public static int count = 0;
-
-    public static final int actionTime = 20;
-    public Action currentAction = null;
-    int currentActionTime = 0;
-    int hiddenLayerNeurons = 11;
     RLBot bot;
-    int lastEnemyId = -1;
-    public RLBotPerception perception;
-//    double actionReward = 0;
-//    int actionFireMode = Action.NO_FIRE;
-    Action[] actions = Action.getAllActionsArray();
-    public Brain brain;
-    boolean unipolar = true;
-
-    FileLogger flog = null;
+    AdditiveRegression classifier = null;
+    Instances instances = null;
 
     public RLCombatModule(RLBot bot) {
         this.bot = bot;
-
-//        flog = new FileLogger("cb-log-"+bot.getBotName()+".csv");
-//        flog.addToLog("asd;");
-
-        count++;
-//        hiddenLayerNeurons = (int) getRandParam(4, 10, 2);
-        int[] hiddenLayers = new int[actions.length];
-        for (int i = 0; i < hiddenLayers.length; i++) {
-            hiddenLayers[i] = hiddenLayerNeurons;
+        classifier = (AdditiveRegression) readFromFile("additive-regression-weka-model.model");
+        try {
+            instances = DataSource.read("instances-t1.csv");
+        } catch (Exception ex) {
+            Logger.getLogger(RLCombatModule.class.getName()).log(Level.SEVERE, null, ex);
         }
-        perception = new RLBotPerception(bot);
-        brain = new Brain(perception, actions, hiddenLayers);
-
-//        if (count == 1)
-//            brain.setAlpha(0.1); //learning rate
-//        else
-        brain.setAlpha(0.7);
-        brain.setGamma(0.3); //discounting rate
-        brain.setLambda(0.2); //trace forgetting
-//        b.setUseBoltzmann(true);
-//        b.setTemperature(0.001);
-        brain.setRandActions(0.1); //exploration
-
-//        brain.setAlpha(getRandParam(0.4, 0.8, 0.2)); //learning rate
-//        brain.setGamma(getRandParam(0.5, 0.9, 0.2)); //discounting rate
-//        brain.setLambda(getRandParam(0.2, 0.9, 0.2)); //trace forgetting
-////        b.setUseBoltzmann(true);
-////        b.setTemperature(0.001);
-//        brain.setRandActions(getRandParam(0.01, 0.4, 0.1)); //exploration
-//        unipolar = Rand.b();
-
-        System.out.println(bot.getBotName() + "'s RLCombatModule started: actions=" + actions.length);
-
     }
 
-    double getRandParam(double from, double to, double quant) {
-        int count = (int) ((to - from) / quant) + 1;
-        Random r = new Random();
-        return from + r.nextInt(count) * quant;
-    }
+    private double predictX(String wpn, double d0, double d1, Vector3f bv) throws Exception {
+        //wpn,d0,d1,bx,by,bz,hx,hy,hz
+        double[] vals = new double[7];
+        vals[0] = instances.attribute(0).indexOfValue(wpn);
+        if (vals[0] == -1) return Double.NaN;
+        vals[1] = d0;
+        vals[2] = d1;
+        vals[3] = bv.x;
+        vals[4] = bv.y;
+        vals[5] = bv.z;
 
-    @Override
-    public String toString() {
-        String s = "alpha=" + brain.getAlpha() + " gamma=" + brain.getGamma() +
-                "\nlambda=" + brain.getLambda() + " rand=" + brain.getRandActions() + "\n"+"hl-size="+hiddenLayerNeurons+"\n";
-        return s;
+        Instance ni = new Instance(1, vals);
+        instances.add(ni);
+        try {
+            double pred = classifier.classifyInstance(instances.lastInstance());
+            return pred;
+        } catch (Exception ex) {
+            for (int i=0; i<vals.length; i++) {
+                System.out.println("vals["+i+"] = "+vals[i]);
+            }
+            System.out.println("wpn = "+wpn);
+            ex.printStackTrace();
+            return Double.NaN;
+        }
     }
 
     public FiringDecision getFiringDecision() {
@@ -134,7 +109,9 @@ public class RLCombatModule {
         if (chosen == null) {
             return null;
         }
-        return new FiringDecision(chosen, -1);
+        float dist = CommFun.getDistanceBetweenPositions(playerPos, chosen.getObjectPosition());
+        int wpn = SimpleCombatModule.chooseWeapon(bot, dist);
+        return new FiringDecision(chosen, wpn);
     }
 
     /**
@@ -147,111 +124,52 @@ public class RLCombatModule {
         if (fd == null || fd.enemyInfo == null) {
             return null;
         }
-        
-        currentActionTime++;
+
         boolean reloading = bot.getWorld().getPlayer().getPlayerGun().isCoolingDown();
         Vector3f noFiringLook = fd.enemyInfo.predictedPos == null ? fd.enemyInfo.getObjectPosition() : fd.enemyInfo.predictedPos;
         if (reloading) {
             return SimpleAimingModule.getNoFiringInstructions(bot, noFiringLook);
         }
 
-        if (currentActionTime >= actionTime || fd.enemyInfo.ent.getNumber() != lastEnemyId) {
-            currentActionTime = 0;
-
-
-            bot.rewardsCount++;
-            bot.totalReward += perception.getReward();
-
-//            flog.addToLog(currentAction.toString()+";"+perception.getReward());
-
-            if (BotStatistic.getInstance() != null) {
-                BotStatistic.getInstance().addReward(bot.getBotName(), perception.getReward(), bot.getFrameNumber());
-            }
-
-            //if the enemy changed, we end the episode
-            if (fd.enemyInfo.ent.getNumber() != lastEnemyId) {
-                lastEnemyId = fd.enemyInfo.ent.getNumber();
-                currentAction = null;
-                brain.reset();
-            }
-            //choose new action and execute it
-            perception.perceive(); //calls updateInputValues
-            brain.count(Action.getActionsAvailability(bot)); //chooses action and updates with last reward.
-            currentAction = actions[brain.getAction()];
-            executeAction(currentAction);
-
-            perception.resetReward();
+        if (fd.enemyInfo.lastUpdateFrame + bot.cConfig.maxEnemyInfoAge4Firing < bot.getFrameNumber()) {
+            return SimpleAimingModule.getNoFiringInstructions(bot, noFiringLook);
         }
-//        return getFiringInstructionsAtHitpoint(fd, 1);
-//        return getNewPredictingFiringInstructions(bot, fd, bot.cConfig.getBulletSpeedForGivenGun(bot.getCurrentWeaponIndex()));
-//        switch (actionFireMode) {
-//            case Action.FIRE:
-//                return getFastFiringInstructions(fd, bot);
-//            case Action.FIRE_PREDICTED:
-        return SimpleAimingModule.getNewPredictingFiringInstructions(bot, fd, bot.cConfig.getBulletSpeedForGivenGun(bot.getCurrentWeaponIndex()));
-//            default:
-//            case Action.NO_FIRE:
-//                return SimpleAimingModule.getNoFiringInstructions(bot, noFiringLook);
-//        }
 
+        FiringInstructions fi = SimpleAimingModule.getNewPredictingFiringInstructions(bot, fd, bot.cConfig.getBulletSpeedForGivenGun(fd.gunIndex));
+        double d0 = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), fd.enemyInfo.getObjectPosition());
+        double d1 = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), fd.enemyInfo.predictedPos);
+        Vector3f bv = CommFun.getNormalizedDirectionVector(bot.getBotPosition(), fd.enemyInfo.getObjectPosition());
+        try {
+            double pred = predictX(CommFun.getGunName(fd.gunIndex), d0, d1, bv);
+            if (pred != Double.NaN) {
+                Dbg.prn("x error = "+(pred - fi.fireDir.x));
+                fi.fireDir.x = (float) pred;
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RLCombatModule.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return fi;
     }
 
-    /**
-     * * Point the enemy and shoot.
-     * @param fd
-     * @param playerPos
-     * @return
-     */
-    static public FiringInstructions getFastFiringInstructions(
-            FiringDecision fd, MapBotBase bot) {
-        Vector3f to = new Vector3f(fd.enemyInfo.getBestVisibleEnemyPart(bot));
-        Vector3f fireDir = CommFun.getNormalizedDirectionVector(bot.getBotPosition(), to);
-//		bot.dtalk.addToLog("Fast firing.");
-        return new FiringInstructions(fireDir);
+    public static void saveToFile(String filename, Object o) {
+        try {
+            FileOutputStream fos = new FileOutputStream(filename);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(o);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
-    private void executeAction(Action action) {
-//        actionFireMode = action.getShootingMode();
-        String say = "";
-        say += "wpns=";
-        for (int i = 7; i < 18; i++) {
-            if (bot.botHasItem(i)) {
-                if (bot.botHasItem(PlayerGun.getAmmoInventoryIndexByGun(i))) {
-                    say += "1";
-                } else {
-                    say += "A";
-                }
-            } else {
-                say += "0";
-            }
+    public static Object readFromFile(String fileName) {
+        Object r = null;
+        try {
+            FileInputStream fis = new FileInputStream(fileName);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            r = ois.readObject();
+        } catch (Exception e) {
+            System.err.println("Error reading object: " + fileName);
         }
-//        System.out.println("===================================> executing action: " + action.toString() + " (" + say + ")");
-
-        int wpind = action.actionToInventoryIndex();
-
-        if (bot.getCurrentWeaponIndex() != wpind) {
-            if (bot.botHasItem(wpind) && !Action.isProhibited(action)) {
-                bot.changeWeaponToIndex(wpind);
-            }
-            else bot.changeWeaponToIndex(7); //blaster
-//            if (bot.botHasItem(wpind)) System.out.println("chng wpn to: "+CommFun.getGunName(wpind));
-
-        }
-
-        switch (action.getCombatMove()) {
-            case Action.CB_RETREAT:
-                bot.plan = FuzzyGlobalNav.getEnemyRetreatPlan(bot);
-//                Dbg.prn(bot.getBotName() + ">----------> RETREAT!");
-                break;
-            case Action.CB_DISTANT:
-                bot.plan = FuzzyGlobalNav.getEnemyDistPosPlan(bot, bot.fd);
-//                Dbg.prn(bot.getBotName() + ">----------> FROM DISTANCE!");
-                break;
-            case Action.CB_CLOSER:
-            default:
-                bot.plan = FuzzyGlobalNav.getEnemyEngagingPlan(bot, bot.plan);
-//                Dbg.prn(bot.getBotName() + ">----------> ENGAGING!");
-        }
-
+        return r;
     }
 }

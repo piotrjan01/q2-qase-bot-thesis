@@ -70,34 +70,6 @@ public class BasicCommands extends Job {
 			bot.say("Passing the command to console: "+todo);
 			bot.consoleCommand(todo);
 		}
-                else if (cmd.startsWith("savebrain ")) {
-                    String name = bot.getBotName()+"-"+cmd.substring(10);
-                    try {
-                        RLBot b = (RLBot)bot;
-                        b.combatModule.brain.save(name);
-                        bot.say("Brain saved.");
-                    }
-                    catch (ClassCastException e) {
-                        bot.say("I have no brain. Nothing to save.");
-                    }
-                    catch (Exception e) {
-                        bot.say("Couldn't save: "+name);
-                    }
-                }
-                else if (cmd.startsWith("loadbrain ")) {
-                    String name = bot.getBotName()+"-"+cmd.substring(10);
-                    try {
-                        RLBot b = (RLBot)bot;
-                        b.combatModule.brain.load(name);
-                        bot.say("Brain loaded.");
-                    }
-                    catch (ClassCastException e) {
-                        bot.say("I have no brain. Nothing to load.");
-                    }
-                    catch (Exception e) {
-                        bot.say("Couldn't load: "+name);
-                    }
-                }
 		else {
 			try {
 				
