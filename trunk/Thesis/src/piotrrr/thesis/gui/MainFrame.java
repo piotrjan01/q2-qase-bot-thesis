@@ -1452,15 +1452,11 @@ public class MainFrame extends javax.swing.JFrame {
             bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
 
         } else if (option.equals("SSRLBot")) {
-            Dbg.prn("connecting rlbot learing with accumulated wpn info in state");
-            bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
-            ((RLBot) bot).combatModule.perception.singleState = true;
+            Dbg.prn("sorry...");
 
         }else if (option.equals("NoRLBot")) {
-            Dbg.prn("connecting rlbot rubbing the mint");
-            bot = new RLBot(option + "-" + nr, AppConfig.altSkinName);
-            ((RLBot) bot).combatModule.brain.setAlpha(0.0);
-            ((RLBot) bot).combatModule.brain.setRandActions(1);
+            Dbg.prn("sorry...");
+            
         } else {
             return null;
         }

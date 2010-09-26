@@ -68,7 +68,7 @@ public class WekaTest {
 
     }
 
-    private static void predictX(String wpn, double d0, double d1, Vector3f bv) throws Exception {
+    private static double predictX(String wpn, double d0, double d1, Vector3f bv) throws Exception {
         //wpn,d0,d1,bx,by,bz,hx,hy,hz
         Instances uli = DataSource.read("instances-t1.csv");
 
@@ -84,9 +84,10 @@ public class WekaTest {
         uli.add(ni);
         try {
             double pred = ar.classifyInstance(uli.lastInstance());
-            System.out.println("" + uli.lastInstance().value(0) + " -> " + pred);
+            return pred;
         } catch (Exception ex) {
             ex.printStackTrace();
+            return Double.NaN;
         }
     }
 
