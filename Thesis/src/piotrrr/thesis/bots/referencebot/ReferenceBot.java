@@ -16,10 +16,15 @@ import soc.qase.tools.vecmath.Vector3f;
 
 public class ReferenceBot extends MapBotBase {
 
+    public static int botsCount = 0;
     FileLogger fLog = null;
+    String comma = ",";
+    double lastPitch = 0;
+    double lastYaw = 0;
 
     public ReferenceBot(String botName, String skinName) {
         super(botName, skinName);
+
         globalNav = new FuzzyGlobalNav();
         localNav = new SimpleLocalNav();
         timers.put("glob-nav", new Timer("glob-nav"));
@@ -31,9 +36,9 @@ public class ReferenceBot extends MapBotBase {
 //        timers.put("nav2", new Timer("nav2"));
 //        timers.put("nav3", new Timer("nav3"));
 //        timers.put("nav4", new Timer("nav4"));
-
-        fLog = new FileLogger(botName + "-aim.csv");
-        fLog.addToLog("wpn;d0;d1;bx;by;bz;hx;hy;hz\n");
+        botsCount++;
+        fLog = new FileLogger("ReferenceBot-" + botsCount + "-aim.csv");
+        fLog.addToLog("wpn,dist0,dist1,emx,emy,emz,fdx,fdy,fdz\n");
 
     }
 
@@ -74,15 +79,30 @@ public class ReferenceBot extends MapBotBase {
         FiringInstructions fi = SimpleAimingModule.getFiringInstructions(fd, this);
         timers.get("aim").pause();
 
-        if (fi != null && fi.doFire) {
-            Vector3f bc = CommFun.getNormalizedDirectionVector(getBotPosition(), fd.enemyInfo.getObjectPosition());
-            Vector3f bp = CommFun.getNormalizedDirectionVector(getBotPosition(), fd.enemyInfo.predictedPos);
-            bp.sub(bc);
-            Vector3f hp = CommFun.getNormalizedDirectionVector(getBotPosition(), SimpleAimingModule.getHitPoint(this, fd, cConfig.getBulletSpeedForGivenGun(fd.gunIndex)));
-            hp.sub(bc);
-            saveDataToFile(bp, hp, CommFun.getGunName(fd.gunIndex),
-                    CommFun.getDistanceBetweenPositions(getBotPosition(), fd.enemyInfo.getObjectPosition()),
-                    CommFun.getDistanceBetweenPositions(getBotPosition(), fd.enemyInfo.predictedPos));
+        if (fi != null) {
+
+            Vector3f botPos = getBotPosition();
+            Vector3f enemPos = fd.enemyInfo.getObjectPosition();
+            Vector3f enemPredPos = fd.enemyInfo.predictedPos;            
+
+            int wpn = fd.gunIndex;
+
+            //vector from me to enemy
+            Vector3f toEnemyDir = CommFun.getNormalizedDirectionVector(botPos, enemPos);
+
+            //vector from me to the enemy next position, relative to toEnemyDir
+            Vector3f enemyMoveDirRelative = CommFun.getNormalizedDirectionVector(botPos, enemPredPos);
+            enemyMoveDirRelative.sub(toEnemyDir);
+
+            //vector of fire direction, relative to toEnemyDir.
+            Vector3f fireDirRelative = new Vector3f(fi.fireDir);
+            fireDirRelative.sub(toEnemyDir);
+
+            double d0 = CommFun.getDistanceBetweenPositions(botPos, enemPos);
+            double d1 = CommFun.getDistanceBetweenPositions(botPos, enemPredPos);
+
+            saveDataToFile(wpn, d0, d1, enemyMoveDirRelative, fireDirRelative);
+
         }
 
         executeInstructions(ni, fi);
@@ -90,9 +110,15 @@ public class ReferenceBot extends MapBotBase {
 
     }
 
-    protected void saveDataToFile(Vector3f bv, Vector3f hv, String wpn, float d0, float d1) {
-        //"dist;wpn;mx;my;mz;hx;hy;hz\n"
-        //wpn;d0;d1;bx;by;bz;hx;hy;hz\n
-        fLog.addToLog(wpn + ";" + d0 + ";" + d1 + ";" + bv.x + ";" + bv.y + ";" + bv.z + ";" + hv.x + ";" + hv.y + ";" + hv.z + "\n");
+//    protected double getPitch(Vector3f from, Vector3f to) {
+//        Vector3f v = CommFun.getNormalizedDirectionVector(from, to);
+//        Angles ang = new Angles(v.x, v.y, v.z);
+//
+//    }
+    protected void saveDataToFile(int wpn, double dist0, double dist1, Vector3f enemyMove, Vector3f fireDir) {
+        //"wpn,dist0,dist1,emx,emy,emz,fdx,fdy,fdz"
+        fLog.addToLog(wpn + comma + dist0 + comma + dist1 + comma +
+                enemyMove.x + comma + enemyMove.y + comma + enemyMove.z + comma +
+                fireDir.x + comma + fireDir.y + comma + fireDir.z + "\n");
     }
 }
