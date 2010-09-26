@@ -238,7 +238,6 @@ public class MapBotBase extends BotBase {
                     "alive: " + isAlive() + "\n" +
                     "connected: " + isConnected() + "\n" +
                     "state: " + fuzzyState + "\n\n" +
-                    getTimersString() + "\n" +
                     kb.toString();
         }
     }

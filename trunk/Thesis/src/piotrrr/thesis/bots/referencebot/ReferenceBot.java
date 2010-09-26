@@ -27,15 +27,6 @@ public class ReferenceBot extends MapBotBase {
 
         globalNav = new FuzzyGlobalNav();
         localNav = new SimpleLocalNav();
-        timers.put("glob-nav", new Timer("glob-nav"));
-        timers.put("rank", new Timer("rank"));
-        timers.put("aim", new Timer("aim"));
-        timers.put("fd", new Timer("fd"));
-        timers.put("nav0", new Timer("nav0"));
-        timers.put("nav1", new Timer("nav1"));
-//        timers.put("nav2", new Timer("nav2"));
-//        timers.put("nav3", new Timer("nav3"));
-//        timers.put("nav4", new Timer("nav4"));
         botsCount++;
         fLog = new FileLogger("ReferenceBot-" + botsCount + "-aim.csv");
         fLog.addToLog("wpn,dist0,dist1,emx,emy,emz,fdx,fdy,fdz\n");
@@ -49,9 +40,7 @@ public class ReferenceBot extends MapBotBase {
         NavInstructions ni = null;
         if (!noMove) {
 
-            timers.get("glob-nav").resume();
             plan = globalNav.establishNewPlan(this, plan);
-            timers.get("glob-nav").pause();
 
             if (plan == null) {
                 Dbg.prn("plan is null....");
@@ -63,9 +52,7 @@ public class ReferenceBot extends MapBotBase {
 
         FiringDecision fd = null;
         if (!noFire) {
-            timers.get("fd").resume();
             fd = SimpleCombatModule.getFiringDecision(this);
-            timers.get("fd").pause();
             if (fd != null && getWeaponIndex() != fd.gunIndex) {
                 changeWeaponByInventoryIndex(fd.gunIndex);
             }
@@ -75,9 +62,7 @@ public class ReferenceBot extends MapBotBase {
 //					changeWeaponByInventoryIndex(justInCaseWeaponIndex);
 //			}
         }
-        timers.get("aim").resume();
         FiringInstructions fi = SimpleAimingModule.getFiringInstructions(fd, this);
-        timers.get("aim").pause();
 
         if (fi != null) {
 

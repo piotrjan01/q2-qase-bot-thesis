@@ -8,7 +8,6 @@ import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.combat.FiringInstructions;
 
 import piotrrr.thesis.common.navigation.NavInstructions;
-import piotrrr.thesis.tools.Timer;
 
 public class RLBot extends MapBotBase {
 
@@ -21,17 +20,6 @@ public class RLBot extends MapBotBase {
 
     public RLBot(String botName, String skinName) {
         super(botName, skinName);
-
-        timers.put("glob-nav", new Timer("glob-nav"));
-        timers.put("rank", new Timer("rank"));
-        timers.put("aim", new Timer("aim"));
-        timers.put("fd", new Timer("fd"));
-        timers.put("nav0", new Timer("nav0"));
-        timers.put("nav1", new Timer("nav1"));
-//        timers.put("nav2", new Timer("nav2"));
-//        timers.put("nav3", new Timer("nav3"));
-//        timers.put("nav4", new Timer("nav4"));
-
         globalNav = new FuzzyGlobalNav();
         localNav = new SimpleLocalNav();
     }
@@ -43,21 +31,13 @@ public class RLBot extends MapBotBase {
         FiringInstructions fi = null;
         fd = null;
         if (!noFire) {
-            timers.get("fd").resume();
             fd = combatModule.getFiringDecision();
-            timers.get("fd").pause();
-
-
-            timers.get("aim").resume();
             fi = combatModule.getFiringInstructions(fd);
-            timers.get("aim").pause();
         }
 
         NavInstructions ni = null;
         if (!noMove) {
-            timers.get("glob-nav").resume();
             plan = globalNav.establishNewPlan(this, plan);
-            timers.get("glob-nav").pause();
             if (plan == null) {
 //                Dbg.prn("plan is null....");
                 return;
