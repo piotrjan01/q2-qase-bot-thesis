@@ -1,5 +1,6 @@
 package piotrrr.thesis.bots.referencebot;
 
+import java.util.HashMap;
 import piotrrr.thesis.common.navigation.FuzzyGlobalNav;
 import piotrrr.thesis.common.navigation.SimpleLocalNav;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
@@ -11,26 +12,24 @@ import piotrrr.thesis.common.combat.SimpleCombatModule;
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.tools.Dbg;
 import piotrrr.thesis.tools.FileLogger;
-import piotrrr.thesis.tools.Timer;
 import soc.qase.tools.vecmath.Vector3f;
 
 public class ReferenceBot extends MapBotBase {
 
     public static int botsCount = 0;
-    FileLogger fLog = null;
+    private int botNr = 0;
+    HashMap<Integer, FileLogger> fLogs = null;
     String comma = ",";
-    double lastPitch = 0;
-    double lastYaw = 0;
+    public boolean saveExamplesToFile = false;
 
     public ReferenceBot(String botName, String skinName) {
         super(botName, skinName);
 
         globalNav = new FuzzyGlobalNav();
         localNav = new SimpleLocalNav();
-        botsCount++;
-        fLog = new FileLogger("ReferenceBot-" + botsCount + "-aim.csv");
-        fLog.addToLog("wpn,dist0,dist1,emx,emy,emz,fdx,fdy,fdz\n");
 
+        botNr = botsCount;
+        botsCount++;
     }
 
     @Override
@@ -64,11 +63,11 @@ public class ReferenceBot extends MapBotBase {
         }
         FiringInstructions fi = SimpleAimingModule.getFiringInstructions(fd, this);
 
-        if (fi != null) {
+        if (saveExamplesToFile && fi != null) {
 
             Vector3f botPos = getBotPosition();
             Vector3f enemPos = fd.enemyInfo.getObjectPosition();
-            Vector3f enemPredPos = fd.enemyInfo.predictedPos;            
+            Vector3f enemPredPos = fd.enemyInfo.predictedPos;
 
             int wpn = fd.gunIndex;
 
@@ -86,7 +85,7 @@ public class ReferenceBot extends MapBotBase {
             double d0 = CommFun.getDistanceBetweenPositions(botPos, enemPos);
             double d1 = CommFun.getDistanceBetweenPositions(botPos, enemPredPos);
 
-            saveDataToFile(wpn, d0, d1, enemyMoveDirRelative, fireDirRelative);
+            saveExamplesToFile(wpn, d0, d1, enemyMoveDirRelative, fireDirRelative);
 
         }
 
@@ -95,14 +94,24 @@ public class ReferenceBot extends MapBotBase {
 
     }
 
-//    protected double getPitch(Vector3f from, Vector3f to) {
-//        Vector3f v = CommFun.getNormalizedDirectionVector(from, to);
-//        Angles ang = new Angles(v.x, v.y, v.z);
-//
-//    }
-    protected void saveDataToFile(int wpn, double dist0, double dist1, Vector3f enemyMove, Vector3f fireDir) {
+    protected void saveExamplesToFile(int wpn, double dist0, double dist1, Vector3f enemyMove, Vector3f fireDir) {
         //"wpn,dist0,dist1,emx,emy,emz,fdx,fdy,fdz"
-        fLog.addToLog(wpn + comma + dist0 + comma + dist1 + comma +
+
+        if (fLogs == null) {
+            fLogs = new HashMap<Integer, FileLogger>();
+        }
+
+        if (!fLogs.containsKey(wpn)) {
+            FileLogger logger = new FileLogger("WpnExamples-wpn" + wpn + "-bot" + botNr + ".csv");
+            fLogs.put(wpn, logger);
+            logger.addToLog("wpn" + comma + "dist0" + comma + "dist1" + comma +
+                    "emx" + comma + "emy" + comma + "emz" + comma +
+                    "fdx" + comma + "fdy" + comma + "fdz");
+
+        }
+
+        FileLogger log = fLogs.get(wpn);
+        log.addToLog(wpn + comma + dist0 + comma + dist1 + comma +
                 enemyMove.x + comma + enemyMove.y + comma + enemyMove.z + comma +
                 fireDir.x + comma + fireDir.y + comma + fireDir.z + "\n");
     }

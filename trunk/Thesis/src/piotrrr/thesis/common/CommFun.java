@@ -1,5 +1,9 @@
 package piotrrr.thesis.common;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
@@ -150,4 +154,25 @@ public class CommFun {
         ret.z = v.z;
         return ret;
     }
+
+
+     public static void saveToFile(String filename, Object o) throws Exception {
+
+        FileOutputStream fos = new FileOutputStream(filename);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(o);
+
+    }
+
+    public static Object readFromFile(String fileName) throws Exception {
+        Object r = null;
+
+        FileInputStream fis = new FileInputStream(fileName);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        r = ois.readObject();
+
+        return r;
+    }
+
+
 }
