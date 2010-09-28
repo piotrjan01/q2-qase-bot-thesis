@@ -5,6 +5,7 @@
 package piotrrr.thesis.weka;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,25 +30,21 @@ import weka.core.converters.ConverterUtils.DataSource;
  */
 public class WekaTest {
 
-    public static void saveToFile(String filename, Object o) {
-        try {
-            FileOutputStream fos = new FileOutputStream(filename);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(o);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public static void saveToFile(String filename, Object o) throws Exception {
+
+        FileOutputStream fos = new FileOutputStream(filename);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(o);
+
     }
 
-    public static Object readFromFile(String fileName) {
+    public static Object readFromFile(String fileName) throws Exception {
         Object r = null;
-        try {
-            FileInputStream fis = new FileInputStream(fileName);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            r = ois.readObject();
-        } catch (Exception e) {
-            System.err.println("Error reading object: " + fileName);
-        }
+
+        FileInputStream fis = new FileInputStream(fileName);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        r = ois.readObject();
+
         return r;
     }
 
@@ -57,7 +54,11 @@ public class WekaTest {
     static AdditiveRegression ar = null;
 
     private static void test2() {
-        ar = (AdditiveRegression) readFromFile("additive-regression-weka-model.model");
+        try {
+            ar = (AdditiveRegression) readFromFile("additive-regression-weka-model.model");
+        } catch (Exception ex) {
+            Logger.getLogger(WekaTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
 //        System.out.println("AR: " + ar.toString());
         try {
             //should get -0.340244
