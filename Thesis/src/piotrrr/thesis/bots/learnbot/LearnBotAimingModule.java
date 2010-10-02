@@ -86,29 +86,6 @@ public class LearnBotAimingModule implements Serializable {
 
     }
 
-    public static LearnBotAimingModule createAimingModule(String exNamesPrefix, String exNamesSuffix) throws Exception {
-        LearnBotAimingModule mod = new LearnBotAimingModule();
-
-        for (int i : validWeapons) {
-            log.info("Getting examples for wpn: " + i);
-            WpnExamples we = new WpnExamples();
-            try {
-                we.readExamplesFromFile(exNamesPrefix + i + exNamesSuffix);
-            } catch (Exception ex) {
-                log.info("Can't read examples file: " + exNamesPrefix + i + exNamesSuffix);
-                continue;
-            }
-
-            log.info("Creating handler for wpn: " + i);
-            WpnHandler wh = new WpnHandler();
-            wh.learn(we);
-
-            mod.handlers.put(i, wh);
-        }
-
-        return mod;
-    }
-
     public static LearnBotAimingModule createAimingModule(WpnExamplesSet exmpls) throws Exception {
         LearnBotAimingModule mod = new LearnBotAimingModule();
 
@@ -123,25 +100,6 @@ public class LearnBotAimingModule implements Serializable {
         return mod;
     }
 
-
-    /**
-     * For creating new aiming module and saving it
-     * @param args
-     */
-    public static void main(String[] args) {
-        String pr = "WpnExamples-wpn";
-        String suf = "-bot0.csv";
-        try {
-            log.info("Creating aiming module");
-            LearnBotAimingModule mod = createAimingModule(pr, suf);
-            log.info("Saving to file");
-            CommFun.saveToFile("LearnBot-aimModule-new", mod);
-
-        } catch (Exception ex) {
-            log.error("error while testing!", ex);
-        }
-    }
-
     @Override
     public String toString() {
         String ret = this.getClass().getSimpleName()+":\n";
@@ -152,7 +110,19 @@ public class LearnBotAimingModule implements Serializable {
         return ret;
     }
 
-
-
+    public String evaluate(WpnExamplesSet exmpls) throws Exception {
+        String ret = "Evaluation results:\n";
+        for (int i : exmpls.examples.keySet()) {
+            ret+="Weapon: "+CommFun.getGunName(i)+"\n";
+            WpnExamples we = exmpls.examples.get(i);
+            if (handlers.containsKey(i)) {
+                log.info("Evaluating for wpn: "+CommFun.getGunName(i));
+                WpnHandler wh = handlers.get(i);
+                ret+=wh.evaluate(we)+"\n\n";
+            }
+            else log.info("No handler found for weapon: "+CommFun.getGunName(i));
+        }
+        return ret;
+    }
 
 }

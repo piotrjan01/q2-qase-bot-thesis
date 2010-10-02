@@ -8,6 +8,7 @@ package piotrrr.thesis.bots.learnbot;
 import java.io.Serializable;
 import java.util.HashMap;
 import org.apache.log4j.Logger;
+import piotrrr.thesis.common.CommFun;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -54,7 +55,7 @@ public class WpnExamplesSet implements Serializable {
         String s = this.getClass().getName()+":\n";
         s+="Examples for weapons: \n";
         for (int i : examples.keySet()) {
-            s+="wpn="+i+" examplesCount="+examples.get(i).instances.numInstances()+"\n";
+            s+="wpn="+CommFun.getGunName(i)+" examples-count="+examples.get(i).instances.numInstances()+"\n";
         }
         return s;
     }
