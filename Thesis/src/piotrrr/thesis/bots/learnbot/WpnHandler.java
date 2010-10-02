@@ -4,9 +4,10 @@
  */
 package piotrrr.thesis.bots.learnbot;
 
+import java.io.Serializable;
 import java.util.Random;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 import soc.qase.tools.vecmath.Vector3f;
 import weka.classifiers.Classifier;
 import weka.classifiers.trees.M5P;
@@ -17,13 +18,13 @@ import weka.core.Instances;
  *
  * @author piotrrr
  */
-public class WpnHandler {
+public class WpnHandler implements Serializable {
 
     Classifier xLearner = new M5P();
     Classifier yLearner = new M5P();
     Classifier zLearner = new M5P();
     Instances xInst, yInst, zInst;
-    static Logger log = Logger.getLogger(WpnHandler.class.getName());
+    static Logger log = Logger.getLogger(WpnHandler.class);
 
     public void learn(WpnExamples examples) throws Exception {
         //wpn,d0,d1,bx,by,bz,hx,hy,hz
@@ -84,7 +85,7 @@ public class WpnHandler {
         vals[5] = enemyMovDir.z;
 
         Instance i = new Instance(1, vals);
-        insts.add(i);
+        //insts.add(i);   <------------------------------- ?
         return cl.classifyInstance(i);
     }
 
@@ -111,7 +112,22 @@ public class WpnHandler {
 
 
         } catch (Exception ex) {
-            Logger.getLogger(WpnHandler.class.getName()).log(Level.SEVERE, "Exception during test!11", ex);
+            log.error("Exception during test!11", ex);
         }
     }
+
+    @Override
+    public String toString() {
+        String ret = this.getClass().getSimpleName()+"\n";
+        try {
+            ret += "Learner used: " + xLearner.getClass().getSimpleName();
+        } catch (Exception ex) {
+            ret += "Something is wrong with the learner..."+ex.getMessage();
+            log.error("Field not found?", ex);
+        }
+        return ret;
+    }
+
+
+
 }
