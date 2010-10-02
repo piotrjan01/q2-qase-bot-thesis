@@ -5,11 +5,13 @@
 package piotrrr.thesis.bots.learnbot;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.Random;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import soc.qase.tools.vecmath.Vector3f;
 import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.classifiers.meta.AdditiveRegression;
 import weka.classifiers.trees.M5P;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -20,11 +22,73 @@ import weka.core.Instances;
  */
 public class WpnHandler implements Serializable {
 
-    Classifier xLearner = new M5P();
-    Classifier yLearner = new M5P();
-    Classifier zLearner = new M5P();
+    Classifier xLearner = new AdditiveRegression(new M5P());
+    Classifier yLearner = new AdditiveRegression(new M5P());
+    Classifier zLearner = new AdditiveRegression(new M5P());
+    
     Instances xInst, yInst, zInst;
     static Logger log = Logger.getLogger(WpnHandler.class);
+
+    public String evaluate(WpnExamples examples) throws Exception {
+        //wpn,d0,d1,bx,by,bz,hx,hy,hz
+        Random r = new Random();
+
+        Instances xDs, yDs, zDs;
+
+        xDs = examples.instances.resample(r);
+        yDs = examples.instances.resample(r);
+        zDs = examples.instances.resample(r);
+
+        xDs.deleteAttributeAt(8);
+        xDs.deleteAttributeAt(7);
+        xDs.setClassIndex(6);
+
+        yDs.deleteAttributeAt(8);
+        yDs.deleteAttributeAt(6);
+        yDs.setClassIndex(6);
+
+        zDs.deleteAttributeAt(6);
+        zDs.deleteAttributeAt(7);
+        zDs.setClassIndex(6);
+
+        Evaluation ex, ey, ez;
+
+        String ret = "";
+
+        log.info("Evaluating x.");
+        ex = new Evaluation(xDs);
+        ex.evaluateModel(xLearner, xDs);
+        log.info(ex.toSummaryString());
+        ret += "X: "+ex.toSummaryString();
+        double rmse = ex.rootMeanSquaredError();
+
+        log.info("Evaluating y.");
+        ey = new Evaluation(yDs);
+        ey.evaluateModel(yLearner, yDs);
+        log.info(ey.toSummaryString());
+        ret += "Y: "+ey.toSummaryString();
+        rmse += ey.rootMeanSquaredError();
+
+        log.info("Evaluating z.");
+        ez = new Evaluation(zDs);
+        ez.evaluateModel(zLearner, zDs);
+        log.info(ez.toSummaryString());
+        ret += "Z: "+ez.toSummaryString();
+        rmse += ez.rootMeanSquaredError();
+        
+        log.info("Evaluating finished.");
+
+
+        //To get smaller memmory use
+        log.info("Cleaning up the temporary instances");
+        xDs.delete();
+        yDs.delete();
+        zDs.delete();
+
+        String nr = NumberFormat.getInstance().format((rmse*rmse)/3.0);
+        return "\nClasses avg mean squared error: " +nr+"\n\n"+ret;
+
+    }
 
     public void learn(WpnExamples examples) throws Exception {
         //wpn,d0,d1,bx,by,bz,hx,hy,hz
@@ -118,16 +182,13 @@ public class WpnHandler implements Serializable {
 
     @Override
     public String toString() {
-        String ret = this.getClass().getSimpleName()+"\n";
+        String ret = this.getClass().getSimpleName() + "\n";
         try {
             ret += "Learner used: " + xLearner.getClass().getSimpleName();
         } catch (Exception ex) {
-            ret += "Something is wrong with the learner..."+ex.getMessage();
+            ret += "Something is wrong with the learner..." + ex.getMessage();
             log.error("Field not found?", ex);
         }
         return ret;
     }
-
-
-
 }

@@ -140,12 +140,17 @@ public class MainFrame extends javax.swing.JFrame {
         botStateInfoTextArea1 = new javax.swing.JTextArea();
         jPanel18 = new javax.swing.JPanel();
         jPanel19 = new javax.swing.JPanel();
-        loadCSVFileExamplesButton6 = new javax.swing.JButton();
         learnAndSaveClassifButton7 = new javax.swing.JButton();
-        jScrollPane10 = new javax.swing.JScrollPane();
-        csvInfojTextArea1 = new javax.swing.JTextArea();
         jScrollPane11 = new javax.swing.JScrollPane();
         learnerInfojTextArea2 = new javax.swing.JTextArea();
+        jPanel20 = new javax.swing.JPanel();
+        testClassifierjButton6 = new javax.swing.JButton();
+        jScrollPane12 = new javax.swing.JScrollPane();
+        testClassifierjTextArea1 = new javax.swing.JTextArea();
+        jPanel21 = new javax.swing.JPanel();
+        loadCSVFileExamplesButton6 = new javax.swing.JButton();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        csvInfojTextArea1 = new javax.swing.JTextArea();
         jPanel16 = new javax.swing.JPanel();
         jPanel17 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -881,23 +886,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Create classifier"));
 
-        loadCSVFileExamplesButton6.setText("Load CSV file with examles");
-        loadCSVFileExamplesButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadCSVFileExamplesButton6ActionPerformed(evt);
-            }
-        });
-
         learnAndSaveClassifButton7.setText("Learn and save the classifier ");
         learnAndSaveClassifButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 learnAndSaveClassifButton7ActionPerformed(evt);
             }
         });
-
-        csvInfojTextArea1.setColumns(20);
-        csvInfojTextArea1.setRows(5);
-        jScrollPane10.setViewportView(csvInfojTextArea1);
 
         learnerInfojTextArea2.setColumns(20);
         learnerInfojTextArea2.setRows(5);
@@ -910,25 +904,85 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel19Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(loadCSVFileExamplesButton6)
-                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(learnAndSaveClassifButton7)
-                    .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE))
+                    .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel19Layout.setVerticalGroup(
             jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel19Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(loadCSVFileExamplesButton6)
-                    .addComponent(learnAndSaveClassifButton7))
+                .addComponent(learnAndSaveClassifButton7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
-                    .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Test LearnBotAimingModule with given examples"));
+
+        testClassifierjButton6.setText("Load and test the classfier");
+        testClassifierjButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                testClassifierjButton6ActionPerformed(evt);
+            }
+        });
+
+        testClassifierjTextArea1.setColumns(20);
+        testClassifierjTextArea1.setRows(5);
+        jScrollPane12.setViewportView(testClassifierjTextArea1);
+
+        javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
+        jPanel20.setLayout(jPanel20Layout);
+        jPanel20Layout.setHorizontalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel20Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
+                    .addComponent(testClassifierjButton6))
+                .addContainerGap())
+        );
+        jPanel20Layout.setVerticalGroup(
+            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel20Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(testClassifierjButton6)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Load examples from CSV file"));
+
+        loadCSVFileExamplesButton6.setText("Load CSV file with examples");
+        loadCSVFileExamplesButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadCSVFileExamplesButton6ActionPerformed(evt);
+            }
+        });
+
+        csvInfojTextArea1.setColumns(20);
+        csvInfojTextArea1.setRows(5);
+        jScrollPane10.setViewportView(csvInfojTextArea1);
+
+        javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
+        jPanel21.setLayout(jPanel21Layout);
+        jPanel21Layout.setHorizontalGroup(
+            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel21Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(loadCSVFileExamplesButton6)
+                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel21Layout.setVerticalGroup(
+            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel21Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(loadCSVFileExamplesButton6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -938,15 +992,24 @@ public class MainFrame extends javax.swing.JFrame {
             jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel18Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(267, Short.MAX_VALUE))
+                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel19, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel21, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel18Layout.setVerticalGroup(
             jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel18Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(327, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel20, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel18Layout.createSequentialGroup()
+                        .addComponent(jPanel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(54, 54, 54))
         );
 
         jTabbedPane1.addTab("Learning", jPanel18);
@@ -1372,7 +1435,9 @@ public class MainFrame extends javax.swing.JFrame {
             ReferenceBot bot = new ReferenceBot("ReferenceBot-" + i, AppConfig.skinName);
             bot.dtalk.active = false;
             bot.connect(AppConfig.serverIP, AppConfig.serverPort);
-            if (saveExamplesChkBox.isSelected()) bot.saveExamplesToFile = true;
+            if (saveExamplesChkBox.isSelected()) {
+                bot.saveExamplesToFile = true;
+            }
             bots.add(bot);
         }
     }//GEN-LAST:event_connectRefBotsjButton1ActionPerformed
@@ -1541,7 +1606,9 @@ public class MainFrame extends javax.swing.JFrame {
         if (option.equals("ReferenceBot")) {
             Dbg.prn("connecting rfrnc");
             bot = new ReferenceBot(option + "-" + nr, AppConfig.skinName);
-            if (saveExamplesChkBox1.isSelected()) ((ReferenceBot)bot).saveExamplesToFile = true;
+            if (saveExamplesChkBox1.isSelected()) {
+                ((ReferenceBot) bot).saveExamplesToFile = true;
+            }
 
         } else if (option.equals("LearnBot")) {
             Dbg.prn("connecting rlbot learing");
@@ -1554,11 +1621,11 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void runLocalQ2Server(int port, String mapName) {
-        String timescale = ""+AppConfig.timeScale;
+        String timescale = "" + AppConfig.timeScale;
         String quakeExec = "quake2.exe";
-        String cmd = AppConfig.quakePath + "\\"+quakeExec+" +set dedicated 1 +set deathmatch 1 +map " +
-                mapName + " +set cheats 1 +set port " + port + " +set timescale " + timescale+
-                " +set rcon_password qwe123"+" +set dmflags 1544";
+        String cmd = AppConfig.quakePath + "\\" + quakeExec + " +set dedicated 1 +set deathmatch 1 +map " +
+                mapName + " +set cheats 1 +set port " + port + " +set timescale " + timescale +
+                " +set rcon_password qwe123" + " +set dmflags 1544";
         String batName = "run" + port + ".bat";
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(batName));
@@ -1584,9 +1651,8 @@ public class MainFrame extends javax.swing.JFrame {
         try {
             int timescale = Integer.parseInt(timescaleTextField2.getText());
             AppConfig.timeScale = timescale;
-            System.out.println("Timescale: "+timescale);
-        }
-        catch (Exception e) {
+            System.out.println("Timescale: " + timescale);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1627,12 +1693,12 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_startExperimentButtonActionPerformed
 
     private void loadCSVFileExamplesButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadCSVFileExamplesButton6ActionPerformed
-
+        csvInfojTextArea1.setText("Loading...");
         JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
         fc.setApproveButtonText("Open");
         fc.setDialogTitle("Open examples CSV file");
         fc.showOpenDialog(this);
-        log.info("Reading CSV examples from file: "+fc.getSelectedFile().getPath());
+        log.info("Reading CSV examples from file: " + fc.getSelectedFile().getPath());
         try {
             tmpWpnExamplesSet = WpnExamplesSet.readWpnExamplesSetFromFile(fc.getSelectedFile().getPath());
         } catch (Exception ex) {
@@ -1644,6 +1710,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_loadCSVFileExamplesButton6ActionPerformed
 
     private void learnAndSaveClassifButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_learnAndSaveClassifButton7ActionPerformed
+        learnerInfojTextArea2.setText("Loading...");
         if (tmpWpnExamplesSet == null) {
             learnerInfojTextArea2.setText("No examples set! Please read examples first!");
             return;
@@ -1652,19 +1719,47 @@ public class MainFrame extends javax.swing.JFrame {
         fc.setApproveButtonText("Save");
         fc.setDialogTitle("Save learned LearningBotAimingModule");
         fc.showOpenDialog(this);
-        log.info("File chose to save LearningBotAimingModule: " + fc.getSelectedFile().getPath());        
+        log.info("File chose to save LearningBotAimingModule: " + fc.getSelectedFile().getPath());
         try {
             log.info("Creating the LearningBotAimingModule");
             tmpLearnBotAimingModule = LearnBotAimingModule.createAimingModule(tmpWpnExamplesSet);
-            log.info("Saving LearningBotAimingModule to "+fc.getSelectedFile().getPath());
+            log.info("Saving LearningBotAimingModule to " + fc.getSelectedFile().getPath());
             CommFun.saveToFile(fc.getSelectedFile().getPath(), tmpLearnBotAimingModule);
             learnerInfojTextArea2.setText(tmpLearnBotAimingModule.toString());
         } catch (Exception ex) {
             log.error("Error while learning the classifier!", ex);
-            learnerInfojTextArea2.setText("Error when learning: "+ex.getMessage());
+            learnerInfojTextArea2.setText("Error when learning: " + ex.getMessage());
         }
-        
+
     }//GEN-LAST:event_learnAndSaveClassifButton7ActionPerformed
+
+    private void testClassifierjButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testClassifierjButton6ActionPerformed
+        try {
+            testClassifierjTextArea1.setText("Loading...");
+            JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+            fc.setApproveButtonText("Open");
+            fc.setDialogTitle("Open LearningBotAimingModule");
+            fc.showOpenDialog(this);
+            log.info("Reading LearningBotAimingModule file: " + fc.getSelectedFile().getPath());
+            try {
+                tmpLearnBotAimingModule = (LearnBotAimingModule) CommFun.readFromFile(fc.getSelectedFile().getPath());
+            } catch (Exception e) {
+                log.error("Exception while reading the LearningBotAimingModule", e);
+                testClassifierjTextArea1.setText("Exception while reading the LearningBotAimingModule");
+                return;
+            }
+            if (tmpWpnExamplesSet == null) {
+                log.error("Examples set is empty! Please load it first.");
+                testClassifierjTextArea1.setText("Examples set is empty! Please load it first.");
+                return;
+            }
+            testClassifierjTextArea1.setText(fc.getSelectedFile().getPath() + "\n" +
+                    tmpLearnBotAimingModule.toString() + "\n\n" +
+                    tmpLearnBotAimingModule.evaluate(tmpWpnExamplesSet));
+        } catch (Exception ex) {
+            log.error("Exception while evaluating!", ex);
+        }
+    }//GEN-LAST:event_testClassifierjButton6ActionPerformed
 
     private void sleep(int milis) {
         try {
@@ -1760,6 +1855,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -1770,6 +1867,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -1813,6 +1911,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel statsSourcejLabel16;
     private javax.swing.JButton stepButton1;
     private javax.swing.JTextField stepSizeTextField2;
+    private javax.swing.JButton testClassifierjButton6;
+    private javax.swing.JTextArea testClassifierjTextArea1;
     private javax.swing.JTextField timescaleTextField2;
     private javax.swing.JRadioButton visibleEntsRadioButton2;
     private javax.swing.JRadioButton visibleWaypointsRadioButton2;
@@ -1828,10 +1928,8 @@ public class MainFrame extends javax.swing.JFrame {
     private DebugStepJob stepJob = null;
     private MainFrameUpdater updater = null;
     private LinkedList<Process> childProcesses = new LinkedList<Process>();
-
     private Logger log = Logger.getLogger(MainFrame.class);
     private WpnExamplesSet tmpWpnExamplesSet = null;
-
     private LearnBotAimingModule tmpLearnBotAimingModule = null;
 
     public JTextArea getMessagesTextArea() {

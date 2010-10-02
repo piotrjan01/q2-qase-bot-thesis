@@ -1,9 +1,13 @@
 package piotrrr.thesis.common;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
@@ -12,11 +16,12 @@ import soc.qase.tools.vecmath.Vector3f;
  */
 public class CommFun {
 
-    public static String getArrayAsString(Object [] arr) {
+    public static String getArrayAsString(Object[] arr) {
         String res = "[ ";
-        for (Object s : arr)
-            res+=(""+s+" ");
-        res+=("]\n");
+        for (Object s : arr) {
+            res += ("" + s + " ");
+        }
+        res += ("]\n");
         return res;
     }
 
@@ -155,8 +160,7 @@ public class CommFun {
         return ret;
     }
 
-
-     public static void saveToFile(String filename, Object o) throws Exception {
+    public static void saveToFile(String filename, Object o) throws Exception {
 
         FileOutputStream fos = new FileOutputStream(filename);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -174,5 +178,16 @@ public class CommFun {
         return r;
     }
 
-
+    public static List<String> getAllFilesInDirectory(String dir) {
+        LinkedList<String> list = new LinkedList<String>();
+        File folder = new File(dir);
+        File[] listOfFiles = folder.listFiles();
+        if (listOfFiles == null) return list;
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                list.add(listOfFiles[i].getName());
+            }
+        }
+        return list;
+    }
 }
