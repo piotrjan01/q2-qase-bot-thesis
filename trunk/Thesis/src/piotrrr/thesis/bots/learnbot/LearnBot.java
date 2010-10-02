@@ -1,18 +1,17 @@
 package piotrrr.thesis.bots.learnbot;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 import piotrrr.thesis.bots.referencebot.ReferenceBot;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.combat.FiringInstructions;
-import piotrrr.thesis.common.combat.SimpleAimingModule;
 import piotrrr.thesis.common.combat.SimpleCombatModule;
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.tools.Dbg;
 
 public class LearnBot extends ReferenceBot {
 
+    Logger log = Logger.getLogger(LearnBot.class);
 
     LearnBotAimingModule aimModule = null;
 
@@ -22,7 +21,7 @@ public class LearnBot extends ReferenceBot {
         try {
             aimModule = (LearnBotAimingModule) CommFun.readFromFile("LearnBot-aimModule");
         } catch (Exception ex) {
-            Logger.getLogger(LearnBot.class.getName()).log(Level.SEVERE, "couldnt read aim module!", ex);
+            log.error("couldnt read aim module!", ex);
         }
 
     }

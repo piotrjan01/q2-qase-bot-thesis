@@ -11,6 +11,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * Writes to a file.
+ * Overwriting !!!!!!
+ * @author piotrrr
+ */
 public class FileLogger {
 
 	public FileLogger(String fname) {

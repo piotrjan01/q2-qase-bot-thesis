@@ -5,8 +5,9 @@
 package piotrrr.thesis.bots.learnbot;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.FileNotFoundException;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import soc.qase.tools.vecmath.Vector3f;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -20,20 +21,25 @@ import weka.core.converters.ConverterUtils.DataSource;
 public class WpnExamples {
 
     Instances instances = null;
-    static Logger log = Logger.getLogger(WpnExamples.class.getName());
+    private Logger log = Logger.getLogger(WpnExamples.class);
 
     public void readExamplesFromFile(String src) throws Exception {
         if (instances != null) {
-            log.warning("Reading new instances, but old instances was not null!");
+            log.warn("Reading new instances, but old instances was not null!");
         }
         CSVLoader loader = new CSVLoader();
-        loader.setSource(new File(src));
+        File f = new File(src);
+        if ( ! f.exists() ) throw new FileNotFoundException(src);
+        loader.setSource(f);
         instances = DataSource.read(loader);
+        log.debug("Read examples: "+instances.numInstances());
     }
 
     public void appendExamplesFromFile(String src) throws Exception {
         CSVLoader loader = new CSVLoader();
-        loader.setSource(new File(src));
+        File f = new File(src);
+        if ( ! f.exists() ) throw new FileNotFoundException(src);
+        loader.setSource(f);
         Instances inst = DataSource.read(loader);
 
         int i = 0;
@@ -66,18 +72,20 @@ public class WpnExamples {
      * @param args
      */
     public static void main(String [] args) {
+        Logger log = Logger.getLogger(WpnExamples.class);
+        BasicConfigurator.configure();
         WpnExamples ex = new WpnExamples();
         try {
             ex.readExamplesFromFile("testing-set.csv");
             log.info("Nr of instances read: "+ex.instances.numInstances());
             ex.appendExamplesFromFile("testing-set.csv");
-            log.info("Nr of instances read: "+ex.instances.numInstances());
+            log.info("Nr of instances after appending: "+ex.instances.numInstances());
             ex.addInstance(10, 10, 10, new Vector3f(10, 22, 12), new Vector3f(10, 22, 12));
             ex.addInstance(10, 10, 10, new Vector3f(10, 22, 12), new Vector3f(10, 22, 12));
             ex.addInstance(10, 10, 10, new Vector3f(10, 22, 12), new Vector3f(10, 22, 12));
-            log.info("Nr of instances read: "+ex.instances.numInstances());
+            log.info("Nr of instances after adding: "+ex.instances.numInstances());
         } catch (Exception ex1) {
-            Logger.getLogger(WpnExamples.class.getName()).log(Level.SEVERE, "Error when reading the file", ex1);
+            log.error("Error when reading the file", ex1);
         }
     }
 }

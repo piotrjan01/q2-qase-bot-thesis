@@ -5,15 +5,11 @@
 package piotrrr.thesis.weka;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 import soc.qase.tools.vecmath.Vector3f;
 import weka.classifiers.Evaluation;
 import weka.classifiers.meta.AdditiveRegression;
@@ -29,6 +25,8 @@ import weka.core.converters.ConverterUtils.DataSource;
  * @author piotrrr
  */
 public class WekaTest {
+
+    private static Logger log = Logger.getLogger(WekaTest.class);
 
     public static void saveToFile(String filename, Object o) throws Exception {
 
@@ -57,14 +55,14 @@ public class WekaTest {
         try {
             ar = (AdditiveRegression) readFromFile("additive-regression-weka-model.model");
         } catch (Exception ex) {
-            Logger.getLogger(WekaTest.class.getName()).log(Level.SEVERE, null, ex);
+           log.error("in test2", ex);
         }
 //        System.out.println("AR: " + ar.toString());
         try {
             //should get -0.340244
             predictX("HYPERBLASTER", 1182, 1173, new Vector3f(-0.032718, 0.017606, 0.0054));
         } catch (Exception ex) {
-            Logger.getLogger(WekaTest.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("in test2", ex);
         }
 
     }
@@ -173,7 +171,7 @@ public class WekaTest {
             //Print tree as if-then-else statement :)
             System.out.println(tree.toSource("DistClassifier"));
         } catch (Exception ex) {
-            Logger.getLogger(WekaTest.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("in test1", ex);
         }
     }
 }

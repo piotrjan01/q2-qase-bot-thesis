@@ -82,7 +82,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
     /**
      * If true, after respawn the bot will try to obtain weapons using cheats.
      */
-    public boolean cheatOnRespawn = true;
+    public boolean cheatOnRespawn = false;
 
 
     /**

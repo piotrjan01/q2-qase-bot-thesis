@@ -18,7 +18,7 @@ public class ReferenceBot extends MapBotBase {
 
     public static int botsCount = 0;
     private int botNr = 0;
-    HashMap<Integer, FileLogger> fLogs = null;
+    FileLogger fLog = null;
     String comma = ",";
     public boolean saveExamplesToFile = false;
 
@@ -97,21 +97,13 @@ public class ReferenceBot extends MapBotBase {
     protected void saveExamplesToFile(int wpn, double dist0, double dist1, Vector3f enemyMove, Vector3f fireDir) {
         //"wpn,dist0,dist1,emx,emy,emz,fdx,fdy,fdz"
 
-        if (fLogs == null) {
-            fLogs = new HashMap<Integer, FileLogger>();
-        }
-
-        if (!fLogs.containsKey(wpn)) {
-            FileLogger logger = new FileLogger("WpnExamples-wpn" + wpn + "-bot" + botNr + ".csv");
-            fLogs.put(wpn, logger);
-            logger.addToLog("wpn" + comma + "dist0" + comma + "dist1" + comma +
+        if (fLog == null) {
+            fLog = new FileLogger("WpnExamples-bot" + botNr + ".csv");
+            fLog.addToLog("wpn" + comma + "dist0" + comma + "dist1" + comma +
                     "emx" + comma + "emy" + comma + "emz" + comma +
-                    "fdx" + comma + "fdy" + comma + "fdz");
-
-        }
-
-        FileLogger log = fLogs.get(wpn);
-        log.addToLog(wpn + comma + dist0 + comma + dist1 + comma +
+                    "fdx" + comma + "fdy" + comma + "fdz\n");
+        }        
+        fLog.addToLog(wpn + comma + dist0 + comma + dist1 + comma +
                 enemyMove.x + comma + enemyMove.y + comma + enemyMove.z + comma +
                 fireDir.x + comma + fireDir.y + comma + fireDir.z + "\n");
     }
