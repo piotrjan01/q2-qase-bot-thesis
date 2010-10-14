@@ -14,13 +14,14 @@ import soc.qase.file.dm2.DM2Parser;
 import soc.qase.state.Angles;
 import soc.qase.state.Entity;
 import soc.qase.state.World;
+import soc.qase.tools.Utils;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
  *
  * @author piotrrr
  */
-public class DemoToCsv {
+public class DemoToCsvAngles {
 
     private static BSPParser bsp = null;
     private static FileLogger fLog = null;
@@ -41,7 +42,7 @@ public class DemoToCsv {
         boolean auto = true;
 
         String mapPrefix = AppConfig.quakePath + "\\baseq2\\maps\\";
-        String demosPath = "./";
+        String demosPath = "./demos/";
         if (auto) {
             for (String s : CommFun.getAllFilesInDirectory(demosPath)) {
                 if (!s.endsWith(".dm2")) {
@@ -105,7 +106,7 @@ public class DemoToCsv {
                 continue;
             }
 
-            if (w.getPlayer().getPlayerGun().isFiringOrCoolingDown()) {
+            if (w.getPlayer().getPlayerGun().isFiring()) {
 
                 Vector3f enemyPos = enemy.getObjectPosition();
                 Vector3f predPos = new Vector3f(enemyPos);
@@ -114,17 +115,32 @@ public class DemoToCsv {
                 Vector3f enDir = CommFun.getNormalizedDirectionVector(pPos, enemyPos);
                 Vector3f predEnDir = CommFun.getNormalizedDirectionVector(pPos, predPos);
 
-                Angles ang = w.getPlayer().getPlayerGun().getAngles();
+                Angles lookAngles = w.getPlayer().getPlayerView().getViewAngles();
 //                prn("" + pPos);
 //                prn("yaw=" + ang.getYaw() + " pitch=" + ang.getPitch());
 
-                Vector3f fireAt = new Vector3f(pPos);
-                fireAt.x += (float) Math.sin(ang.getYaw());
-                fireAt.y += (float) Math.cos(ang.getYaw());
-                fireAt.x += (float) Math.sin(ang.getPitch());
+//                float[] angs = new float[3];
+                float[] angs = Utils.calcAngles(enDir);
 
-                Vector3f fireAtRel = CommFun.getNormalizedDirectionVector(pPos, fireAt);
-                fireAtRel.sub(enDir);
+                Vector3f enDirHoriz = new Vector3f(enDir);
+                enDirHoriz.z = 0;
+                enDirHoriz.normalize();
+
+                double yaw = lookAngles.getYaw();
+                if (yaw < 0) yaw += 360;
+
+                float yawDiff = (float) (yaw - angs[0]);
+
+
+                double pitch = lookAngles.getPitch();
+
+                float pitchDiff = (float) (pitch - angs[1]);
+
+//                angs[0] = xBaseVector.angle(enDirHoriz);
+
+//                prn("\nen-dir-pitch: "+angs[1]);
+//                prn("look-pitch:   "+pitch);
+//                prn("diff:       "+(pitch-angs[1]));
 
 
                 Vector3f moveRel = new Vector3f(predEnDir);
@@ -135,7 +151,7 @@ public class DemoToCsv {
                 double dist0 = CommFun.getDistanceBetweenPositions(pPos, enemyPos);
                 double dist1 = CommFun.getDistanceBetweenPositions(pPos, predPos);
 
-                saveExamplesToFile(wpn, dist0, dist1, moveRel, fireAtRel);
+                saveExamplesToFile(wpn, dist0, dist1-dist0, moveRel, new Angles(yawDiff, pitchDiff, 0));
             }
 
             enLastPos = enemy.getObjectPosition();
@@ -143,34 +159,21 @@ public class DemoToCsv {
         }
     }
 
-    protected static void saveExamplesToFile(int wpn, double dist0, double dist1, Vector3f enemyMove, Vector3f fireDir) {
+    protected static void saveExamplesToFile(int wpn, double dist, double distSpeed, Vector3f enemyMove, Angles fireAngles) {
         //"wpn,dist0,dist1,emx,emy,emz,fdx,fdy,fdz"
 
         if (fLog == null) {
             fLog = new FileLogger(csv + ".csv");
-            fLog.addToLog("wpn" + comma + "dist0" + comma + "dist1" + comma +
+            fLog.addToLog("wpn" + comma + "dist0" + comma + "distSpeed" + comma +
                     "emx" + comma + "emy" + comma + "emz" + comma +
-                    "fdx" + comma + "fdy" + comma + "fdz\n");
+                    "yaw" + comma + "pitch\n");
         }
-        fLog.addToLog(wpn + comma + dist0 + comma + dist1 + comma +
+        fLog.addToLog(wpn + comma + dist + comma + distSpeed + comma +
                 enemyMove.x + comma + enemyMove.y + comma + enemyMove.z + comma +
-                fireDir.x + comma + fireDir.y + comma + fireDir.z + "\n");
+                fireAngles.getYaw() + comma + fireAngles.getPitch() + "\n");
     }
 
-    private static Entity getClosestVisible(Vector ents, Vector3f myPos) {
-        double minDist = Double.MAX_VALUE;
-        Entity ret = null;
-        for (Object o : ents) {
-            Entity e = (Entity) o;
-            double dist = CommFun.getDistanceBetweenPositions(myPos, e.getObjectPosition());
-            if (dist < minDist && bsp.isVisible(myPos, e.getObjectPosition())) {
-                ret = e;
-                minDist = dist;
-            }
-        }
-        return ret;
-    }
-
+  
     /**
      * Used to print the requests on the screen.
      * @param s
