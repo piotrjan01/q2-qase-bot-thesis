@@ -26,4 +26,20 @@ public class NavConfig {
      * Recommended ammo percent, the bot should have
      */
     public static final float recommendedAmmoPercent = 0.3f;
+
+
+    public static float weight_health = 0.9f;
+
+    public static float weight_armor = 0.3f;
+
+    public static float weight_weapon = 0.6f;
+
+    public static float weight_ammo = 0.3f;
+
+    public static float weight_distance = 0.2f;
+
+    public static float weight_enemycost = 0.5f;
+    
+    public static float weight_aggresiveness = 0.7f;
+
 }

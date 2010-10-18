@@ -4,14 +4,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
-import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.bots.tuning.WeaponConfig;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.EnemyInfo;
 import piotrrr.thesis.common.entities.EntityDoublePair;
-import piotrrr.thesis.tools.Dbg;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
 import soc.qase.tools.vecmath.Vector3f;

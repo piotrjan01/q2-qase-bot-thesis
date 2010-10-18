@@ -5,19 +5,22 @@ import piotrrr.thesis.bots.referencebot.ReferenceBot;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.combat.FiringInstructions;
+import piotrrr.thesis.common.combat.SimpleAimingModule;
 import piotrrr.thesis.common.combat.SimpleCombatModule;
+import piotrrr.thesis.common.navigation.FuzzyGlobalNavContra;
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.tools.Dbg;
 
 public class LearnBot extends ReferenceBot {
 
     Logger log = Logger.getLogger(LearnBot.class);
-
     LearnBotAimingModule aimModule = null;
 
     public LearnBot(String botName, String skinName) {
         super(botName, skinName);
-        
+
+        globalNav = new FuzzyGlobalNavContra();
+
         try {
             aimModule = (LearnBotAimingModule) CommFun.readFromFile("LearnBot-aimModule");
         } catch (Exception ex) {
@@ -49,19 +52,13 @@ public class LearnBot extends ReferenceBot {
             if (fd != null && getWeaponIndex() != fd.gunIndex) {
                 changeWeaponByInventoryIndex(fd.gunIndex);
             }
-//			else {
-//				int justInCaseWeaponIndex = SimpleCombatModule.chooseWeapon(this, cConfig.maxShortDistance4WpChoice+0.1f);
-//				if (getWeaponIndex() != justInCaseWeaponIndex)
-//					changeWeaponByInventoryIndex(justInCaseWeaponIndex);
-//			}
         }
-        
-        FiringInstructions fi = aimModule.getFiringInstructions(fd, this);
+
+//        FiringInstructions fi = aimModule.getFiringInstructions(fd, this);
+        FiringInstructions fi = SimpleAimingModule.getFiringInstructions(fd, this);
 
         executeInstructions(ni, fi);
 
 
     }
-
-
 }
