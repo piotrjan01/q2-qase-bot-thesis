@@ -10,7 +10,6 @@ import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
 import piotrrr.thesis.common.jobs.Job;
 import piotrrr.thesis.gui.MyPopUpDialog;
-import piotrrr.thesis.tools.Timer;
 import soc.qase.bot.NoClipBot;
 import soc.qase.file.bsp.BSPParser;
 import soc.qase.state.PlayerGun;

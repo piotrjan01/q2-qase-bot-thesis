@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Vector;
 
-import java.util.logging.Level;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
@@ -29,8 +28,6 @@ import org.apache.log4j.Logger;
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.learnbot.LearnBot;
 
-import piotrrr.thesis.bots.learnbot.LearnBotAimingModule;
-import piotrrr.thesis.bots.learnbot.WpnExamplesSet;
 import piotrrr.thesis.bots.referencebot.ReferenceBot;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
@@ -138,19 +135,6 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         botStateInfoTextArea1 = new javax.swing.JTextArea();
-        jPanel18 = new javax.swing.JPanel();
-        jPanel19 = new javax.swing.JPanel();
-        learnAndSaveClassifButton7 = new javax.swing.JButton();
-        jScrollPane11 = new javax.swing.JScrollPane();
-        learnerInfojTextArea2 = new javax.swing.JTextArea();
-        jPanel20 = new javax.swing.JPanel();
-        testClassifierjButton6 = new javax.swing.JButton();
-        jScrollPane12 = new javax.swing.JScrollPane();
-        testClassifierjTextArea1 = new javax.swing.JTextArea();
-        jPanel21 = new javax.swing.JPanel();
-        loadCSVFileExamplesButton6 = new javax.swing.JButton();
-        jScrollPane10 = new javax.swing.JScrollPane();
-        csvInfojTextArea1 = new javax.swing.JTextArea();
         jPanel16 = new javax.swing.JPanel();
         jPanel17 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -170,7 +154,6 @@ public class MainFrame extends javax.swing.JFrame {
         bot3List = new javax.swing.JList();
         timescaleTextField2 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        saveExamplesChkBox1 = new javax.swing.JCheckBox();
         startExperimentButton = new javax.swing.JButton();
         jPanel13 = new javax.swing.JPanel();
         refreshButton = new javax.swing.JButton();
@@ -884,136 +867,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Info & Control", jPanel6);
 
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Create classifier"));
-
-        learnAndSaveClassifButton7.setText("Learn and save the classifier ");
-        learnAndSaveClassifButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                learnAndSaveClassifButton7ActionPerformed(evt);
-            }
-        });
-
-        learnerInfojTextArea2.setColumns(20);
-        learnerInfojTextArea2.setRows(5);
-        jScrollPane11.setViewportView(learnerInfojTextArea2);
-
-        javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
-        jPanel19.setLayout(jPanel19Layout);
-        jPanel19Layout.setHorizontalGroup(
-            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel19Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(learnAndSaveClassifButton7)
-                    .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel19Layout.setVerticalGroup(
-            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel19Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(learnAndSaveClassifButton7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Test LearnBotAimingModule with given examples"));
-
-        testClassifierjButton6.setText("Load and test the classfier");
-        testClassifierjButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                testClassifierjButton6ActionPerformed(evt);
-            }
-        });
-
-        testClassifierjTextArea1.setColumns(20);
-        testClassifierjTextArea1.setRows(5);
-        jScrollPane12.setViewportView(testClassifierjTextArea1);
-
-        javax.swing.GroupLayout jPanel20Layout = new javax.swing.GroupLayout(jPanel20);
-        jPanel20.setLayout(jPanel20Layout);
-        jPanel20Layout.setHorizontalGroup(
-            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel20Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
-                    .addComponent(testClassifierjButton6))
-                .addContainerGap())
-        );
-        jPanel20Layout.setVerticalGroup(
-            jPanel20Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel20Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(testClassifierjButton6)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Load examples from CSV file"));
-
-        loadCSVFileExamplesButton6.setText("Load CSV file with examples");
-        loadCSVFileExamplesButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadCSVFileExamplesButton6ActionPerformed(evt);
-            }
-        });
-
-        csvInfojTextArea1.setColumns(20);
-        csvInfojTextArea1.setRows(5);
-        jScrollPane10.setViewportView(csvInfojTextArea1);
-
-        javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
-        jPanel21.setLayout(jPanel21Layout);
-        jPanel21Layout.setHorizontalGroup(
-            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel21Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(loadCSVFileExamplesButton6)
-                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel21Layout.setVerticalGroup(
-            jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel21Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(loadCSVFileExamplesButton6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane10, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(jPanel18);
-        jPanel18.setLayout(jPanel18Layout);
-        jPanel18Layout.setHorizontalGroup(
-            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel18Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel19, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel21, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel18Layout.setVerticalGroup(
-            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel20, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel18Layout.createSequentialGroup()
-                        .addComponent(jPanel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(54, 54, 54))
-        );
-
-        jTabbedPane1.addTab("Learning", jPanel18);
-
         jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Options"));
 
         mapsList.setModel(new javax.swing.AbstractListModel() {
@@ -1073,8 +926,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Timescale");
 
-        saveExamplesChkBox1.setText("Save examples to files");
-
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
         jPanel17Layout.setHorizontalGroup(
@@ -1101,12 +952,9 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane8)
                     .addComponent(jLabel19))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel17Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(timescaleTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE))
-                    .addComponent(saveExamplesChkBox1))
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(timescaleTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel17Layout.setVerticalGroup(
@@ -1133,8 +981,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel17Layout.createSequentialGroup()
-                                .addComponent(saveExamplesChkBox1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(30, 30, 30)
                                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(timescaleTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel1)))
@@ -1310,34 +1157,6 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void connectDebugedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectDebugedButtonActionPerformed
-        if (dbgBot != null) {
-            return;
-        }
-        LearnBot bot = new LearnBot("LearnBot-dbg", AppConfig.altSkinName);
-        bot.connect(AppConfig.serverIP, AppConfig.serverPort);
-        stepJob = new DebugStepJob(bot, this);
-        bot.addBotJob(stepJob);
-        bot.addBotJob(new GlobalKillsStatsJob(bot));
-        gameStats = BotStatistic.createNewInstance();
-        dbgBot = bot;
-    }//GEN-LAST:event_connectDebugedButtonActionPerformed
-
-    private void pauseToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseToggleButtonActionPerformed
-        dbgBot.botPaused = pauseToggleButton.isSelected();
-    }//GEN-LAST:event_pauseToggleButtonActionPerformed
-
-    private void reqListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_reqListValueChanged
-        int ind = reqList.getSelectedIndex();
-        if (ind < 0 || ind > requiredList.size()) {
-            return;
-        }
-        fullInfo.setText(requiredList.get(ind).toDetailedString());
-        Vector3f lookAt = new Vector3f(requiredList.get(ind).getObjectPosition());
-        dbgBot.setPauseLookAtPosition(lookAt);
-        distanceLabel.setText("" + CommFun.getDistanceBetweenPositions(dbgBot.getBotPosition(), requiredList.get(ind).getObjectPosition()));
-    }//GEN-LAST:event_reqListValueChanged
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         updater.stop = true;
         if (dbgBot != null) {
@@ -1356,112 +1175,37 @@ public class MainFrame extends javax.swing.JFrame {
         AppConfig.writeConfig();
     }//GEN-LAST:event_formWindowClosing
 
-    private void pauseAnotherBotsToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseAnotherBotsToggleActionPerformed
-        for (MapBotBase b : bots) {
-            b.botPaused = pauseAnotherBotsToggle.isSelected();
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        if (gameStats == null) {
+            gameStats = BotStatistic.createNewInstance();
         }
-    }//GEN-LAST:event_pauseAnotherBotsToggleActionPerformed
+        currentStats = gameStats;
+        refreshButtonActionPerformed(evt);
+}//GEN-LAST:event_jButton5ActionPerformed
 
-    private void sendCommandToDBGButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendCommandToDBGButtonActionPerformed
-        String cmd = jTextField1.getText();
-        dbgBot.handleCommand(cmd);
-    }//GEN-LAST:event_sendCommandToDBGButtonActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+        fc.setApproveButtonText("Open");
+        fc.setDialogTitle("Open statistics");
+        fc.showOpenDialog(this);
+        System.out.println("Reading stats from file: " + fc.getSelectedFile());
+        loadedStats = BotStatistic.readFromFile(fc.getSelectedFile().getPath());
+        currentStats = loadedStats;
+        refreshButtonActionPerformed(null);
+}//GEN-LAST:event_jButton2ActionPerformed
 
-    private void sendCommandToAnothersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendCommandToAnothersButtonActionPerformed
-        String cmd = jTextField1.getText();
-        for (MapBotBase b : bots) {
-            b.handleCommand(cmd);
-        }
-    }//GEN-LAST:event_sendCommandToAnothersButtonActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
-    private void allEntsRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allEntsRadioButton1ActionPerformed
-        Vector<GameObject> v = new Vector<GameObject>();
-        //FIXMe:
-        v.addAll(dbgBot.kb.getAllItems());
-//      v.addAll(dbgBot.kb.getAllPickableEntities());
-        setReqList(v);
-    }//GEN-LAST:event_allEntsRadioButton1ActionPerformed
-
-    private void visibleWaypointsRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_visibleWaypointsRadioButton2ActionPerformed
-        Vector<GameObject> v = new Vector<GameObject>();
-        v.addAll(dbgBot.kb.getAllVisibleWaypoints());
-        setReqList(v);
-    }//GEN-LAST:event_visibleWaypointsRadioButton2ActionPerformed
-
-    private void stepButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepButton1ActionPerformed
-        int steps = Integer.parseInt(stepSizeTextField2.getText());
-        stepJob.pauseIn(steps);
-    }//GEN-LAST:event_stepButton1ActionPerformed
-
-    private void navPlanRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_navPlanRadioButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_navPlanRadioButtonActionPerformed
-
-    private void visibleEntsRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_visibleEntsRadioButton2ActionPerformed
-        Vector<GameObject> v = new Vector<GameObject>();
-        v.addAll(dbgBot.kb.getAllVisibleEntities());
-        setReqList(v);
-    }//GEN-LAST:event_visibleEntsRadioButton2ActionPerformed
-
-    private void pickupFailuresRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pickupFailuresRadioButton1ActionPerformed
-        Vector<GameObject> v = new Vector<GameObject>();
-        v.addAll(dbgBot.kb.getAllEntsWithPickupFailure());
-        setReqList(v);
-    }//GEN-LAST:event_pickupFailuresRadioButton1ActionPerformed
-
-    private void edgeFailuresRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeFailuresRadioButtonActionPerformed
-//    	Vector<GameObject> v = new Vector<GameObject>();
-//        v.addAll(dbgBot.kb.getAllEdgeFailures());
-//        setReqList(v);
-    }//GEN-LAST:event_edgeFailuresRadioButtonActionPerformed
-
-    private void goToButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goToButtonActionPerformed
-        if (reqList.getSelectedIndex() == -1) {
+        if (currentStats == null) {
             return;
         }
-        Vector3f dst = requiredList.elementAt(reqList.getSelectedIndex()).getObjectPosition();
-        dbgBot.goToPositionWithNoClipCheating(dst);
-    }//GEN-LAST:event_goToButtonActionPerformed
-
-    private void enemyInfoRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enemyInfoRadioButton1ActionPerformed
-        Vector<GameObject> v = new Vector<GameObject>();
-        v.addAll(dbgBot.kb.getAllEnemyInformation());
-        setReqList(v);
-    }//GEN-LAST:event_enemyInfoRadioButton1ActionPerformed
-
-    private void connectRefBotsjButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectRefBotsjButton1ActionPerformed
-        int num = Integer.parseInt(nrOfRefBotsTextField2.getText());
-        for (int i = 0; i < num; i++) {
-            ReferenceBot bot = new ReferenceBot("ReferenceBot-" + i, AppConfig.skinName);
-            bot.dtalk.active = false;
-            bot.connect(AppConfig.serverIP, AppConfig.serverPort);
-            if (saveExamplesChkBox.isSelected()) {
-                bot.saveExamplesToFile = true;
-            }
-            bots.add(bot);
-        }
-    }//GEN-LAST:event_connectRefBotsjButton1ActionPerformed
-
-    private void connectedBotsList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_connectedBotsList1ValueChanged
-        int ind = connectedBotsList1.getSelectedIndex();
-        BotBase bot = getBotFromList(ind);
-        if (bot == null) {
-            return;
-        }
-        if (bot.getFrameNumber() < 2) {
-            return;
-        }
-        selectedBotInfoTextArea1.setText(bot.toDetailedString());
-    }//GEN-LAST:event_connectedBotsList1ValueChanged
-
-    private void disconnectSelectedButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disconnectSelectedButton1ActionPerformed
-        int ind = connectedBotsList1.getSelectedIndex();
-        BotBase bot = getBotFromList(ind);
-        if (bot == null) {
-            return;
-        }
-        bot.disconnect();
-    }//GEN-LAST:event_disconnectSelectedButton1ActionPerformed
+        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+        fc.setApproveButtonText("Save");
+        fc.setDialogTitle("Save current statistics");
+        fc.showOpenDialog(this);
+        System.out.println("Saving stats to file: " + fc.getSelectedFile());
+        currentStats.saveToFile(fc.getSelectedFile().getPath());
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
         if (currentStats == null) {
@@ -1510,70 +1254,150 @@ public class MainFrame extends javax.swing.JFrame {
         avgRewardjPanel16.add(StatsChartsFactory.getAvgRewardsChart(currentStats));
         avgRewardjPanel16.revalidate();
 
-
     }//GEN-LAST:event_refreshButtonActionPerformed
 
-    private void nrOfRefBotsTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrOfRefBotsTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nrOfRefBotsTextField2ActionPerformed
+    private void startExperimentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startExperimentButtonActionPerformed
+        int gamesNr = Integer.parseInt(nrOfGamesList.getSelectedValue().toString());
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            int timescale = Integer.parseInt(timescaleTextField2.getText());
+            AppConfig.timeScale = timescale;
+            System.out.println("Timescale: " + timescale);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        if (currentStats == null) {
+        String b1 = bot1List.getSelectedValue().toString();
+        String b2 = bot2List.getSelectedValue().toString();
+        String b3 = bot3List.getSelectedValue().toString();
+
+        String mapName = mapsList.getSelectedValue().toString();
+
+        gameStats = BotStatistic.createNewInstance();
+
+        for (int i = 0; i < gamesNr; i++) {
+            runLocalQ2Server(AppConfig.serverPort + i, mapName);
+            sleep(3000);
+            MapBotBase bot1 = connectBotByListOption(b1, i, AppConfig.serverPort + i);
+            bot1.addBotJob(new GlobalKillsStatsJob(bot1));
+            //            bot1.dtalk.active = false;
+            bots.add(bot1);
+            sleep(1000);
+            //            bot1.consoleCommand("rcon \tqwe123 \tsv_gravity "+(int)(800*AppConfig.timeScale));
+            //            bot1.consoleCommand("\"rcon\" \"qwe123\" \"sv_gravity\" "+(int)(800*AppConfig.timeScale));
+            //            bot1.consoleCommand("/rcon qwe123 sv_gravity "+(int)(800*AppConfig.timeScale));
+            //            bot1.consoleCommand("rcon qwe123 dmflags 1544");
+
+            MapBotBase bot2 = connectBotByListOption(b2, i, AppConfig.serverPort + i);
+            //            bot2.dtalk.active = false;
+            bots.add(bot2);
+            sleep(1000);
+
+            MapBotBase bot3 = connectBotByListOption(b3, i, AppConfig.serverPort + i);
+            if (bot3 != null) {
+                //                bot3.dtalk.active = false;
+                bots.add(bot3);
+                sleep(1000);
+            }
+        }
+        Dbg.prn("gamesNr: " + gamesNr);
+}//GEN-LAST:event_startExperimentButtonActionPerformed
+
+    private void stepButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepButton1ActionPerformed
+        int steps = Integer.parseInt(stepSizeTextField2.getText());
+        stepJob.pauseIn(steps);
+}//GEN-LAST:event_stepButton1ActionPerformed
+
+    private void sendCommandToAnothersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendCommandToAnothersButtonActionPerformed
+        String cmd = jTextField1.getText();
+        for (MapBotBase b : bots) {
+            b.handleCommand(cmd);
+        }
+}//GEN-LAST:event_sendCommandToAnothersButtonActionPerformed
+
+    private void sendCommandToDBGButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendCommandToDBGButtonActionPerformed
+        String cmd = jTextField1.getText();
+        dbgBot.handleCommand(cmd);
+}//GEN-LAST:event_sendCommandToDBGButtonActionPerformed
+
+    private void pauseAnotherBotsToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseAnotherBotsToggleActionPerformed
+        for (MapBotBase b : bots) {
+            b.botPaused = pauseAnotherBotsToggle.isSelected();
+        }
+}//GEN-LAST:event_pauseAnotherBotsToggleActionPerformed
+
+    private void pauseToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseToggleButtonActionPerformed
+        dbgBot.botPaused = pauseToggleButton.isSelected();
+}//GEN-LAST:event_pauseToggleButtonActionPerformed
+
+    private void reqListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_reqListValueChanged
+        int ind = reqList.getSelectedIndex();
+        if (ind < 0 || ind > requiredList.size()) {
             return;
         }
-        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-        fc.setApproveButtonText("Save");
-        fc.setDialogTitle("Save current statistics");
-        fc.showOpenDialog(this);
-        System.out.println("Saving stats to file: " + fc.getSelectedFile());
-        currentStats.saveToFile(fc.getSelectedFile().getPath());
+        fullInfo.setText(requiredList.get(ind).toDetailedString());
+        Vector3f lookAt = new Vector3f(requiredList.get(ind).getObjectPosition());
+        dbgBot.setPauseLookAtPosition(lookAt);
+        distanceLabel.setText("" + CommFun.getDistanceBetweenPositions(dbgBot.getBotPosition(), requiredList.get(ind).getObjectPosition()));
+}//GEN-LAST:event_reqListValueChanged
 
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-        fc.setApproveButtonText("Open");
-        fc.setDialogTitle("Open statistics");
-        fc.showOpenDialog(this);
-        System.out.println("Reading stats from file: " + fc.getSelectedFile());
-        loadedStats = BotStatistic.readFromFile(fc.getSelectedFile().getPath());
-        currentStats = loadedStats;
-        refreshButtonActionPerformed(null);
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void nrOfRLtBotsTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrOfRLtBotsTextField3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nrOfRLtBotsTextField3ActionPerformed
-
-    private void connectLearnBotsjButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectLearnBotsjButton2ActionPerformed
-        int num = Integer.parseInt(nrOfRLtBotsTextField3.getText());
-        for (int i = 0; i < num; i++) {
-            LearnBot bot = new LearnBot("LearnBot-" + i, AppConfig.altSkinName);
-            bot.dtalk.active = false;
-            bot.connect(AppConfig.serverIP, AppConfig.serverPort);
-            bots.add(bot);
+    private void goToButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goToButtonActionPerformed
+        if (reqList.getSelectedIndex() == -1) {
+            return;
         }
-    }//GEN-LAST:event_connectLearnBotsjButton2ActionPerformed
+        Vector3f dst = requiredList.elementAt(reqList.getSelectedIndex()).getObjectPosition();
+        dbgBot.goToPositionWithNoClipCheating(dst);
+}//GEN-LAST:event_goToButtonActionPerformed
 
-    private void quakePathjTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quakePathjTextField2ActionPerformed
-    }//GEN-LAST:event_quakePathjTextField2ActionPerformed
+    private void enemyInfoRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enemyInfoRadioButton1ActionPerformed
+        Vector<GameObject> v = new Vector<GameObject>();
+        v.addAll(dbgBot.kb.getAllEnemyInformation());
+        setReqList(v);
+}//GEN-LAST:event_enemyInfoRadioButton1ActionPerformed
 
-    private void botMapsPathjTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botMapsPathjTextField3ActionPerformed
-    }//GEN-LAST:event_botMapsPathjTextField3ActionPerformed
+    private void edgeFailuresRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeFailuresRadioButtonActionPerformed
+        //    	Vector<GameObject> v = new Vector<GameObject>();
+        //        v.addAll(dbgBot.kb.getAllEdgeFailures());
+        //        setReqList(v);
+}//GEN-LAST:event_edgeFailuresRadioButtonActionPerformed
 
-    private void serverIPjTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverIPjTextField4ActionPerformed
-    }//GEN-LAST:event_serverIPjTextField4ActionPerformed
+    private void pickupFailuresRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pickupFailuresRadioButton1ActionPerformed
+        Vector<GameObject> v = new Vector<GameObject>();
+        v.addAll(dbgBot.kb.getAllEntsWithPickupFailure());
+        setReqList(v);
+}//GEN-LAST:event_pickupFailuresRadioButton1ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fc.setApproveButtonText("Open");
-        fc.setDialogTitle("Choose Quake2 root path");
-        fc.showOpenDialog(this);
-        System.out.println("Q2 Path: " + fc.getSelectedFile());
-        quakePathjTextField2.setText(fc.getSelectedFile().getPath());
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void visibleEntsRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_visibleEntsRadioButton2ActionPerformed
+        Vector<GameObject> v = new Vector<GameObject>();
+        v.addAll(dbgBot.kb.getAllVisibleEntities());
+        setReqList(v);
+}//GEN-LAST:event_visibleEntsRadioButton2ActionPerformed
+
+    private void navPlanRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_navPlanRadioButtonActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_navPlanRadioButtonActionPerformed
+
+    private void visibleWaypointsRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_visibleWaypointsRadioButton2ActionPerformed
+        Vector<GameObject> v = new Vector<GameObject>();
+        v.addAll(dbgBot.kb.getAllVisibleWaypoints());
+        setReqList(v);
+}//GEN-LAST:event_visibleWaypointsRadioButton2ActionPerformed
+
+    private void allEntsRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allEntsRadioButton1ActionPerformed
+        Vector<GameObject> v = new Vector<GameObject>();
+        //FIXMe:
+        v.addAll(dbgBot.kb.getAllItems());
+        //      v.addAll(dbgBot.kb.getAllPickableEntities());
+        setReqList(v);
+}//GEN-LAST:event_allEntsRadioButton1ActionPerformed
+
+    private void applyConfigButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyConfigButtonActionPerformed
+        AppConfig.quakePath = quakePathjTextField2.getText();
+        AppConfig.serverIP = serverIPjTextField4.getText();
+        AppConfig.botMapsDir = botMapsPathjTextField3.getText() + "\\";
+        System.setProperty("QUAKE2", AppConfig.quakePath);
+        AppConfig.writeConfig();
+}//GEN-LAST:event_applyConfigButtonActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
@@ -1583,33 +1407,100 @@ public class MainFrame extends javax.swing.JFrame {
         fc.showOpenDialog(this);
         System.out.println("Maps Path: " + fc.getSelectedFile());
         botMapsPathjTextField3.setText(fc.getSelectedFile().getPath());
-    }//GEN-LAST:event_jButton4ActionPerformed
+}//GEN-LAST:event_jButton4ActionPerformed
 
-    private void applyConfigButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyConfigButtonActionPerformed
-        AppConfig.quakePath = quakePathjTextField2.getText();
-        AppConfig.serverIP = serverIPjTextField4.getText();
-        AppConfig.botMapsDir = botMapsPathjTextField3.getText() + "\\";
-        System.setProperty("QUAKE2", AppConfig.quakePath);
-        AppConfig.writeConfig();
-    }//GEN-LAST:event_applyConfigButtonActionPerformed
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setApproveButtonText("Open");
+        fc.setDialogTitle("Choose Quake2 root path");
+        fc.showOpenDialog(this);
+        System.out.println("Q2 Path: " + fc.getSelectedFile());
+        quakePathjTextField2.setText(fc.getSelectedFile().getPath());
+}//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        if (gameStats == null) {
-            gameStats = BotStatistic.createNewInstance();
+    private void serverIPjTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverIPjTextField4ActionPerformed
+
+}//GEN-LAST:event_serverIPjTextField4ActionPerformed
+
+    private void botMapsPathjTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botMapsPathjTextField3ActionPerformed
+
+}//GEN-LAST:event_botMapsPathjTextField3ActionPerformed
+
+    private void quakePathjTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quakePathjTextField2ActionPerformed
+
+}//GEN-LAST:event_quakePathjTextField2ActionPerformed
+
+    private void connectLearnBotsjButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectLearnBotsjButton2ActionPerformed
+        int num = Integer.parseInt(nrOfRLtBotsTextField3.getText());
+        for (int i = 0; i < num; i++) {
+            LearnBot bot = new LearnBot("LearnBot-" + i, AppConfig.altSkinName);
+            bot.dtalk.active = false;
+            bot.connect(AppConfig.serverIP, AppConfig.serverPort);
+            bots.add(bot);
         }
-        currentStats = gameStats;
-        refreshButtonActionPerformed(evt);
-    }//GEN-LAST:event_jButton5ActionPerformed
+}//GEN-LAST:event_connectLearnBotsjButton2ActionPerformed
+
+    private void nrOfRLtBotsTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrOfRLtBotsTextField3ActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_nrOfRLtBotsTextField3ActionPerformed
+
+    private void connectRefBotsjButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectRefBotsjButton1ActionPerformed
+        int num = Integer.parseInt(nrOfRefBotsTextField2.getText());
+        for (int i = 0; i < num; i++) {
+            ReferenceBot bot = new ReferenceBot("ReferenceBot-" + i, AppConfig.skinName);
+            bot.dtalk.active = false;
+            bot.connect(AppConfig.serverIP, AppConfig.serverPort);
+            if (saveExamplesChkBox.isSelected()) {
+                //                bot.saveExamplesToFile = true;
+            }
+            bots.add(bot);
+        }
+}//GEN-LAST:event_connectRefBotsjButton1ActionPerformed
+
+    private void nrOfRefBotsTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nrOfRefBotsTextField2ActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_nrOfRefBotsTextField2ActionPerformed
+
+    private void connectDebugedButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectDebugedButtonActionPerformed
+        if (dbgBot != null) {
+            return;
+        }
+        LearnBot bot = new LearnBot("LearnBot-dbg", AppConfig.altSkinName);
+        bot.connect(AppConfig.serverIP, AppConfig.serverPort);
+        stepJob = new DebugStepJob(bot, this);
+        bot.addBotJob(stepJob);
+        bot.addBotJob(new GlobalKillsStatsJob(bot));
+        gameStats = BotStatistic.createNewInstance();
+        dbgBot = bot;
+}//GEN-LAST:event_connectDebugedButtonActionPerformed
+
+    private void disconnectSelectedButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disconnectSelectedButton1ActionPerformed
+        int ind = connectedBotsList1.getSelectedIndex();
+        BotBase bot = getBotFromList(ind);
+        if (bot == null) {
+            return;
+        }
+        bot.disconnect();
+}//GEN-LAST:event_disconnectSelectedButton1ActionPerformed
+
+    private void connectedBotsList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_connectedBotsList1ValueChanged
+        int ind = connectedBotsList1.getSelectedIndex();
+        BotBase bot = getBotFromList(ind);
+        if (bot == null) {
+            return;
+        }
+        if (bot.getFrameNumber() < 2) {
+            return;
+        }
+        selectedBotInfoTextArea1.setText(bot.toDetailedString());
+}//GEN-LAST:event_connectedBotsList1ValueChanged
 
     private MapBotBase connectBotByListOption(String option, int nr, int port) {
         MapBotBase bot = null;
         if (option.equals("ReferenceBot")) {
             Dbg.prn("connecting rfrnc");
             bot = new ReferenceBot(option + "-" + nr, AppConfig.skinName);
-            if (saveExamplesChkBox1.isSelected()) {
-                ((ReferenceBot) bot).saveExamplesToFile = true;
-            }
-
         } else if (option.equals("LearnBot")) {
             Dbg.prn("connecting rlbot learing");
             bot = new LearnBot(option + "-" + nr, AppConfig.altSkinName);
@@ -1644,122 +1535,6 @@ public class MainFrame extends javax.swing.JFrame {
             err.printStackTrace();
         }
     }
-
-    private void startExperimentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startExperimentButtonActionPerformed
-        int gamesNr = Integer.parseInt(nrOfGamesList.getSelectedValue().toString());
-
-        try {
-            int timescale = Integer.parseInt(timescaleTextField2.getText());
-            AppConfig.timeScale = timescale;
-            System.out.println("Timescale: " + timescale);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String b1 = bot1List.getSelectedValue().toString();
-        String b2 = bot2List.getSelectedValue().toString();
-        String b3 = bot3List.getSelectedValue().toString();
-
-        String mapName = mapsList.getSelectedValue().toString();
-
-        gameStats = BotStatistic.createNewInstance();
-
-        for (int i = 0; i < gamesNr; i++) {
-            runLocalQ2Server(AppConfig.serverPort + i, mapName);
-            sleep(3000);
-            MapBotBase bot1 = connectBotByListOption(b1, i, AppConfig.serverPort + i);
-            bot1.addBotJob(new GlobalKillsStatsJob(bot1));
-//            bot1.dtalk.active = false;
-            bots.add(bot1);
-            sleep(1000);
-//            bot1.consoleCommand("rcon \tqwe123 \tsv_gravity "+(int)(800*AppConfig.timeScale));
-//            bot1.consoleCommand("\"rcon\" \"qwe123\" \"sv_gravity\" "+(int)(800*AppConfig.timeScale));
-//            bot1.consoleCommand("/rcon qwe123 sv_gravity "+(int)(800*AppConfig.timeScale));
-//            bot1.consoleCommand("rcon qwe123 dmflags 1544");
-
-            MapBotBase bot2 = connectBotByListOption(b2, i, AppConfig.serverPort + i);
-//            bot2.dtalk.active = false;
-            bots.add(bot2);
-            sleep(1000);
-
-            MapBotBase bot3 = connectBotByListOption(b3, i, AppConfig.serverPort + i);
-            if (bot3 != null) {
-//                bot3.dtalk.active = false;
-                bots.add(bot3);
-                sleep(1000);
-            }
-        }
-        Dbg.prn("gamesNr: " + gamesNr);
-    }//GEN-LAST:event_startExperimentButtonActionPerformed
-
-    private void loadCSVFileExamplesButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadCSVFileExamplesButton6ActionPerformed
-        csvInfojTextArea1.setText("Loading...");
-        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-        fc.setApproveButtonText("Open");
-        fc.setDialogTitle("Open examples CSV file");
-        fc.showOpenDialog(this);
-        log.info("Reading CSV examples from file: " + fc.getSelectedFile().getPath());
-        try {
-            tmpWpnExamplesSet = WpnExamplesSet.readWpnExamplesSetFromFile(fc.getSelectedFile().getPath());
-        } catch (Exception ex) {
-            log.error("Error reading examples!", ex);
-            csvInfojTextArea1.setText("Error reading file!");
-            return;
-        }
-        csvInfojTextArea1.setText(tmpWpnExamplesSet.toString());
-    }//GEN-LAST:event_loadCSVFileExamplesButton6ActionPerformed
-
-    private void learnAndSaveClassifButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_learnAndSaveClassifButton7ActionPerformed
-        learnerInfojTextArea2.setText("Loading...");
-        if (tmpWpnExamplesSet == null) {
-            learnerInfojTextArea2.setText("No examples set! Please read examples first!");
-            return;
-        }
-        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-        fc.setApproveButtonText("Save");
-        fc.setDialogTitle("Save learned LearningBotAimingModule");
-        fc.showOpenDialog(this);
-        log.info("File chose to save LearningBotAimingModule: " + fc.getSelectedFile().getPath());
-        try {
-            log.info("Creating the LearningBotAimingModule");
-            tmpLearnBotAimingModule = LearnBotAimingModule.createAimingModule(tmpWpnExamplesSet);
-            log.info("Saving LearningBotAimingModule to " + fc.getSelectedFile().getPath());
-            CommFun.saveToFile(fc.getSelectedFile().getPath(), tmpLearnBotAimingModule);
-            learnerInfojTextArea2.setText(tmpLearnBotAimingModule.toString());
-        } catch (Exception ex) {
-            log.error("Error while learning the classifier!", ex);
-            learnerInfojTextArea2.setText("Error when learning: " + ex.getMessage());
-        }
-
-    }//GEN-LAST:event_learnAndSaveClassifButton7ActionPerformed
-
-    private void testClassifierjButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testClassifierjButton6ActionPerformed
-        try {
-            testClassifierjTextArea1.setText("Loading...");
-            JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-            fc.setApproveButtonText("Open");
-            fc.setDialogTitle("Open LearningBotAimingModule");
-            fc.showOpenDialog(this);
-            log.info("Reading LearningBotAimingModule file: " + fc.getSelectedFile().getPath());
-            try {
-                tmpLearnBotAimingModule = (LearnBotAimingModule) CommFun.readFromFile(fc.getSelectedFile().getPath());
-            } catch (Exception e) {
-                log.error("Exception while reading the LearningBotAimingModule", e);
-                testClassifierjTextArea1.setText("Exception while reading the LearningBotAimingModule");
-                return;
-            }
-            if (tmpWpnExamplesSet == null) {
-                log.error("Examples set is empty! Please load it first.");
-                testClassifierjTextArea1.setText("Examples set is empty! Please load it first.");
-                return;
-            }
-            testClassifierjTextArea1.setText(fc.getSelectedFile().getPath() + "\n" +
-                    tmpLearnBotAimingModule.toString() + "\n\n" +
-                    tmpLearnBotAimingModule.evaluate(tmpWpnExamplesSet));
-        } catch (Exception ex) {
-            log.error("Exception while evaluating!", ex);
-        }
-    }//GEN-LAST:event_testClassifierjButton6ActionPerformed
 
     private void sleep(int milis) {
         try {
@@ -1808,7 +1583,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton connectLearnBotsjButton2;
     private javax.swing.JButton connectRefBotsjButton1;
     private javax.swing.JList connectedBotsList1;
-    private javax.swing.JTextArea csvInfojTextArea1;
     private javax.swing.JPanel deathsByTypejPanel14;
     private javax.swing.JButton disconnectSelectedButton1;
     private javax.swing.JLabel distanceLabel;
@@ -1852,11 +1626,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
-    private javax.swing.JPanel jPanel18;
-    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel20;
-    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -1865,9 +1635,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane10;
-    private javax.swing.JScrollPane jScrollPane11;
-    private javax.swing.JScrollPane jScrollPane12;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -1882,9 +1649,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel killsByTypejPanel14;
     private javax.swing.JPanel killsPanel14;
     private javax.swing.JPanel killsePerDeathjPanel14;
-    private javax.swing.JButton learnAndSaveClassifButton7;
-    private javax.swing.JTextArea learnerInfojTextArea2;
-    private javax.swing.JButton loadCSVFileExamplesButton6;
     private javax.swing.JList mapsList;
     private javax.swing.JTextArea messages;
     private javax.swing.JScrollPane messagesScrollPane1;
@@ -1901,7 +1665,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane reqListScrollPane2;
     private javax.swing.JPanel rewardPanel16;
     private javax.swing.JCheckBox saveExamplesChkBox;
-    private javax.swing.JCheckBox saveExamplesChkBox1;
     private javax.swing.JTextArea selectedBotInfoTextArea1;
     private javax.swing.JButton sendCommandToAnothersButton;
     private javax.swing.JButton sendCommandToDBGButton;
@@ -1911,8 +1674,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel statsSourcejLabel16;
     private javax.swing.JButton stepButton1;
     private javax.swing.JTextField stepSizeTextField2;
-    private javax.swing.JButton testClassifierjButton6;
-    private javax.swing.JTextArea testClassifierjTextArea1;
     private javax.swing.JTextField timescaleTextField2;
     private javax.swing.JRadioButton visibleEntsRadioButton2;
     private javax.swing.JRadioButton visibleWaypointsRadioButton2;
@@ -1929,8 +1690,8 @@ public class MainFrame extends javax.swing.JFrame {
     private MainFrameUpdater updater = null;
     private LinkedList<Process> childProcesses = new LinkedList<Process>();
     private Logger log = Logger.getLogger(MainFrame.class);
-    private WpnExamplesSet tmpWpnExamplesSet = null;
-    private LearnBotAimingModule tmpLearnBotAimingModule = null;
+//    private WpnExamplesSet tmpWpnExamplesSet = null;
+//    private LearnBotAimingModule tmpLearnBotAimingModule = null;
 
     public JTextArea getMessagesTextArea() {
         return messages;

@@ -26,7 +26,7 @@ import soc.qase.tools.vecmath.Vector3f;
  * @author Piotr Gwizdała
  * @see MapBotBase
  */
-public class FuzzyGlobalNavContra implements GlobalNav {
+public class TuningGlobalNav implements GlobalNav {
 
     static double mainDecisionTimeout = 40;
     static double spontDecisionTimeout = 20;
@@ -113,7 +113,7 @@ public class FuzzyGlobalNavContra implements GlobalNav {
         }
 
         //Get the entity ranking:
-        TreeSet<EntityDoublePair> ranking = FuzzyEntityRanking.getEntityFuzzyRanking(bot);
+        TreeSet<EntityDoublePair> ranking = TuningEntityRanking.getEntityFuzzyRanking(bot);
 //		bot.dtalk.addToLog(ReferenceBotEntityRanking.getRankingDebugInfo(bot));
 
         while ((plan == null || plan.path == null)) {
@@ -138,10 +138,10 @@ public class FuzzyGlobalNavContra implements GlobalNav {
 //					" > "+lower+
 //					" et: "+EntityType.getEntityType(ranking.last().ent)+
 //					" dist: "+distance+" timeout: "+mainDecisionTimeout);
-            plan = new NavPlan(bot, ranking.first().ent, (int) (mainDecisionTimeout));
+            plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
 
 //			plan.path = bot.kb.findShortestPath(bot.getBotPosition(), plan.dest.getObjectPosition());
-            ranking.pollFirst();
+            ranking.pollLast();
 
         }
         return plan;

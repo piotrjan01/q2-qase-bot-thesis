@@ -2,31 +2,22 @@ package piotrrr.thesis.bots.learnbot;
 
 import org.apache.log4j.Logger;
 import piotrrr.thesis.bots.referencebot.ReferenceBot;
-import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.combat.FiringInstructions;
 import piotrrr.thesis.common.combat.SimpleAimingModule;
 import piotrrr.thesis.common.combat.SimpleCombatModule;
-import piotrrr.thesis.common.navigation.FuzzyGlobalNavContra;
+import piotrrr.thesis.common.navigation.TuningGlobalNav;
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.tools.Dbg;
 
 public class LearnBot extends ReferenceBot {
 
     Logger log = Logger.getLogger(LearnBot.class);
-    LearnBotAimingModule aimModule = null;
 
     public LearnBot(String botName, String skinName) {
         super(botName, skinName);
 
-        globalNav = new FuzzyGlobalNavContra();
-
-        try {
-            aimModule = (LearnBotAimingModule) CommFun.readFromFile("LearnBot-aimModule");
-        } catch (Exception ex) {
-            log.error("couldnt read aim module!", ex);
-        }
-
+        globalNav = new TuningGlobalNav();
     }
 
     @Override
@@ -53,8 +44,6 @@ public class LearnBot extends ReferenceBot {
                 changeWeaponByInventoryIndex(fd.gunIndex);
             }
         }
-
-//        FiringInstructions fi = aimModule.getFiringInstructions(fd, this);
         FiringInstructions fi = SimpleAimingModule.getFiringInstructions(fd, this);
 
         executeInstructions(ni, fi);
