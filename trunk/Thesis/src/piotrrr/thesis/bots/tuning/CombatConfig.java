@@ -3,26 +3,10 @@ package piotrrr.thesis.bots.tuning;
 public class CombatConfig {
 	
 	/**
-	 * Maximum time allowed that the bullet would take to hit the target. 
-	 * If time to hit is grater than this, the shooting is not performed.
-	 */
-	public float maxTimeToHit = 20f;
-	
-	/**
-	 * Maximum error of the prediction to still consider the prediction good
-	 */
-	public float maxPredictionError = 60f;
-	
-	/**
 	 * The maximal age of enemy information to be considered relevant
 	 * for prediction in the firing module.
 	 */
 	public int maxEnemyInfoAge4Firing = 2;
-	
-	/**
-	 * The maximum distance to be still considered as short distance when firing
-	 */
-	public float maxShortDistance4Firing = 100f;
 	
 	/**
 	 * The maximum distance to be still considered as short distance when choosing a weapon

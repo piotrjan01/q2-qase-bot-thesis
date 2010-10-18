@@ -1,44 +1,140 @@
 package piotrrr.thesis.common.navigation;
 
+import java.util.HashMap;
 import java.util.TreeSet;
 
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.bots.tuning.WeaponConfig;
+import piotrrr.thesis.common.CommFun;
+import piotrrr.thesis.common.combat.EnemyInfo;
 import piotrrr.thesis.common.entities.EntityDoublePair;
+import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
+import soc.qase.tools.vecmath.Vector3f;
 
 public class TuningEntityRanking {
 
+    private static class MyVector extends Vector3f {
+
+        public MyVector(Vector3f v) {
+            x = v.x;
+            y = v.y;
+            z = v.z;
+        }
+
+        @Override
+        public int hashCode() {
+            return (int) x;
+        }
+    }
+
+    private static class RankingCache {
+
+        HashMap<MyVector, HashMap<MyVector, Double>> distCache = new HashMap<MyVector, HashMap<MyVector, Double>>();
+        HashMap<MyVector, HashMap<MyVector, Waypoint[]>> pathCache = new HashMap<MyVector, HashMap<MyVector, Waypoint[]>>();
+        int cacheUse = 0;
+        int fnCalls = 0;
+    }
+
+    private static class Measures {
+
+        //benefits
+        double healthBen = 0;
+        double armorBen = 0;
+        double weaponBen = 0;
+        double ammoBen = 0;
+        //deficiencies
+        double healthDef = 0;
+        double armorDef = 0;
+        double weaponDef = 0;
+        double ammoDef = 0;
+        double dist = 0;
+        double enemyCost = 0;
+
+        void updateToMaximumValues(Measures m) {
+            if (healthBen < m.healthBen) healthBen = m.healthBen;
+            if (armorBen < m.armorBen) armorBen = m.armorBen;
+            if (weaponBen < m.weaponBen) weaponBen = m.weaponBen;
+            if (ammoBen < m.ammoBen) ammoBen = m.ammoBen;
+            if (healthDef < m.healthDef) healthDef = m.healthDef;
+            if (armorDef < m.armorDef) armorDef = m.armorDef;
+            if (weaponDef < m.weaponDef) weaponDef = m.weaponDef;
+            if (ammoDef < m.ammoDef) ammoDef = m.ammoDef;
+            if (dist < m.dist) dist = m.dist;
+            if (enemyCost < m.enemyCost) enemyCost = m.enemyCost;
+        }
+
+        void normalize(Measures maximums) {
+            healthBen /= maximums.healthBen;
+            armorBen /= maximums.armorBen;
+            weaponBen /= maximums.weaponBen;
+            ammoBen /= maximums.ammoBen;
+            healthDef /= maximums.healthDef;
+            armorDef /= maximums.armorDef;
+            weaponDef /= maximums.weaponDef;
+            ammoDef /= maximums.ammoDef;
+            dist /= maximums.dist;
+            enemyCost /= maximums.enemyCost;
+        }
+
+    }
+
     public static TreeSet<EntityDoublePair> getEntityFuzzyRanking(MapBotBase bot) {
         TreeSet<EntityDoublePair> ret = new TreeSet<EntityDoublePair>();
-    
+        RankingCache cache = new RankingCache();
+        HashMap<Entity, Measures> em = new HashMap<Entity, Measures>();
+        Measures max = new Measures();
+
+        //get measures and maximums
+        for (Entity ent : bot.kb.getAllPickableEntities()) {
+            Measures m = getMeasures(bot, ent, cache);
+            em.put(ent, m);
+            max.updateToMaximumValues(m);
+        }
+
+        //normalize measures
+        for (Measures m : em.values()) {
+            m.normalize(max);
+        }
+
+        for (Entity e : em.keySet()) {
+            Measures m = em.get(e);
+            double rank = bot.nConfig.weight_health*(m.healthBen+m.healthDef);
+            rank += bot.nConfig.weight_armor*(m.armorBen+m.armorDef);
+            rank += bot.nConfig.weight_weapon*(m.weaponBen+m.weaponDef);
+            rank += bot.nConfig.weight_ammo*(m.ammoBen+m.ammoDef);
+            rank -= bot.nConfig.weight_distance*m.dist;
+            rank -= bot.nConfig.weight_enemycost*m.enemyCost;
+            ret.add(new EntityDoublePair(e, rank));
+        }
+        
         return ret;
     }
 
-    public static void doSettings(MapBotBase bot, Entity e) {
+    private static Measures getMeasures(MapBotBase bot, Entity e, RankingCache cache) {
 
-        double benefit = 0;
-        double deficiency = 0;
-        double dist = 0;
-        double ec = 0;
+        Measures m = new Measures();
 
         if (e.getType().equals(Entity.TYPE_HEALTH)) {
-            benefit = getItemHealthBenefit(bot, e);
-            deficiency = getBotHealthDeficiency(bot, 0);
+            m.healthBen = getItemHealthBenefit(bot, e);
+            m.healthDef = getBotHealthDeficiency(bot, 0);
+        } else if (e.getType().equals(Entity.TYPE_ARMOR)) {
+            m.armorBen = getItemArmorBenefit(bot, e);
+            m.armorDef = getBotArmorDeficiency(bot, 0);
+        } else if (e.isWeaponEntity()) {
+            m.weaponBen = getItemWeaponBenefit(bot, e);
+            m.weaponDef = getBotWeaponDeficiency(bot, 0);
+        } else if (e.getType().equals(Entity.TYPE_AMMO)) {
+            m.ammoBen = getItemAmmoBenefit(bot, e);
+            m.ammoDef = getBotAmmoDeficiency(bot, 0);
         }
-        else if (e.getType().equals(Entity.TYPE_ARMOR)) {
-            benefit = getItemArmorBenefit(bot, e);
-            deficiency = getBotArmorDeficiency(bot, 0);
-        }
-        else if (e.isWeaponEntity()) {
-            benefit = getItemWeaponBenefit(bot, e);
-            deficiency = getBotWeaponDeficiency(bot, 0);
-        }
-        else if (e.getType().equals(Entity.TYPE_AMMO)) {
-            benefit = getItemAmmoBenefit(bot, e);
-            deficiency = getBotAmmoDeficiency(bot, 0);
-        }
+
+        m.dist = getDistanceFollowingMap(bot, bot.getBotPosition(), e.getObjectPosition(), cache);
+        m.enemyCost = getEnemyCost(bot, e, cache);
+
+        return
+         m;
     }
 
     public static float getBotHealthDeficiency(MapBotBase bot, int addedHealth) {
@@ -220,4 +316,97 @@ public class TuningEntityRanking {
         }
         return -1;
     }
+
+    /**
+     * Returns the distance between given positions following the map
+     * @param bot the bot for whom the distance is calculated
+     * @param from initial position
+     * @param to final position
+     * @return distance between from and to following the shortest path on the map.
+     * Double.MAX_VALUE is returned in case there is no path.
+     */
+    private static double getDistanceFollowingMap(MapBotBase bot, Vector3f vfrom, Vector3f vto, RankingCache cache) {
+        cache.fnCalls++;
+        MyVector from = new MyVector(vfrom);
+        MyVector to = new MyVector(vto);
+
+        HashMap<MyVector, Double> map = cache.distCache.get(from);
+        if (map != null) {
+            Double p = map.get(to);
+            if (p != null) {
+                cache.cacheUse++;
+                return p;
+            }
+        }
+
+        double distance = 0.0d;
+        Waypoint[] path = getShortestPath(bot, from, to, cache);
+        if (path == null) {
+//			Dbg.err("Path is null at counting distance on map.");
+            return Double.MAX_VALUE;
+        }
+        Vector3f pos = from;
+        for (Waypoint wp : path) {
+            distance += CommFun.getDistanceBetweenPositions(pos, wp.getObjectPosition());
+            pos = wp.getObjectPosition();
+        }
+
+        if (map == null) {
+            map = new HashMap<MyVector, Double>();
+            cache.distCache.put(from, map);
+        }
+        map.put(to, distance);
+
+        return distance;
+    }
+
+    private static Waypoint[] getShortestPath(MapBotBase bot, Vector3f vfrom, Vector3f vto, RankingCache cache) {
+        cache.fnCalls++;
+        MyVector from = new MyVector(vfrom);
+        MyVector to = new MyVector(vto);
+
+        HashMap<MyVector, Waypoint[]> map = cache.pathCache.get(from);
+        if (map != null) {
+            Waypoint[] p = map.get(to);
+            if (p != null) {
+                cache.cacheUse++;
+                return p;
+            }
+        }
+
+        Waypoint[] path = bot.kb.findShortestPath(from, to);
+
+        if (map == null) {
+            map = new HashMap<MyVector, Waypoint[]>();
+            cache.pathCache.put(from, map);
+        }
+        map.put(to, path);
+
+        return path;
+
+    }
+
+
+     private static float getEnemyCost(MapBotBase bot, Entity e, RankingCache c) {
+        float riskyDistance = 1000;
+        float cost = 0;
+
+        Waypoint[] path = getShortestPath(bot, bot.getBotPosition(), e.getObjectPosition(), c);
+        if (path == null) {
+            return 0;
+        }
+        for (EnemyInfo en : bot.kb.getAllEnemyInformation()) {
+            for (Waypoint w : path) {
+//                if (!bot.getBsp().isVisible(w.getObjectPosition(), en.getObjectPosition())) {
+//                    continue; TOOOO SLOOWW !!!!!!!
+//                }
+                float dist = CommFun.getDistanceBetweenPositions(w.getObjectPosition(), en.getObjectPosition());
+                if (dist < riskyDistance) {
+                    cost += 1 - dist / riskyDistance;
+                }
+            }
+        }
+        return cost;
+    }
+
 }

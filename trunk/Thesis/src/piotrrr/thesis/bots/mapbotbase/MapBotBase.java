@@ -16,13 +16,9 @@ import piotrrr.thesis.common.navigation.LocalNav;
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.common.navigation.NavPlan;
 import piotrrr.thesis.common.navigation.WorldKB;
-import piotrrr.thesis.tools.Dbg;
-import piotrrr.thesis.tools.FileLogger;
 import soc.qase.state.Action;
-import soc.qase.state.Angles;
 import soc.qase.state.Entity;
 import soc.qase.state.PlayerMove;
-import soc.qase.tools.Utils;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
@@ -96,9 +92,6 @@ public class MapBotBase extends BotBase {
         addBotJob(basicCommands);
         addBotJob(stuckDetector);
 
-
-
-
     }
 
     @Override
@@ -151,10 +144,6 @@ public class MapBotBase extends BotBase {
         }
 
         if (fi != null) {
-//            float []  angles = Utils.calcAngles(aimDir);
-//            Angles arg0= new Angles(angles[0], angles[1], angles[2]);
-//            Angles arg0 = randAiming(new Angles(fi.fireDir.x, fi.fireDir.y, fi.fireDir.z));
-//            world.getPlayer().setGunAngles(arg0);
             if (fi.doFire) {
                 setAction(Action.ATTACK, true);
             } else {
