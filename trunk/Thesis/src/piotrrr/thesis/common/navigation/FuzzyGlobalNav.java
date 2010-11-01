@@ -2,7 +2,6 @@ package piotrrr.thesis.common.navigation;
 
 import java.util.LinkedList;
 import java.util.Random;
-import piotrrr.thesis.bots.referencebot.*;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -10,12 +9,7 @@ import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.EnemyInfo;
-import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.entities.EntityDoublePair;
-import piotrrr.thesis.common.entities.EntityType;
-import piotrrr.thesis.common.navigation.GlobalNav;
-import piotrrr.thesis.common.navigation.NavPlan;
-import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.tools.Dbg;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
@@ -230,36 +224,36 @@ public class FuzzyGlobalNav implements GlobalNav {
         return ret;
     }
 
-    public static NavPlan getEnemyRetreatPlan(MapBotBase bot) {
-        NavPlan plan = null;
-        TreeSet<EntityDoublePair> ranking = FuzzyEntityRanking.getEnemyRetreatFuzzyRanking(bot);
-        while ((plan == null || plan.path == null) && !ranking.isEmpty()) {
-            plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
-            ranking.pollLast();
-        }
-        if (plan == null) return null;
-        plan.isCombat = true;
-        return plan;
-    }
+//    public static NavPlan getEnemyRetreatPlan(MapBotBase bot) {
+//        NavPlan plan = null;
+//        TreeSet<EntityDoublePair> ranking = FuzzyEntityRanking.getEnemyRetreatFuzzyRanking(bot);
+//        while ((plan == null || plan.path == null) && !ranking.isEmpty()) {
+//            plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
+//            ranking.pollLast();
+//        }
+//        if (plan == null) return null;
+//        plan.isCombat = true;
+//        return plan;
+//    }
 
-    public static NavPlan getEnemyDistPosPlan(MapBotBase bot, FiringDecision fd) {
-        NavPlan plan = null;
-        Waypoint chosen = bot.kb.map.findClosestWaypoint(bot.getBotPosition());
-        LinkedList<Waypoint> nbrs = getRecursivelyNeighbourWaypointList(bot, chosen, 4);
-        double maxDist = 0;
-        chosen = null;
-        for (Waypoint wp : nbrs) {
-            double dist = CommFun.getDistanceBetweenPositions(fd.enemyInfo.getObjectPosition(), wp.getObjectPosition());
-            if (dist < maxDist) continue;
-            if ( ! bot.getBsp().isVisible(fd.enemyInfo.getObjectPosition(), wp.getObjectPosition())) continue;
-            maxDist = dist;
-            chosen = wp;
-        }
-        if (chosen == null) return null;
-        plan = new NavPlan(bot, chosen, fd.enemyInfo.ent,(long) mainDecisionTimeout);
-        plan.isCombat = true;
-        return plan;
-    }
+//    public static NavPlan getEnemyDistPosPlan(MapBotBase bot, FiringDecision fd) {
+//        NavPlan plan = null;
+//        Waypoint chosen = bot.kb.map.findClosestWaypoint(bot.getBotPosition());
+//        LinkedList<Waypoint> nbrs = getRecursivelyNeighbourWaypointList(bot, chosen, 4);
+//        double maxDist = 0;
+//        chosen = null;
+//        for (Waypoint wp : nbrs) {
+//            double dist = CommFun.getDistanceBetweenPositions(fd.enemyInfo.getObjectPosition(), wp.getObjectPosition());
+//            if (dist < maxDist) continue;
+//            if ( ! bot.getBsp().isVisible(fd.enemyInfo.getObjectPosition(), wp.getObjectPosition())) continue;
+//            maxDist = dist;
+//            chosen = wp;
+//        }
+//        if (chosen == null) return null;
+//        plan = new NavPlan(bot, chosen, fd.enemyInfo.ent,(long) mainDecisionTimeout);
+//        plan.isCombat = true;
+//        return plan;
+//    }
 
     static LinkedList<Waypoint> getRecursivelyNeighbourWaypointList(MapBotBase bot, Waypoint initial, int level) {
         LinkedList<Waypoint> ret = new LinkedList<Waypoint>();

@@ -32,8 +32,7 @@ public class LearnBot extends ReferenceBot {
             if (plan == null) {
                 Dbg.prn("plan is null....");
                 return;
-            }
-            assert plan != null;
+            }            
             ni = localNav.getNavigationInstructions(this);
         }
 
@@ -45,9 +44,6 @@ public class LearnBot extends ReferenceBot {
             }
         }
         FiringInstructions fi = SimpleAimingModule.getFiringInstructions(fd, this);
-
         executeInstructions(ni, fi);
-
-
     }
 }

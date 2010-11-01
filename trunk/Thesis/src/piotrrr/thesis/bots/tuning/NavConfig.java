@@ -1,6 +1,9 @@
 package piotrrr.thesis.bots.tuning;
 
-public class NavConfig {
+import java.io.Serializable;
+import java.lang.reflect.Field;
+
+public class NavConfig implements Serializable {
 
     /**
      * What defitiency we agree to when we attack the enemy
@@ -21,25 +24,50 @@ public class NavConfig {
      * @see BotBase#recommendedHealthLevel
      */
     public static final float recommendedWeaponPercent = 0.4f;
-
     /**
      * Recommended ammo percent, the bot should have
      */
     public static final float recommendedAmmoPercent = 0.3f;
+    public OptParam weight_health = new OptParam(0.9f, 0, 1, 0.1);
+    public OptParam weight_armor = new OptParam(0.3f, 0, 1, 0.1);
+    public OptParam weight_weapon = new OptParam(0.6f, 0, 1, 0.1);
+    public OptParam weight_ammo = new OptParam(0.3f, 0, 1, 0.1);
+    public OptParam weight_distance = new OptParam(0.2f, 0, 1, 0.1);
+    public OptParam weight_enemycost = new OptParam(0.5f, 0, 1, 0.1);
+    public OptParam weight_aggresiveness = new OptParam(0.7f, 0, 1, 0.1);
+
+    public void randAllParams() {
+        for (Field f : this.getClass().getDeclaredFields()) {
+            try {
+                if (!f.getType().equals(OptParam.class)) {
+                    continue;
+                }
+                OptParam p = (OptParam) f.get(this);
+                p.setRandomValue();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        String ret = "NavConfig: \n";
+        for (Field f : this.getClass().getDeclaredFields()) {
+            try {
+                if (!f.getType().equals(OptParam.class)) {
+                    continue;
+                }
+                OptParam p = (OptParam) f.get(this);
+                ret += f.getName()+": "+p.getValue()+"\n";
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return ret+"\n";
+    }
 
 
-    public static float weight_health = 0.9f;
 
-    public static float weight_armor = 0.3f;
-
-    public static float weight_weapon = 0.6f;
-
-    public static float weight_ammo = 0.3f;
-
-    public static float weight_distance = 0.2f;
-
-    public static float weight_enemycost = 0.5f;
-    
-    public static float weight_aggresiveness = 0.7f;
 
 }

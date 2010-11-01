@@ -533,4 +533,8 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
         MyPopUpDialog.showMyDialogBox(getBotName(), stack, MyPopUpDialog.error);
         e.printStackTrace();
     }
+
+    public void resetFramesCount() {
+        firstFrameNumber = lastWorldFrame;
+    }
 }
