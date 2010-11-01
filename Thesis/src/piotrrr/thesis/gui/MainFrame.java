@@ -25,6 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.learnbot.LearnBot;
 
@@ -867,7 +868,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Info & Control", jPanel6);
 
-        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Options"));
+        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Run default game"));
 
         mapsList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "q2dm1", "map1", "map2" };
@@ -926,6 +927,13 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Timescale");
 
+        startExperimentButton.setText("Start");
+        startExperimentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startExperimentButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
         jPanel17Layout.setHorizontalGroup(
@@ -933,28 +941,31 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel17Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel16))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel17))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel18))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel20))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane8)
-                    .addComponent(jLabel19))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(timescaleTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+                    .addGroup(jPanel17Layout.createSequentialGroup()
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel17))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel18))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel20))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane8)
+                            .addComponent(jLabel19))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(timescaleTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE))
+                    .addComponent(startExperimentButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel17Layout.setVerticalGroup(
@@ -986,15 +997,10 @@ public class MainFrame extends javax.swing.JFrame {
                                     .addComponent(timescaleTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel1)))
                             .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(startExperimentButton)
+                .addContainerGap())
         );
-
-        startExperimentButton.setText("Start");
-        startExperimentButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startExperimentButtonActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
@@ -1002,19 +1008,15 @@ public class MainFrame extends javax.swing.JFrame {
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(startExperimentButton))
-                .addContainerGap(207, Short.MAX_VALUE))
+                .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(188, Short.MAX_VALUE))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(startExperimentButton)
-                .addContainerGap(298, Short.MAX_VALUE))
+                .addContainerGap(309, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Run Experiment", jPanel16);
@@ -1420,15 +1422,12 @@ public class MainFrame extends javax.swing.JFrame {
 }//GEN-LAST:event_jButton3ActionPerformed
 
     private void serverIPjTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverIPjTextField4ActionPerformed
-
 }//GEN-LAST:event_serverIPjTextField4ActionPerformed
 
     private void botMapsPathjTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botMapsPathjTextField3ActionPerformed
-
 }//GEN-LAST:event_botMapsPathjTextField3ActionPerformed
 
     private void quakePathjTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quakePathjTextField2ActionPerformed
-
 }//GEN-LAST:event_quakePathjTextField2ActionPerformed
 
     private void connectLearnBotsjButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectLearnBotsjButton2ActionPerformed
@@ -1496,6 +1495,10 @@ public class MainFrame extends javax.swing.JFrame {
         selectedBotInfoTextArea1.setText(bot.toDetailedString());
 }//GEN-LAST:event_connectedBotsList1ValueChanged
 
+    /**
+     * Runs the optimization
+     * @param evt
+     */
     private MapBotBase connectBotByListOption(String option, int nr, int port) {
         MapBotBase bot = null;
         if (option.equals("ReferenceBot")) {
@@ -1548,7 +1551,7 @@ public class MainFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        BasicConfigurator.configure();
+        PropertyConfigurator.configure("log4j.properties");
         AppConfig.readConfig();
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -1565,6 +1568,7 @@ public class MainFrame extends javax.swing.JFrame {
 
             public void run() {
                 MainFrame mf = new MainFrame();
+                MainFrame.mainFrameInstance = mf;
                 mf.setVisible(true);
 //                Dbg.toAppend = mf.getMessagesTextArea();
             }
@@ -1690,6 +1694,7 @@ public class MainFrame extends javax.swing.JFrame {
     private MainFrameUpdater updater = null;
     private LinkedList<Process> childProcesses = new LinkedList<Process>();
     private Logger log = Logger.getLogger(MainFrame.class);
+    private static MainFrame mainFrameInstance = null;
 //    private WpnExamplesSet tmpWpnExamplesSet = null;
 //    private LearnBotAimingModule tmpLearnBotAimingModule = null;
 
@@ -1814,4 +1819,10 @@ public class MainFrame extends javax.swing.JFrame {
         return ret;
 
     }
+
+    public static MainFrame getMainFrameInstance() {
+        return mainFrameInstance;
+    }
+    
+
 }

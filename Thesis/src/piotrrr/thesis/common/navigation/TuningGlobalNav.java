@@ -2,20 +2,15 @@ package piotrrr.thesis.common.navigation;
 
 import java.util.LinkedList;
 import java.util.Random;
-import piotrrr.thesis.bots.referencebot.*;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
-import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.EnemyInfo;
-import piotrrr.thesis.common.combat.FiringDecision;
 import piotrrr.thesis.common.entities.EntityDoublePair;
-import piotrrr.thesis.common.entities.EntityType;
-import piotrrr.thesis.common.navigation.GlobalNav;
-import piotrrr.thesis.common.navigation.NavPlan;
-import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.tools.Dbg;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
@@ -31,7 +26,8 @@ public class TuningGlobalNav implements GlobalNav {
     static double mainDecisionTimeout = 40;
     static double spontDecisionTimeout = 20;
     static double antiStuckDecisionTimeout = 10;
-    static int maximalDistance = 400;
+    static int maximaSpontanlDistance = 400;
+    private static Logger log = Logger.getLogger(TuningGlobalNav.class);
 
     /**
      * Returns the new plan that the bot should follow
@@ -42,10 +38,7 @@ public class TuningGlobalNav implements GlobalNav {
     @Override
     public NavPlan establishNewPlan(MapBotBase bot, NavPlan oldPlan) {
 
-        mainDecisionTimeout = 40;
-        spontDecisionTimeout = 20;
-        antiStuckDecisionTimeout = 10;
-
+        log.setLevel(Level.OFF);
         /**
          * When do we change the plan?
          * + when we don't have plan
@@ -59,27 +52,24 @@ public class TuningGlobalNav implements GlobalNav {
          */
         boolean changePlan = false;
 
-        String talk = "";
-
         if (oldPlan == null) {
             changePlan = true;
-            talk = "plan change: no plan!";
+            log.info("plan change: no plan!");
         } else if (oldPlan.done) {
             changePlan = true;
             bot.kb.addToBlackList(oldPlan.dest);
-            talk = "plan change: old plan is done!";
+            log.info("plan change: old plan is done!");
         } //if the bot is stuck
         else if (bot.stuckDetector.isStuck) {
-//            bot.dtalk.addToLog("plan change: bot is stuck !");
+            log.info("plan change: bot is stuck !");
             bot.stuckDetector.reset();
             return getSpontaneousAntiStuckPlan(bot);
         } //if we timed out with the plan
         else if (oldPlan.deadline <= bot.getFrameNumber()) {
-//            bot.dtalk.addToLog("plan change: old plan timed out!");
+            log.info("plan change: old plan timed out!");
             changePlan = true;
         }
 
-//		if (talk != "" ) bot.dtalk.addToLog(talk);
 
         /**
          * What do we do when we decide to change the plan?
@@ -91,59 +81,63 @@ public class TuningGlobalNav implements GlobalNav {
 
         //If we didn't want to change the plan, we may still do it if there is some good spontaneous plan.
         if (!changePlan && oldPlan != null && !oldPlan.isSpontaneos && !oldPlan.isCombat) {
+            log.info("trying to find a spontaneous plan");
             plan = getSpontaneousPlan(bot);
         }
         if (plan != null) {
+            log.info("doing the spontanous plan!");
             return plan;
         }
 
         //If no spontaneous plans available, we continue with old one...
         if (!changePlan) {
+            log.info("No plan change: returning the old plan");
             return oldPlan;
         }
 
 
-        if (NavConfig.aggressiveness > FuzzyEntityRanking.getMaximalDeficiency(bot)) {
+        if (bot.nConfig.weight_aggresiveness.getValue() > TuningEntityRanking.getWeigthedDeficiency(bot)) {
+
+            log.info("Aggressiveness triggered. Trying to get enemy engaging plan");
+
             plan = getEnemyEngagingPlan(bot, oldPlan);
 
             if (plan != null) {
-//                bot.dtalk.addToLog("GOING TO ATTTACK !!!");
+                log.info("Engaging the enemy!");
                 return plan;
             }
         }
 
         //Get the entity ranking:
         TreeSet<EntityDoublePair> ranking = TuningEntityRanking.getEntityFuzzyRanking(bot);
-//		bot.dtalk.addToLog(ReferenceBotEntityRanking.getRankingDebugInfo(bot));
+        log.info("Got entity ranking: size="+ranking.size());
 
         while ((plan == null || plan.path == null)) {
 
             if (ranking.size() == 0 || bot.stuckDetector.isStuck) {
+
+                log.info("bot is stuck or there are no items in ranking. trying to go somewhere");
+
                 Entity wp = bot.kb.getSomeItem();
 //				double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), wp.getObjectPosition());
 //				bot.dtalk.addToLog("ranking size = 0, going for random item!");
                 plan = new NavPlan(bot, wp, (int) (mainDecisionTimeout));
 //				plan.path = bot.kb.findShortestPath(bot.getBotPosition(), plan.dest.getObjectPosition());
                 if (plan.path == null) {
+                    log.info("No path found. Returning spontaneous antistuck plan");
                     return getSpontaneousAntiStuckPlan(bot);
                 }
-
-
+                log.info("Going for some random item");
                 return plan;
             }
 
-//			double distance = getDistanceFollowingMap(bot, bot.getBotPosition(), ranking.last().ent.getObjectPosition());
-//			int lower = (ranking.size() >= 2) ? (int)(ranking.lower(ranking.last()).dbl) : 0;
-//			bot.dtalk.addToLog("got new plan: rank: "+((int)ranking.last().dbl)+
-//					" > "+lower+
-//					" et: "+EntityType.getEntityType(ranking.last().ent)+
-//					" dist: "+distance+" timeout: "+mainDecisionTimeout);
-            plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
+            log.info("Trying to get a plan for best option in ranking. Ranking size: "+ranking.size());
 
-//			plan.path = bot.kb.findShortestPath(bot.getBotPosition(), plan.dest.getObjectPosition());
+            plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
             ranking.pollLast();
 
         }
+        log.info("Found a plan for ranking item. returning it.");
         return plan;
     }
 
@@ -155,7 +149,7 @@ public class TuningGlobalNav implements GlobalNav {
     static NavPlan getSpontaneousPlan(MapBotBase bot) {
         NavPlan newPlan = null;
 
-        Vector<Entity> entries = bot.kb.getActiveEntitiesWithinTheRange(bot.getBotPosition(), maximalDistance, bot.getFrameNumber());
+        Vector<Entity> entries = bot.kb.getActiveEntitiesWithinTheRange(bot.getBotPosition(), maximaSpontanlDistance, bot.getFrameNumber());
         if (entries.size() == 0) {
             return null;
         }
@@ -230,36 +224,44 @@ public class TuningGlobalNav implements GlobalNav {
         return ret;
     }
 
-    public static NavPlan getEnemyRetreatPlan(MapBotBase bot) {
-        NavPlan plan = null;
-        TreeSet<EntityDoublePair> ranking = FuzzyEntityRanking.getEnemyRetreatFuzzyRanking(bot);
-        while ((plan == null || plan.path == null) && !ranking.isEmpty()) {
-            plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
-            ranking.pollLast();
-        }
-        if (plan == null) return null;
-        plan.isCombat = true;
-        return plan;
-    }
+//    public static NavPlan getEnemyRetreatPlan(MapBotBase bot) {
+//        NavPlan plan = null;
+//        TreeSet<EntityDoublePair> ranking = FuzzyEntityRanking.getEnemyRetreatFuzzyRanking(bot);
+//        while ((plan == null || plan.path == null) && !ranking.isEmpty()) {
+//            plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
+//            ranking.pollLast();
+//        }
+//        if (plan == null) {
+//            return null;
+//        }
+//        plan.isCombat = true;
+//        return plan;
+//    }
 
-    public static NavPlan getEnemyDistPosPlan(MapBotBase bot, FiringDecision fd) {
-        NavPlan plan = null;
-        Waypoint chosen = bot.kb.map.findClosestWaypoint(bot.getBotPosition());
-        LinkedList<Waypoint> nbrs = getRecursivelyNeighbourWaypointList(bot, chosen, 4);
-        double maxDist = 0;
-        chosen = null;
-        for (Waypoint wp : nbrs) {
-            double dist = CommFun.getDistanceBetweenPositions(fd.enemyInfo.getObjectPosition(), wp.getObjectPosition());
-            if (dist < maxDist) continue;
-            if ( ! bot.getBsp().isVisible(fd.enemyInfo.getObjectPosition(), wp.getObjectPosition())) continue;
-            maxDist = dist;
-            chosen = wp;
-        }
-        if (chosen == null) return null;
-        plan = new NavPlan(bot, chosen, fd.enemyInfo.ent,(long) mainDecisionTimeout);
-        plan.isCombat = true;
-        return plan;
-    }
+//    public static NavPlan getEnemyDistPosPlan(MapBotBase bot, FiringDecision fd) {
+//        NavPlan plan = null;
+//        Waypoint chosen = bot.kb.map.findClosestWaypoint(bot.getBotPosition());
+//        LinkedList<Waypoint> nbrs = getRecursivelyNeighbourWaypointList(bot, chosen, 4);
+//        double maxDist = 0;
+//        chosen = null;
+//        for (Waypoint wp : nbrs) {
+//            double dist = CommFun.getDistanceBetweenPositions(fd.enemyInfo.getObjectPosition(), wp.getObjectPosition());
+//            if (dist < maxDist) {
+//                continue;
+//            }
+//            if (!bot.getBsp().isVisible(fd.enemyInfo.getObjectPosition(), wp.getObjectPosition())) {
+//                continue;
+//            }
+//            maxDist = dist;
+//            chosen = wp;
+//        }
+//        if (chosen == null) {
+//            return null;
+//        }
+//        plan = new NavPlan(bot, chosen, fd.enemyInfo.ent, (long) mainDecisionTimeout);
+//        plan.isCombat = true;
+//        return plan;
+//    }
 
     static LinkedList<Waypoint> getRecursivelyNeighbourWaypointList(MapBotBase bot, Waypoint initial, int level) {
         LinkedList<Waypoint> ret = new LinkedList<Waypoint>();

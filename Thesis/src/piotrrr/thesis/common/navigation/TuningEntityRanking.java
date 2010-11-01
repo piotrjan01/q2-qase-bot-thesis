@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.TreeSet;
 
 import piotrrr.thesis.bots.mapbotbase.MapBotBase;
-import piotrrr.thesis.bots.tuning.NavConfig;
 import piotrrr.thesis.bots.tuning.WeaponConfig;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.EnemyInfo;
@@ -14,6 +13,25 @@ import soc.qase.state.Entity;
 import soc.qase.tools.vecmath.Vector3f;
 
 public class TuningEntityRanking {
+
+    private static float botMaxHealth = 100f;
+    private static float botMaxArmor = 100f;
+    private static float botMaxAmmo = Float.NaN;
+    private static float botMaxWeapons = Float.NaN;
+
+    private static void setMaxAmmoAndMaxWeapns(MapBotBase bot) {
+
+        botMaxAmmo = 0;
+        botMaxWeapons = 0;
+
+        for (int am : bot.wConfig.usableAmmo) {
+            botMaxAmmo += bot.wConfig.getAmmoWeightByInventoryIndex(am);
+        }
+
+        for (int w : bot.wConfig.usableWeapons) {
+            botMaxWeapons += bot.wConfig.getWeaponWeightByInvIndex(w);
+        }
+    }
 
     private static class MyVector extends Vector3f {
 
@@ -26,6 +44,22 @@ public class TuningEntityRanking {
         @Override
         public int hashCode() {
             return (int) x;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final MyVector other = (MyVector) obj;
+            if (x == other.x && y == other.y && z == other.z) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -44,72 +78,82 @@ public class TuningEntityRanking {
         double armorBen = 0;
         double weaponBen = 0;
         double ammoBen = 0;
-        //deficiencies
-        double healthDef = 0;
-        double armorDef = 0;
-        double weaponDef = 0;
-        double ammoDef = 0;
         double dist = 0;
         double enemyCost = 0;
-
-        void updateToMaximumValues(Measures m) {
-            if (healthBen < m.healthBen) healthBen = m.healthBen;
-            if (armorBen < m.armorBen) armorBen = m.armorBen;
-            if (weaponBen < m.weaponBen) weaponBen = m.weaponBen;
-            if (ammoBen < m.ammoBen) ammoBen = m.ammoBen;
-            if (healthDef < m.healthDef) healthDef = m.healthDef;
-            if (armorDef < m.armorDef) armorDef = m.armorDef;
-            if (weaponDef < m.weaponDef) weaponDef = m.weaponDef;
-            if (ammoDef < m.ammoDef) ammoDef = m.ammoDef;
-            if (dist < m.dist) dist = m.dist;
-            if (enemyCost < m.enemyCost) enemyCost = m.enemyCost;
-        }
-
-        void normalize(Measures maximums) {
-            healthBen /= maximums.healthBen;
-            armorBen /= maximums.armorBen;
-            weaponBen /= maximums.weaponBen;
-            ammoBen /= maximums.ammoBen;
-            healthDef /= maximums.healthDef;
-            armorDef /= maximums.armorDef;
-            weaponDef /= maximums.weaponDef;
-            ammoDef /= maximums.ammoDef;
-            dist /= maximums.dist;
-            enemyCost /= maximums.enemyCost;
-        }
-
     }
 
     public static TreeSet<EntityDoublePair> getEntityFuzzyRanking(MapBotBase bot) {
+
+        if (botMaxAmmo == Float.NaN || botMaxWeapons == Float.NaN) {
+            setMaxAmmoAndMaxWeapns(bot);
+        }
+
         TreeSet<EntityDoublePair> ret = new TreeSet<EntityDoublePair>();
         RankingCache cache = new RankingCache();
         HashMap<Entity, Measures> em = new HashMap<Entity, Measures>();
-        Measures max = new Measures();
+
+        double maxDist = 0;
+        double maxEnemyCost = 0;
 
         //get measures and maximums
         for (Entity ent : bot.kb.getAllPickableEntities()) {
             Measures m = getMeasures(bot, ent, cache);
             em.put(ent, m);
-            max.updateToMaximumValues(m);
+            if (m.enemyCost > maxEnemyCost) {
+                maxEnemyCost = m.enemyCost;
+            }
+            if (m.dist > maxDist) {
+                maxDist = m.dist;
+            }
         }
 
-        //normalize measures
-        for (Measures m : em.values()) {
-            m.normalize(max);
-        }
+        float hd = getBotHealthDeficiency(bot, 0);
+        float ard = getBotArmorDeficiency(bot, 0);
+        float amd = getBotAmmoDeficiency(bot, 0);
+        float wd = getBotWeaponDeficiency(bot, 0);
 
         for (Entity e : em.keySet()) {
             Measures m = em.get(e);
-            double rank = bot.nConfig.weight_health*(m.healthBen+m.healthDef);
-            rank += bot.nConfig.weight_armor*(m.armorBen+m.armorDef);
-            rank += bot.nConfig.weight_weapon*(m.weaponBen+m.weaponDef);
-            rank += bot.nConfig.weight_ammo*(m.ammoBen+m.ammoDef);
-            rank -= bot.nConfig.weight_distance*m.dist;
-            rank -= bot.nConfig.weight_enemycost*m.enemyCost;
+            double rank = 0;
+
+            //Weights constant, independent from context
+            if (e.getType().equals(Entity.TYPE_HEALTH)) {
+                rank = bot.nConfig.weight_health.getValue() * (hd + m.healthBen);
+            } else if (e.getType().equals(Entity.TYPE_ARMOR)) {
+                rank = bot.nConfig.weight_armor.getValue() * (ard + m.armorBen);
+            } else if (e.isWeaponEntity()) {
+                rank = bot.nConfig.weight_weapon.getValue() * (wd + m.weaponBen);
+            } else if (e.getType().equals(Entity.TYPE_AMMO)) {
+                rank = bot.nConfig.weight_ammo.getValue() * (amd + m.ammoBen);
+            }
+
+            //weights depending on context
+            rank += bot.nConfig.weight_distance.getValue() * m.dist / maxDist;
+            rank += bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost;
+
             ret.add(new EntityDoublePair(e, rank));
         }
-        
+
         return ret;
+    }
+
+    public static float getWeigthedDeficiency(MapBotBase bot) {
+
+        if (botMaxAmmo == Float.NaN || botMaxWeapons == Float.NaN) {
+            setMaxAmmoAndMaxWeapns(bot);
+        }
+
+        float hd = getBotHealthDeficiency(bot, 0);
+        float ard = getBotArmorDeficiency(bot, 0);
+        float amd = getBotAmmoDeficiency(bot, 0);
+        float wd = getBotWeaponDeficiency(bot, 0);
+
+        float st = (float) (bot.nConfig.weight_health.getValue() *
+                hd + bot.nConfig.weight_armor.getValue() *
+                ard + bot.nConfig.weight_armor.getValue() *
+                amd + bot.nConfig.weight_weapon.getValue() *
+                wd);
+        return st;
     }
 
     private static Measures getMeasures(MapBotBase bot, Entity e, RankingCache cache) {
@@ -118,42 +162,31 @@ public class TuningEntityRanking {
 
         if (e.getType().equals(Entity.TYPE_HEALTH)) {
             m.healthBen = getItemHealthBenefit(bot, e);
-            m.healthDef = getBotHealthDeficiency(bot, 0);
         } else if (e.getType().equals(Entity.TYPE_ARMOR)) {
             m.armorBen = getItemArmorBenefit(bot, e);
-            m.armorDef = getBotArmorDeficiency(bot, 0);
         } else if (e.isWeaponEntity()) {
             m.weaponBen = getItemWeaponBenefit(bot, e);
-            m.weaponDef = getBotWeaponDeficiency(bot, 0);
         } else if (e.getType().equals(Entity.TYPE_AMMO)) {
             m.ammoBen = getItemAmmoBenefit(bot, e);
-            m.ammoDef = getBotAmmoDeficiency(bot, 0);
         }
 
         m.dist = getDistanceFollowingMap(bot, bot.getBotPosition(), e.getObjectPosition(), cache);
         m.enemyCost = getEnemyCost(bot, e, cache);
 
-        return
-         m;
+        return m;
     }
 
-    public static float getBotHealthDeficiency(MapBotBase bot, int addedHealth) {
+    private static float getBotHealthDeficiency(MapBotBase bot, int addedHealth) {
         float h = bot.getBotHealth() + addedHealth;
-        if (h > NavConfig.recommendedHealthLevel) {
-            h = NavConfig.recommendedHealthLevel;
-        }
-        return 1f - h / (float) NavConfig.recommendedHealthLevel;
+        return 1f - h / botMaxHealth;
     }
 
-    public static float getBotArmorDeficiency(MapBotBase bot, int addedArmor) {
+    private static float getBotArmorDeficiency(MapBotBase bot, int addedArmor) {
         float a = bot.getBotArmor() + addedArmor;
-        if (a > NavConfig.recommendedArmorLevel) {
-            a = NavConfig.recommendedArmorLevel;
-        }
-        return 1f - a / (float) NavConfig.recommendedArmorLevel;
+        return 1f - a / botMaxArmor;
     }
 
-    public static float getBotWeaponDeficiency(MapBotBase bot, int addedWeaponIndex) {
+    private static float getBotWeaponDeficiency(MapBotBase bot, int addedWeaponIndex) {
         /**
         int BLASTER = 7, SHOTGUN = 8,
         SUPER_SHOTGUN = 9, MACHINEGUN = 10, CHAINGUN = 11, GRENADES = 12,
@@ -161,12 +194,6 @@ public class TuningEntityRanking {
         RAILGUN = 16, BFG10K = 17, SHELLS = 18, BULLETS = 19, CELLS = 20,
         ROCKETS = 21, SLUGS = 22;
          **/
-        float weightSum = 0f;
-
-        for (int wp : bot.wConfig.usableWeapons) {
-            weightSum += bot.wConfig.getWeaponWeightByInvIndex(wp);
-        }
-
         float ownedWeapons = 0;
 
         for (int wp : bot.wConfig.usableWeapons) {
@@ -180,19 +207,11 @@ public class TuningEntityRanking {
             ownedWeapons += bot.wConfig.getWeaponWeightByInvIndex(addedWeaponIndex);
         }
 
-        float ret = ownedWeapons / weightSum;
-//        Dbg.prn(bot.getBotName()+": ow = "+ownedWeapons+" ws = "+weightSum+" perc="+ret);
-        if (ret < 0) {
-            ret = 0;
-        }
-        if (ret > NavConfig.recommendedWeaponPercent) {
-            ret = NavConfig.recommendedWeaponPercent;
-        }
-        return 1f - ret / NavConfig.recommendedWeaponPercent;
+        return 1f - ownedWeapons / botMaxWeapons;
 
     }
 
-    public static float getBotAmmoDeficiency(MapBotBase bot, int addedAmmoIndex) {
+    private static float getBotAmmoDeficiency(MapBotBase bot, int addedAmmoIndex) {
         /**
         int BLASTER = 7, SHOTGUN = 8,
         SUPER_SHOTGUN = 9, MACHINEGUN = 10, CHAINGUN = 11, GRENADES = 12,
@@ -200,12 +219,6 @@ public class TuningEntityRanking {
         RAILGUN = 16, BFG10K = 17, SHELLS = 18, BULLETS = 19, CELLS = 20,
         ROCKETS = 21, SLUGS = 22;
          **/
-        float maxAmmo = 0f;
-
-        for (int am : bot.wConfig.usableAmmo) {
-            maxAmmo += bot.wConfig.getAmmoWeightByInventoryIndex(am);
-        }
-
         float ownedAmmo = 0;
 
         for (int am : bot.wConfig.usableAmmo) {
@@ -216,23 +229,14 @@ public class TuningEntityRanking {
         }
 
         if (addedAmmoIndex >= 18 && addedAmmoIndex <= 22) {
-            ownedAmmo += bot.wConfig.getAmmoWeightByInventoryIndex(addedAmmoIndex) * 0.5;
+            //FIXME: 0.3 is not the usual size of ammo pack...
+            ownedAmmo += bot.wConfig.getAmmoWeightByInventoryIndex(addedAmmoIndex) * 0.3;
         }
 
-//		Dbg.prn("owned ammo: "+ownedAmmo+" max ammo: "+maxAmmo);
-        float ret = ownedAmmo / maxAmmo;
-//        Dbg.prn(bot.getBotName() + ": oa = " + ownedAmmo + " ma = " + maxAmmo + " perc=" + ret);
-        if (ret < 0) {
-            ret = 0;
-        }
-        if (ret > NavConfig.recommendedAmmoPercent) {
-            ret = NavConfig.recommendedAmmoPercent;
-        }
-        return 1f - ret / NavConfig.recommendedAmmoPercent;
-
+        return 1f - ownedAmmo / botMaxAmmo;
     }
 
-    public static float getItemHealthBenefit(MapBotBase bot, Entity e) {
+    private static float getItemHealthBenefit(MapBotBase bot, Entity e) {
 
         int growth = 0;
 
@@ -252,12 +256,16 @@ public class TuningEntityRanking {
             growth = 40;
         }
 
+        if (growth == 0) {
+            return 0;
+        }
+
         float before = getBotHealthDeficiency(bot, 0);
         float after = getBotHealthDeficiency(bot, growth);
         return (before - after);
     }
 
-    public static float getItemArmorBenefit(MapBotBase bot, Entity e) {
+    private static float getItemArmorBenefit(MapBotBase bot, Entity e) {
 
         int growth = 0;
 
@@ -280,7 +288,7 @@ public class TuningEntityRanking {
         return 0;
     }
 
-    public static float getItemWeaponBenefit(MapBotBase bot, Entity e) {
+    private static float getItemWeaponBenefit(MapBotBase bot, Entity e) {
 
         if (e.isWeaponEntity()) {
             int ind = e.getInventoryIndex();
@@ -291,8 +299,7 @@ public class TuningEntityRanking {
         return 0;
     }
 
-    public static float getItemAmmoBenefit(MapBotBase bot, Entity e) {
-        //FIXME:
+    private static float getItemAmmoBenefit(MapBotBase bot, Entity e) {
         if (e.getType().equals(Entity.TYPE_AMMO)) {
             int ind = e.getInventoryIndex();
             float before = getBotAmmoDeficiency(bot, 0);
@@ -386,8 +393,7 @@ public class TuningEntityRanking {
 
     }
 
-
-     private static float getEnemyCost(MapBotBase bot, Entity e, RankingCache c) {
+    private static float getEnemyCost(MapBotBase bot, Entity e, RankingCache c) {
         float riskyDistance = 1000;
         float cost = 0;
 
@@ -408,5 +414,4 @@ public class TuningEntityRanking {
         }
         return cost;
     }
-
 }

@@ -73,8 +73,6 @@ public class MapBotBase extends BotBase {
      */
     public NavConfig nConfig = new NavConfig();
 
-
-
     /**
      * Basic constructor.
      * @param botName the name of the bot to be created
@@ -153,7 +151,9 @@ public class MapBotBase extends BotBase {
             setAction(Action.ATTACK, false);
         }
 
-        setBotMovement(moveDir, aimDir, walk, posture);
+        if (isConnected()) {
+            setBotMovement(moveDir, aimDir, walk, posture);
+        }
     }
 
     protected float angleToMove(int angle) {
@@ -167,9 +167,9 @@ public class MapBotBase extends BotBase {
         int change1 = -error + (int) (2 * error * r.nextDouble());
         int change2 = -error + (int) (2 * error * r.nextDouble());
         int change3 = -error + (int) (2 * error * r.nextDouble());
-        ret.x = aim.x+angleToMove(change1);
-        ret.y = aim.y+angleToMove(change2);
-        ret.z = aim.z+angleToMove(change3);
+        ret.x = aim.x + angleToMove(change1);
+        ret.y = aim.y + angleToMove(change2);
+        ret.z = aim.z + angleToMove(change3);
         return ret;
 
     }
