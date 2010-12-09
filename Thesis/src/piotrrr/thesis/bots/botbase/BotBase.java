@@ -30,7 +30,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
     /**
      * Remembers the number of the first frame from server. Used to measure time.
      */
-    private static int firstFrameNumber = -1;
+    private int firstFrameNumber = -1;
     /**
      * Counts the deaths of the bot.
      */
@@ -82,7 +82,10 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
      * If true, after respawn the bot will try to obtain weapons using cheats.
      */
     public boolean cheatOnRespawn = false;
-
+    /**
+     * The flag set to true when willing to disconnect on next frame.
+     */
+    private boolean disconnecting = false;
 
     /**
      * Basic constructor
@@ -99,6 +102,10 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
     @Override
     public void runAI(World world) {
         if (world == null) {
+            return;
+        }
+        if (disconnecting) {
+            doDisconnect();
             return;
         }
         try {
@@ -179,7 +186,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
     /**
      * Runs bot jobs stored in botJobs list.
      */
-    private void runBotJobs() {
+    private synchronized void runBotJobs() {
         for (Job j : botJobs) {
             j.run();
         }
@@ -200,7 +207,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
      * @param j the job.
      * @return true if successful.
      */
-    public boolean addBotJob(Job j) {
+    public synchronized boolean addBotJob(Job j) {
         return botJobs.add(j);
     }
 
@@ -325,7 +332,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
         consoleCommand("give bfg10k");
         world.getInventory().setCount(17, 1);
 
-        
+
         consoleCommand("give cells 50");
         world.getInventory().setCount(20, 50);
 
@@ -370,9 +377,6 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
 //            if (i==22) continue;
 //            world.getInventory().setCount(i, PlayerGun.getMaxAmmo(i) / 2);
 //        }
-
-
-
     }
 
     /**
@@ -497,7 +501,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
      * @param dst the position where the bot should move.
      */
     public void goToPositionWithNoClipCheating(Vector3f dst) {
-        clipToPosition(dst);        
+        clipToPosition(dst);
     }
 
     @Override
@@ -516,6 +520,10 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
     }
 
     public void uncaughtException(Thread t, Throwable e) {
+        if (e instanceof ThreadDeath) {
+            System.err.println("Thread death caught.");
+            return;
+        }
         String stack = e.toString();
         int count = 0;
         for (StackTraceElement te : e.getStackTrace()) {
@@ -536,5 +544,42 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
 
     public void resetFramesCount() {
         firstFrameNumber = lastWorldFrame;
+    }
+
+    private void doDisconnect() {
+        super.disconnect();
+        killProxy();
+    }
+
+    private void killProxy() {
+        if (proxy != null) {
+            proxy.deleteObservers();
+            proxy.disconnect();
+            if (proxy.getRecvThread() != null) {
+                try {
+                    proxy.getRecvThread().stop();
+                    proxy.getRecvThread().destroy();
+                }
+                catch (Throwable e) {
+                }
+            }
+        }
+        
+    }
+
+    @Override
+    public void disconnect() {
+        disconnecting = true;
+    }
+
+    public void stopAndDestroy() {
+        try {
+            killProxy();
+            this.stop();
+            this.destroy();
+        } catch (Throwable e) {
+        }
+        world = null;
+        bsp = null;
     }
 }

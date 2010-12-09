@@ -33,7 +33,9 @@ public class MyPopUpDialog implements Runnable {
         if (dialogsCount >= maxDialogsCount) return;
         dialogsCount++;
         MyPopUpDialog mdb = new MyPopUpDialog(title, message, type);
-        new Thread(mdb).start();
+        Thread t = new Thread(mdb);
+        t.setName("dialogBox");
+        t.start();
     }
 
     public void run() {

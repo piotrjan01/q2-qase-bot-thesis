@@ -8,11 +8,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import piotrrr.thesis.bots.learnbot.LearnBot;
-import piotrrr.thesis.bots.referencebot.ReferenceBot;
-import piotrrr.thesis.common.jobs.GlobalKillsStatsJob;
-import piotrrr.thesis.common.stats.BotStatistic;
-import piotrrr.thesis.common.stats.StatsTools;
 import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.gui.MyPopUpDialog;
 import piotrrr.thesis.tools.Dbg;
@@ -21,7 +16,7 @@ import piotrrr.thesis.tools.Dbg;
  *
  * @author piotrrr
  */
-public class RandOptProcess implements OptProcess {
+public class NoChangeProcess implements OptProcess {
 
     private int timescale;
     private int iterations;
@@ -32,7 +27,7 @@ public class RandOptProcess implements OptProcess {
     Random rand = new Random();
     HashSet<NavConfig> visited;
 
-    public RandOptProcess(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
+    public NoChangeProcess(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         this.timescale = timescale;
         this.iterations = iterations;
         this.mapName = mapName;
@@ -52,36 +47,26 @@ public class RandOptProcess implements OptProcess {
         int steepestScore = Integer.MIN_VALUE;
         while (i < iterations && running) {
 
-            List<NavConfig> neigh = generateNeighbours(steepest);
-            NavConfig initial = steepest;
 
-            if (neigh.size() == 0) {
-                initial.randAllParams();
-            }
+            int score = ConfigEvaluator.sequentialEvaluateConfig(steepest, i, repetitions, itScore, mapName);
+            visited.add(steepest);
 
-            
+            DuelEvalResults result = new DuelEvalResults(ConfigEvaluator.gameStats,
+                    /*bot.getBotName() + */ " vs. RefBot",
+                    /*bot.getBotName() + */ " vs. RefBot" +
+                    "\nBest bot: " + /*bestBotName +*/
+                    "\nSteepest bot score: " + steepestScore +
+                    "\nCurrent bot score: " + score +
+                    "\nTested config: " + steepest.toString() +
+                    "\nConfig diff from initial:\n" + steepest.getDifferences(steepest), score);
+            OptimizationRunner.getInstance().handleIterationResults(result);
 
-            for (NavConfig nc : neigh) {
-                int score = ConfigEvaluator.sequentialEvaluateConfig(nc, i, repetitions, itScore, mapName);
-                visited.add(nc);
-
-                DuelEvalResults result = new DuelEvalResults(ConfigEvaluator.gameStats,
-                        /*bot.getBotName() + */ " vs. RefBot",
-                        /*bot.getBotName() + */ " vs. RefBot" +
-                        "\nBest bot: " + /*bestBotName +*/
-                        "\nSteepest bot score: " + steepestScore +
-                        "\nCurrent bot score: " + score +
-                        "\nTested config: " + nc.toString() +
-                        "\nConfig diff from initial:\n" + initial.getDifferences(nc), score);
-                OptimizationRunner.getInstance().handleIterationResults(result);
-
-                if (score > steepestScore) {
-                    steepestScore = score;
-                    steepest = nc;
+            if (score > steepestScore) {
+                steepestScore = score;
+//                    steepest = steepest;
                     /* bestBotName = bot.getBotName();*/
-                }
-
             }
+
 
             botNr += 1;
             i++;
@@ -90,10 +75,9 @@ public class RandOptProcess implements OptProcess {
 
     }
 
-   
 
     public static void main(String[] args) {
-        RandOptProcess pr = new RandOptProcess(100, 10, 20, "map1", 5);
+        NoChangeProcess pr = new NoChangeProcess(100, 10, 20, "map1", 5);
         pr.run();
     }
 

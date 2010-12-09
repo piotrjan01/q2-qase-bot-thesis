@@ -10,11 +10,13 @@
  */
 package piotrrr.thesis.gui;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import org.apache.log4j.PropertyConfigurator;
-import piotrrr.thesis.bots.tuning.EvalResults;
+import piotrrr.thesis.bots.tuning.DuelEvalResults;
 import piotrrr.thesis.bots.tuning.OptResults;
 import piotrrr.thesis.bots.tuning.OptimizationRunner;
 import piotrrr.thesis.common.CommFun;
@@ -54,18 +56,25 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         maxIterScorejTextField1 = new javax.swing.JTextField();
+        jButton4 = new javax.swing.JButton();
+        evalRepetitionsjTextField1 = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jTabbedPane3 = new javax.swing.JTabbedPane();
+        fitnessjPanel5 = new javax.swing.JPanel();
+        refreshResultsChartsjButton4 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         resultsjList1 = new javax.swing.JList();
         jTabbedPane2 = new javax.swing.JTabbedPane();
-        jPanel4 = new javax.swing.JPanel();
+        textjPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         resultDetailsTextArea1 = new javax.swing.JTextArea();
         killsChartjPanel5 = new javax.swing.JPanel();
         killsPerDeathjPanel6 = new javax.swing.JPanel();
+        killsByBotTypejPanel5 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bots Optimization");
@@ -78,14 +87,14 @@ public class OptimizationFrame extends javax.swing.JFrame {
 
         jLabel1.setText("Timescale");
 
-        timescalejTextField1.setText("20");
+        timescalejTextField1.setText("120");
         timescalejTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 timescalejTextField1ActionPerformed(evt);
             }
         });
 
-        iterationsjTextField2.setText("10");
+        iterationsjTextField2.setText("100");
 
         jLabel2.setText("Iterations");
 
@@ -103,9 +112,20 @@ public class OptimizationFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("Max iter score");
+        jLabel3.setText("Iter time in seconds");
 
-        maxIterScorejTextField1.setText("2");
+        maxIterScorejTextField1.setText("3600");
+
+        jButton4.setText("Unblock current optimization");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        evalRepetitionsjTextField1.setText("20");
+
+        jLabel4.setText("Evaluation repetitions");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -118,18 +138,23 @@ public class OptimizationFrame extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel3))
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(maxIterScorejTextField1)
                             .addComponent(iterationsjTextField2)
-                            .addComponent(timescalejTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)))
+                            .addComponent(timescalejTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                            .addComponent(evalRepetitionsjTextField1)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(runjButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)))
-                .addContainerGap(379, Short.MAX_VALUE))
+                        .addComponent(jButton1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton4)))
+                .addContainerGap(343, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -146,11 +171,17 @@ public class OptimizationFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(maxIterScorejTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(32, 32, 32)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(evalRepetitionsjTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(runjButton1)
                     .addComponent(jButton1))
-                .addContainerGap(286, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton4)
+                .addContainerGap(252, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Run Optimization", jPanel1);
@@ -169,16 +200,31 @@ public class OptimizationFrame extends javax.swing.JFrame {
             }
         });
 
+        fitnessjPanel5.setLayout(new java.awt.GridLayout(1, 1));
+        jTabbedPane3.addTab("Fitness", fitnessjPanel5);
+
+        refreshResultsChartsjButton4.setText("Refresh charts");
+        refreshResultsChartsjButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshResultsChartsjButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3)
-                .addContainerGap(375, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 561, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(refreshResultsChartsjButton4)))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -186,8 +232,11 @@ public class OptimizationFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addContainerGap(390, Short.MAX_VALUE))
+                    .addComponent(jButton3)
+                    .addComponent(refreshResultsChartsjButton4))
+                .addGap(18, 18, 18)
+                .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Results", jPanel3);
@@ -203,30 +252,33 @@ public class OptimizationFrame extends javax.swing.JFrame {
         resultDetailsTextArea1.setRows(5);
         jScrollPane2.setViewportView(resultDetailsTextArea1);
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        javax.swing.GroupLayout textjPanel4Layout = new javax.swing.GroupLayout(textjPanel4);
+        textjPanel4.setLayout(textjPanel4Layout);
+        textjPanel4Layout.setHorizontalGroup(
+            textjPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(textjPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        textjPanel4Layout.setVerticalGroup(
+            textjPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(textjPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        jTabbedPane2.addTab("Text", jPanel4);
+        jTabbedPane2.addTab("Text", textjPanel4);
 
-        killsChartjPanel5.setLayout(new java.awt.GridLayout());
+        killsChartjPanel5.setLayout(new java.awt.GridLayout(1, 0));
         jTabbedPane2.addTab("Kills", killsChartjPanel5);
 
         killsPerDeathjPanel6.setLayout(new java.awt.GridLayout(1, 1));
         jTabbedPane2.addTab("Kills per death", killsPerDeathjPanel6);
+
+        killsByBotTypejPanel5.setLayout(new java.awt.GridLayout(1, 1));
+        jTabbedPane2.addTab("Kills by bot type", killsByBotTypejPanel5);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -249,7 +301,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Iteration Results", jPanel2);
+        jTabbedPane1.addTab("Simulation Results", jPanel2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -275,8 +327,9 @@ public class OptimizationFrame extends javax.swing.JFrame {
         int timescale = Integer.parseInt(timescalejTextField1.getText());
         int iterations = Integer.parseInt(iterationsjTextField2.getText());
         int iterScore = Integer.parseInt(maxIterScorejTextField1.getText());
-        String mapName = "map1";
-        OptimizationRunner.getInstance().runOptimization(timescale, iterations, iterScore, mapName);
+        int reps = Integer.parseInt(evalRepetitionsjTextField1.getText());
+        String mapName = "map2";
+        OptimizationRunner.getInstance().runOptimization(timescale, iterations, iterScore, mapName, reps);
         optResults = new OptResults();
     }//GEN-LAST:event_runjButton1ActionPerformed
 
@@ -293,7 +346,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         if (si < 0 || si >= resultsjList1.getModel().getSize()) {
             return;
         }
-        EvalResults r = optResults.iterResults.get(si);
+        DuelEvalResults r = optResults.iterResults.get(si);
         displayResults(r);
     }//GEN-LAST:event_resultsjList1ValueChanged
 
@@ -334,7 +387,35 @@ public class OptimizationFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void displayResults(EvalResults r) {
+    private void refreshResultsChartsjButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshResultsChartsjButton4ActionPerformed
+        fitnessjPanel5.removeAll();
+        LinkedList<double[]> evalScore = new LinkedList<double[]>();
+        LinkedList<double[]> bestScores = new LinkedList<double[]>();
+        int iter = 0;
+        int bestScore = Integer.MIN_VALUE;
+        for (DuelEvalResults res : optResults.iterResults) {
+            if (res.score > bestScore) bestScore = res.score;
+            evalScore.add(new double[] {iter, res.score});
+            bestScores.add(new double[] {iter, bestScore});
+            iter++;
+        }
+        LinkedList<String> series = new LinkedList<String>();
+        series.add("Best fitness");
+        series.add("Eval fitness");
+        HashMap<String, LinkedList<double[]>> map = new HashMap<String, LinkedList<double[]>>();
+        map.put(series.getFirst(), bestScores);
+        map.put(series.getLast(), evalScore);
+        fitnessjPanel5.add(StatsChartsFactory.getXYChart(series, map, "Fitness in evaluations", "Iteration", "Fitness"));
+
+        fitnessjPanel5.revalidate();
+
+    }//GEN-LAST:event_refreshResultsChartsjButton4ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        OptimizationRunner.getInstance().unblockProcess();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void displayResults(DuelEvalResults r) {
         resultDetailsTextArea1.setText(r.toString());
 
         killsChartjPanel5.removeAll();
@@ -342,12 +423,16 @@ public class OptimizationFrame extends javax.swing.JFrame {
         killsChartjPanel5.revalidate();
         
         killsPerDeathjPanel6.removeAll();
-        killsPerDeathjPanel6.add(StatsChartsFactory.getKillsPerEachDeathByBotType(r.stats));
+        killsPerDeathjPanel6.add(StatsChartsFactory.getKillsPerEachDeathByBot(r.stats));
         killsPerDeathjPanel6.revalidate();
+
+        killsByBotTypejPanel5.removeAll();
+        killsByBotTypejPanel5.add(StatsChartsFactory.getKillsInTimeByBotType(r.stats));
+        killsByBotTypejPanel5.revalidate();
 
     }
 
-    public void addResults(EvalResults res) {
+    public void addResults(DuelEvalResults res) {
         Dbg.prn("adding results to list");
         optResults.iterResults.add(res);
         refreshIterResults();
@@ -356,7 +441,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
     public void refreshIterResults() {
         DefaultListModel m = new DefaultListModel();
         int i = 0;
-        for (EvalResults r : optResults.iterResults) {
+        for (DuelEvalResults r : optResults.iterResults) {
             m.add(i, r.toShortString());
             i++;
         }
@@ -395,27 +480,34 @@ public class OptimizationFrame extends javax.swing.JFrame {
         return optFrameInstance;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField evalRepetitionsjTextField1;
+    private javax.swing.JPanel fitnessjPanel5;
     private javax.swing.JTextField iterationsjTextField2;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JPanel killsByBotTypejPanel5;
     private javax.swing.JPanel killsChartjPanel5;
     private javax.swing.JPanel killsPerDeathjPanel6;
     private javax.swing.JTextField maxIterScorejTextField1;
+    private javax.swing.JButton refreshResultsChartsjButton4;
     private javax.swing.JTextArea resultDetailsTextArea1;
     private javax.swing.JList resultsjList1;
     private javax.swing.JButton runjButton1;
+    private javax.swing.JPanel textjPanel4;
     private javax.swing.JTextField timescalejTextField1;
     // End of variables declaration//GEN-END:variables
 }

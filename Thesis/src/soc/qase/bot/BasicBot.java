@@ -2077,4 +2077,8 @@ public abstract class BasicBot extends Thread implements Bot
 
 		proxy.sendMovement(angles, velocity, action);
 	}
+
+        public Proxy getProxy() {
+            return proxy;
+        }
 }

@@ -8,6 +8,7 @@ import piotrrr.thesis.bots.tuning.WeaponConfig;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.EnemyInfo;
 import piotrrr.thesis.common.entities.EntityDoublePair;
+import piotrrr.thesis.tools.Dbg;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
 import soc.qase.tools.vecmath.Vector3f;
@@ -84,7 +85,8 @@ public class TuningEntityRanking {
 
     public static TreeSet<EntityDoublePair> getEntityFuzzyRanking(MapBotBase bot) {
 
-        if (botMaxAmmo == Float.NaN || botMaxWeapons == Float.NaN) {
+        if (Float.isNaN(botMaxAmmo) || Float.isNaN(botMaxWeapons)) {
+            Dbg.prn("setting max ammo and max weapons");
             setMaxAmmoAndMaxWeapns(bot);
         }
 
@@ -116,6 +118,8 @@ public class TuningEntityRanking {
             Measures m = em.get(e);
             double rank = 0;
 
+            boolean err = false;
+
             //Weights constant, independent from context
             if (e.getType().equals(Entity.TYPE_HEALTH)) {
                 rank = bot.nConfig.weight_health.getValue() * (hd + m.healthBen);
@@ -127,13 +131,35 @@ public class TuningEntityRanking {
                 rank = bot.nConfig.weight_ammo.getValue() * (amd + m.ammoBen);
             }
 
+            if (!err && Double.isNaN(rank)) {
+                Dbg.prn("Rank NaN after w*(def+ben) --> Entity:"+e.toString());
+                Dbg.prn("ard="+ard+" wd="+wd+" m.armorBen="+m.armorBen+" m.weapnBen="+m.weaponBen);
+                Dbg.prn("botMaxWeapons="+botMaxWeapons);
+                Dbg.prn("");
+                err=true;
+            }
+
             //weights depending on context
             rank += bot.nConfig.weight_distance.getValue() * m.dist / maxDist;
-            rank += bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost;
+            if (!err && Double.isNaN(rank)) {
+                Dbg.prn("Rank NaN after dist");
+                err=true;
+            }
+
+            if (maxEnemyCost != 0) {
+                rank += bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost;
+            }
+            if (!err && Double.isNaN(rank)) {
+                Dbg.prn("Rank NaN after enemy cost");
+                Dbg.prn("m.enemyCost="+m.enemyCost+" maxEnemyCost="+maxEnemyCost);
+                err=true;
+            }
 
             ret.add(new EntityDoublePair(e, rank));
         }
 
+        cache.distCache.clear();
+        cache.pathCache.clear();
         return ret;
     }
 

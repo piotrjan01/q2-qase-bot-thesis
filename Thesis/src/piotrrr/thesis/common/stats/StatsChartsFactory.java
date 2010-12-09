@@ -65,7 +65,7 @@ public class StatsChartsFactory {
                         s.int1++;
                         double time = k.time / 10;
                         if (time < s.d1) {
-                            time = s.d1;
+                            time = s.d1+1;
                         }
 //                    while (time < s.series.)
                         s.series.add(time, (double) s.int1 / s.int2);
@@ -180,6 +180,57 @@ public class StatsChartsFactory {
                     "Kills per each death by bot type in time",
                     "time [s]",
                     "kills / deaths",
+                    ds,
+                    PlotOrientation.VERTICAL,
+                    true, true, true);
+
+            ChartPanel cp = new ChartPanel(c);
+            return cp;
+
+        }
+    }
+
+    public static ChartPanel getKillsPerEachDeathByBot(BotStatistic stats) {
+        synchronized (stats) {
+            XYSeriesCollection ds = new XYSeriesCollection();
+
+            LinkedList<BotSeries> series = new LinkedList<BotSeries>();
+
+            for (String botName : stats.getAllKillingBotNames()) {
+                series.add(new BotSeries(new XYSeries(botName), 0, 0, botName));
+            }
+
+            for (BotSeries s : series) {
+                s.series.add(0, 0);
+//                s.d1 = StatsTools.countBotsOfGivenFamilly(s.botName, stats);
+            }
+
+            for (Kill k : stats.kills) {
+                for (BotSeries s : series) {
+                    if (k.killer.equals(s.botName) || k.victim.equals(s.botName)) {
+                        if (k.killer.equals(s.botName)) {
+                            s.int1++;
+                        }
+                        if (k.victim.equals(s.botName)) {
+                            s.int2++;
+                        }
+                        float val = 0;
+                        if (s.int2 != 0) {
+                            val = (float) s.int1 / (float) s.int2;
+                        }
+                        s.series.add(k.time / 10, val);
+                    }
+                }
+            }
+
+            for (BotSeries s : series) {
+                ds.addSeries(s.series);
+            }
+
+            JFreeChart c = ChartFactory.createXYLineChart(
+                    "Kills per each death by each bot in time",
+                    "time [s]",
+                    "kills / death",
                     ds,
                     PlotOrientation.VERTICAL,
                     true, true, true);
@@ -483,5 +534,40 @@ public class StatsChartsFactory {
             return cp;
 
         }
+    }
+
+    /**
+     *
+     *
+     * @param
+     * @return
+     */
+    public static ChartPanel getXYChart(LinkedList<String> seriesNames,
+            HashMap<String, LinkedList<double[]>> data,
+            String title, String xLabel, String yLabel) {
+
+
+
+        XYSeriesCollection ds = new XYSeriesCollection();
+
+        for (String sName : seriesNames) {
+            XYSeries s = new XYSeries(sName);
+            for (double[] val : data.get(sName)) {
+                s.add(val[0], val[1]);
+            }
+            ds.addSeries(s);
+        }
+
+        JFreeChart c = ChartFactory.createXYLineChart(
+                title,
+                xLabel,
+                yLabel,
+                ds,
+                PlotOrientation.VERTICAL,
+                true, true, true);
+
+        ChartPanel cp = new ChartPanel(c);
+        return cp;
+
     }
 }

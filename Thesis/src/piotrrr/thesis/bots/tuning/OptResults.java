@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class OptResults implements Serializable {
 
-    public LinkedList<EvalResults> iterResults = new LinkedList<EvalResults>();
+    public LinkedList<DuelEvalResults> iterResults = new LinkedList<DuelEvalResults>();
 
 
 }

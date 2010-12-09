@@ -14,7 +14,7 @@ import soc.qase.tools.vecmath.Vector3f;
  */
 public class StuckDetector extends Job {
 
-    public static final float EPSILON = 90;
+    public static final float EPSILON = 40;
     public boolean isStuck = false;
     long lastFrame;
     int period;
@@ -80,6 +80,7 @@ public class StuckDetector extends Job {
 
         if (distance <= EPSILON) {
             ((MapBotBase) bot).dtalk.addToLog("I'm stuck!");
+            Dbg.prn("\n"+bot.getBotName()+" --> stuck "+(consequentStucks+1)+" times.");
             consequentStucks++;
             isStuck = true;
         } else {

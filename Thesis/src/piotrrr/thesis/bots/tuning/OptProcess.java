@@ -12,4 +12,7 @@ package piotrrr.thesis.bots.tuning;
 public interface OptProcess extends Runnable {
 
     public void stopProcess();
+
+    public void unblockProcess();
+
 }

@@ -12,6 +12,7 @@ public class MainFrameUpdater implements Runnable {
 
 	@Override
 	public void run() {
+            Thread.currentThread().setName("MainFrameUpdater");
 		while ( ! stop ) {
 			try {
 				Thread.sleep(300);

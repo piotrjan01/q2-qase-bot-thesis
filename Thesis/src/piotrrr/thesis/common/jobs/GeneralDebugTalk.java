@@ -84,7 +84,7 @@ public class GeneralDebugTalk extends Job {
         }
         double frame = (bot.getFrameNumber() - lastAddingFrame) / 10.0;
         lastAddingFrame = bot.getFrameNumber();
-        Dbg.prn(bot.getBotName() + ":\t" + frame + ">\tBOT SAYS: " + s);
+//        Dbg.prn(bot.getBotName() + ":\t" + frame + ">\tBOT SAYS: " + s);
         toSay += s + " :: ";
     }
 }

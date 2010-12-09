@@ -26,6 +26,13 @@ public class OptParam implements Serializable {
         this.step = step;
     }
 
+    public OptParam(OptParam original) {
+        this.value = original.value;
+        this.min = original.min;
+        this.max = original.max;
+        this.step = original.step;
+    }
+
     public double getValue() {
         return value;
     }
@@ -48,6 +55,48 @@ public class OptParam implements Serializable {
         int rv = r.nextInt(vals);
         value = min + rv*step;
     }
+
+    public boolean inc() {
+        if (value >= max) {
+            value = max;
+            return false;
+        }
+        value += step;
+        if (value > max) value = max;
+        return true;
+    }
+
+    public boolean dec() {
+        if (value <= min) {
+            value = min;
+            return false;
+        }
+        value -= step;
+        if (value < min) value = min;
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OptParam) {
+            OptParam p = (OptParam) obj;
+            return p.value == value;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + (int) (Double.doubleToLongBits(this.min) ^ (Double.doubleToLongBits(this.min) >>> 32));
+        hash = 89 * hash + (int) (Double.doubleToLongBits(this.max) ^ (Double.doubleToLongBits(this.max) >>> 32));
+        hash = 89 * hash + (int) (Double.doubleToLongBits(this.step) ^ (Double.doubleToLongBits(this.step) >>> 32));
+        return hash;
+    }
+
+
+
+
 
 
 

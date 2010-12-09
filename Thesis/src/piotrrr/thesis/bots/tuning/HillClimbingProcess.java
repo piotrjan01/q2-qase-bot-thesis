@@ -21,7 +21,7 @@ import piotrrr.thesis.tools.Dbg;
  *
  * @author piotrrr
  */
-public class RandOptProcess implements OptProcess {
+public class HillClimbingProcess implements OptProcess {
 
     private int timescale;
     private int iterations;
@@ -32,7 +32,7 @@ public class RandOptProcess implements OptProcess {
     Random rand = new Random();
     HashSet<NavConfig> visited;
 
-    public RandOptProcess(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
+    public HillClimbingProcess(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         this.timescale = timescale;
         this.iterations = iterations;
         this.mapName = mapName;
@@ -56,7 +56,11 @@ public class RandOptProcess implements OptProcess {
             NavConfig initial = steepest;
 
             if (neigh.size() == 0) {
-                initial.randAllParams();
+                Dbg.prn("==========> No neighbours to explore! ");
+                MyPopUpDialog.showMyDialogBox("Optimization finished",
+                        "Optimization finished: There are no more neighbours to explore.",
+                        MyPopUpDialog.info);
+                break;
             }
 
             
@@ -93,7 +97,7 @@ public class RandOptProcess implements OptProcess {
    
 
     public static void main(String[] args) {
-        RandOptProcess pr = new RandOptProcess(100, 10, 20, "map1", 5);
+        HillClimbingProcess pr = new HillClimbingProcess(100, 10, 20, "map1", 5);
         pr.run();
     }
 
