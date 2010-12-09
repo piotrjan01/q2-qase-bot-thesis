@@ -73,6 +73,8 @@ public class MapBotBase extends BotBase {
      */
     public NavConfig nConfig = new NavConfig();
 
+
+
     /**
      * Basic constructor.
      * @param botName the name of the bot to be created
@@ -94,6 +96,8 @@ public class MapBotBase extends BotBase {
 
     @Override
     protected void botLogic() {
+
+       
 
         if (botPaused) {
             return;
@@ -244,4 +248,8 @@ public class MapBotBase extends BotBase {
         }
         return false;
     }
+
+    
+
+    
 }

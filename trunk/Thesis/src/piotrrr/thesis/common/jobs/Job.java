@@ -7,7 +7,7 @@ import piotrrr.thesis.bots.botbase.BotBase;
  * @author Piotr Gwizdała
  *
  */
-public abstract class Job extends Thread {
+public abstract class Job implements Runnable {
 	
 	/**
 	 * The bot that will run the job.

@@ -383,6 +383,7 @@ public class Proxy extends ServerMessageHandler implements Runnable
 
 		// start proxy
 		recvThread = new Thread(this);
+                recvThread.setName("Proxy-RecvThread");
 		recvThread.start();
 		sentChallenge = true;
 		communicator.sendConnectionless("getchallenge");
@@ -691,6 +692,7 @@ public class Proxy extends ServerMessageHandler implements Runnable
 				{
 					public void run()
 					{
+                                            Thread.currentThread().setName("Proxy-anonymousThread");
 						connect(host, port);
 
 						if(ctf)
@@ -743,5 +745,9 @@ public class Proxy extends ServerMessageHandler implements Runnable
 			}
 		}
 	}
+
+        public Thread getRecvThread() {
+            return recvThread;
+        }
 }
 

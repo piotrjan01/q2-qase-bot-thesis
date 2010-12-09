@@ -4,6 +4,9 @@
  */
 package piotrrr.thesis.common.stats;
 
+import java.util.LinkedList;
+import piotrrr.thesis.common.stats.BotStatistic.Kill;
+
 /**
  *
  * @author Piotr Gwizdała
@@ -52,5 +55,16 @@ public class StatsTools {
             }
             return cnt;
         }
+    }
+
+    public static void removeKillsOfBot(String botName, BotStatistic stats) {
+        if (stats == null || botName == null) return;
+        LinkedList<Kill> newKills = new LinkedList<Kill>();
+        for (BotStatistic.Kill k : stats.kills) {
+            if (k.killer.equals(botName)) continue;
+            if (k.victim.equals(botName)) continue;
+            newKills.add(k);
+        }
+        stats.kills = newKills;
     }
 }

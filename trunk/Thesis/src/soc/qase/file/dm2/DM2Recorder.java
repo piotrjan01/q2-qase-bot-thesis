@@ -41,13 +41,15 @@ public class DM2Recorder
 
 	protected boolean recording = false;
 
+        protected boolean initialized = false;
+
 /*-------------------------------------------------------------------*/
 /**	Default constructor. Prepares the DM2Recorder to start saving the
  *	session. */
 /*-------------------------------------------------------------------*/
 	public DM2Recorder()
 	{
-		initRecorder();
+//		initRecorder();
 	}
 
 /*-------------------------------------------------------------------*/
@@ -57,7 +59,7 @@ public class DM2Recorder
 /*-------------------------------------------------------------------*/
 	public DM2Recorder(String fName)
 	{
-		initRecorder();
+//		initRecorder();
 		startRecording(fName);
 	}
 
@@ -66,6 +68,7 @@ public class DM2Recorder
 		blockLength = new byte[4];
 		store = new ByteArrayOutputStream(500 * 1024);
 		storeHeader = new ByteArrayOutputStream(500 * 1024);
+                initialized = true;
 	}
 
 /*-------------------------------------------------------------------*/
@@ -108,6 +111,7 @@ public class DM2Recorder
 
 		try
 		{
+                    if ( ! initialized) initRecorder();
 			store.write(blockLength);
 			store.write(block);
 		}
@@ -125,6 +129,8 @@ public class DM2Recorder
 /*-------------------------------------------------------------------*/
 	public synchronized void addHeader(byte[] block)
 	{
+            if ( ! initialized) initRecorder();
+            
 		block = filterData(block);
 		Utils.intToByteArray(block.length, blockLength, 0);
 
@@ -207,6 +213,8 @@ public class DM2Recorder
 		if(!recording)
 			return false;
 
+                if ( ! initialized) initRecorder();
+
 		try
 		{
 			Utils.intToByteArray(-1, blockLength, 0);
@@ -227,6 +235,8 @@ public class DM2Recorder
 
 	private boolean writeCurrentData()
 	{
+            if ( ! initialized) initRecorder();
+
 		if(store.size() < 5) // no game data was recorded, only an endblock
 		{
 			store.reset();

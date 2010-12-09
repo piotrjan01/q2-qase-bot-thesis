@@ -112,6 +112,7 @@ public class TuningGlobalNav implements GlobalNav {
         TreeSet<EntityDoublePair> ranking = TuningEntityRanking.getEntityFuzzyRanking(bot);
         log.info("Got entity ranking: size="+ranking.size());
 
+        EntityDoublePair chosen = null;
         while ((plan == null || plan.path == null)) {
 
             if (ranking.size() == 0 || bot.stuckDetector.isStuck) {
@@ -133,11 +134,14 @@ public class TuningGlobalNav implements GlobalNav {
 
             log.info("Trying to get a plan for best option in ranking. Ranking size: "+ranking.size());
 
-            plan = new NavPlan(bot, ranking.last().ent, (int) (mainDecisionTimeout));
+            chosen = ranking.last();
+            plan = new NavPlan(bot, chosen.ent, (int) (mainDecisionTimeout));
             ranking.pollLast();
 
         }
         log.info("Found a plan for ranking item. returning it.");
+//        Dbg.prn("Going for: "+chosen.ent.toDetailedString());
+//        Dbg.prn("Rank: "+chosen.dbl+" Ent:"+chosen.ent.toString());
         return plan;
     }
 

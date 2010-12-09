@@ -108,6 +108,8 @@ public class FuzzyEntityRanking {
 //        bot.timers.get("nav0").pause();
 //        Dbg.prn("Cache use = "+(100d*(double)cache.cacheUse) / (double)cache.fnCalls);
 //        Dbg.prn("Chosen ent: "+ret.last().ent.toString()+" rank: "+ret.last().dbl);
+        cache.distCache.clear();
+        cache.pathCache.clear();
         return ret;
     }
 
