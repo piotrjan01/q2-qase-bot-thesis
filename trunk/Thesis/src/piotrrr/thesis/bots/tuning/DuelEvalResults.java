@@ -18,10 +18,10 @@ public class DuelEvalResults implements Serializable {
     public BotStatistic stats;
     public String comment;
     public String shortName;
-    public int score;
+    public double score;
 
 
-    public DuelEvalResults(BotStatistic stats, String shortName, String comment, int score) {
+    public DuelEvalResults(BotStatistic stats, String shortName, String comment, double score) {
         this.stats = stats;
         this.comment = comment;
         this.shortName = shortName;

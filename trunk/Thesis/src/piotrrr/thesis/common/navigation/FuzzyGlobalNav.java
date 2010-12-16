@@ -207,7 +207,7 @@ public class FuzzyGlobalNav implements GlobalNav {
             double mapDist = getDistanceFollowingMap(bot, bot.getBotPosition(), ei.getObjectPosition());
             double dist = CommFun.getDistanceBetweenPositions(bot.getBotPosition(), ei.getObjectPosition());
             if (oldPlan != null && ei.ent.getNumber() == oldPlan.dest.getNumber() && dist < 300) {
-                Dbg.err(bot.getBotName() + "> not going again for that guy... dist=" + dist);
+//                Dbg.err(bot.getBotName() + "> not going again for that guy... dist=" + dist);
                 continue; //if we are close and enemy is not updated, it means it is a zombie :)
             }
             if (mapDist < minRisk) {

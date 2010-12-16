@@ -5,6 +5,7 @@
 package piotrrr.thesis.bots.tuning;
 
 import java.util.LinkedList;
+import java.util.Random;
 import piotrrr.thesis.bots.learnbot.LearnBot;
 import piotrrr.thesis.bots.referencebot.ReferenceBot;
 import piotrrr.thesis.common.jobs.GlobalKillsStatsJob;
@@ -12,6 +13,8 @@ import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.common.stats.StatsTools;
 import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.gui.MyPopUpDialog;
+import piotrrr.thesis.tools.Dbg;
+import piotrrr.thesis.tools.Timer;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
@@ -20,12 +23,13 @@ import soc.qase.tools.vecmath.Vector3f;
  */
 public class ConfigEvaluator implements Runnable {
 
+    static BotStatistic gameStats = null;
+    static Timer timer;
     String mapName;
     LearnBot bot = null;
     ReferenceBot refBot = null;
     NavConfig nc1;
     int gameNr;
-    static BotStatistic gameStats = null;
     boolean running = true;
     boolean unblock = false;
     int itTime;
@@ -34,6 +38,8 @@ public class ConfigEvaluator implements Runnable {
     public static final int ONE_SECOND = 1000;
     private Vector3f refBotLastPos = new Vector3f();
     private Vector3f botLastPos = new Vector3f();
+    public static Random rand = new Random();
+    public static String evalLog = "";
 
     public ConfigEvaluator(String mapName, NavConfig nc1, int gameNr, int itTime) {
         this.mapName = mapName;
@@ -42,81 +48,93 @@ public class ConfigEvaluator implements Runnable {
         this.itTime = itTime;
     }
 
-    public static int sequentialEvaluateConfig(NavConfig nc1, int bn1, int repetitions, int itScore, String mapName) {
+    public static double sequentialEvaluateConfig(NavConfig nc1, int bn1, int repetitions, int itScore, String mapName) {
         LinkedList<ConfigEvaluator> ces = new LinkedList<ConfigEvaluator>();
-
+        evalLog = "";
         ConfigEvaluator.gameStats = null;
+        timer = new Timer("Sequential evaluation [reps=" + repetitions + " itTime=" + itScore + " map=" + mapName+"]");
+        timer.startFromZero();
 
         for (int i = 0; i < repetitions; i++) {
             ces.add(new ConfigEvaluator(mapName, nc1, i, itScore));
             ces.getLast().run();
         }
 
-        int res = 0;
+        double res = 0;
         for (ConfigEvaluator c : ces) {
             res += c.result;
         }
         res /= ces.size();
 
+        timer.pause();
+        evalLog += "\n" + timer.toString();
         return res;
 
     }
 
-    public static int parallelEvaluateConfig(NavConfig nc1, int bn1, int repetitions, int itScore, String mapName) {
-        LinkedList<ConfigEvaluator> ces = new LinkedList<ConfigEvaluator>();
-        LinkedList<Thread> ts = new LinkedList<Thread>();
+    /*public static int parallelEvaluateConfig(NavConfig nc1, int bn1, int repetitions, int itScore, String mapName) {
+    LinkedList<ConfigEvaluator> ces = new LinkedList<ConfigEvaluator>();
+    LinkedList<Thread> ts = new LinkedList<Thread>();
+    evalLog = "";
 
-        ConfigEvaluator.gameStats = null;
+    ConfigEvaluator.gameStats = null;
+    timer = new Timer("Parallel evaluation [reps=" + repetitions + " itTime=" + itScore + "ms map=" + mapName+"]");
+    timer.startFromZero();
 
-        for (int i = 0; i < repetitions; i++) {
-            ces.add(new ConfigEvaluator(mapName, nc1, i, itScore));
-            Thread t = new Thread(ces.getLast());
-            ts.add(t);
-            t.setName("parallelEval-" + i);
-            t.start();
-        }
-
-        boolean working = true;
-        while (working) {
-            int dead = 0;
-            for (Thread t : ts) {
-                if (!t.isAlive()) {
-                    dead++;
-                }
-            }
-            if (dead == ts.size()) {
-                working = false;
-            }
-        }
-
-        int res = 0;
-        for (ConfigEvaluator c : ces) {
-            res += c.result;
-        }
-        res /= ces.size();
-
-        return res;
-
+    for (int i = 0; i < repetitions; i++) {
+    ces.add(new ConfigEvaluator(mapName, nc1, i, itScore));
+    Thread t = new Thread(ces.getLast());
+    ts.add(t);
+    t.setName("parallelEval-" + i);
+    t.start();
     }
 
+    boolean working = true;
+    while (working) {
+    int dead = 0;
+    for (Thread t : ts) {
+    if (!t.isAlive()) {
+    dead++;
+    }
+    }
+    if (dead == ts.size()) {
+    working = false;
+    }
+    }
+
+    int res = 0;
+    for (ConfigEvaluator c : ces) {
+    res += c.result;
+    }
+    res /= ces.size();
+
+    timer.pause();
+    evalLog += "\n" + timer.toString();
+    return res;
+
+    }*/
     public void run() {
-        int servPort = AppConfig.serverPort + gameNr;
+
+        int servPort = AppConfig.serverPort + rand.nextInt(500);
         int sameScoreCount = 0;
         try {
             int ret = 0;
             boolean evalRuns = true;
 
             OptimizationRunner.getInstance().runLocalQ2Server(servPort, mapName);
-            sleep(3 * ONE_SECOND);
+            sleep((int) (0.5 * ONE_SECOND));
 
             if (gameStats == null) {
                 gameStats = BotStatistic.createNewInstance();
             }
 
             bot = OptimizationRunner.getInstance().connectLearnBot(gameNr, servPort);
-            refBot = OptimizationRunner.getInstance().connectReferenceBot(gameNr, servPort);
+            if (bot != null) {
+                refBot = OptimizationRunner.getInstance().connectReferenceBot(gameNr, servPort);
+            }
 
             if (bot == null || refBot == null) {
+//                gameNr++;
                 tryAgain(servPort, "Bots didnt connect to server");
                 return;
             }
@@ -128,14 +146,20 @@ public class ConfigEvaluator implements Runnable {
             int time = 0;
             while (true) {
                 sleep(ONE_SECOND);
-                time++;
+                int lastTime = time;
+                time = bot.getFrameNumber();
+                if ((refBot.getFrameNumber()) > time) {
+                    time = refBot.getFrameNumber();
+                }
                 int score = StatsTools.getBotScore(bot.getBotName(), gameStats);
                 int refScore = StatsTools.getBotScore(refBot.getBotName(), gameStats);
-                if (time >= (itTime / AppConfig.timeScale)) {
+                Dbg.prn("avg ts=" + ((time - lastTime) / 10.0) + " done=" + ((time * 100) / (10 * itTime)) + "%");
+                if (time >= 10 * itTime) {
                     ret = score - refScore;
                     stopAndNullBots();
                     OptimizationRunner.getInstance().clearProcess(servPort);
                     result = ret;
+                    evalLog += "\nGame " + gameNr + " result: " + ret;
                     return;
                 }
                 if (unblock) {
@@ -169,7 +193,7 @@ public class ConfigEvaluator implements Runnable {
 //            result = ret;
 //            return;
         } catch (Exception e) {
-            tryAgain(servPort, "Exception in run(): "+e.toString());
+            tryAgain(servPort, "Exception in run(): " + e.toString());
             return;
         }
     }
@@ -214,6 +238,7 @@ public class ConfigEvaluator implements Runnable {
     }
 
     private void tryAgain(int servPort, String reason) {
+        Dbg.prn("--------->> Retrying: " + reason);
         if (bot != null) {
             StatsTools.removeKillsOfBot(bot.getBotName(), BotStatistic.getInstance());
             bot.disconnect();
@@ -228,8 +253,9 @@ public class ConfigEvaluator implements Runnable {
         }
         //System.gc();
         MyPopUpDialog.showMyDialogBox("Eval unblocked", "Eval was automatically unblocked: " + reason, MyPopUpDialog.info);
-        sleep(2 * ONE_SECOND);
+        sleep((int) (0.5 * ONE_SECOND));
         OptimizationRunner.getInstance().clearProcess(servPort);
+        sleep((int) (0.5 * ONE_SECOND));
         ConfigEvaluator ce = new ConfigEvaluator(mapName, nc1, gameNr, itTime);
         Thread t = new Thread(ce);
         t.start();

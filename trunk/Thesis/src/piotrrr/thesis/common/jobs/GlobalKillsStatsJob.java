@@ -7,6 +7,7 @@ import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.DamageMsgsParser;
 import piotrrr.thesis.common.DeathMsgsParser;
 import piotrrr.thesis.common.stats.BotStatistic;
+import piotrrr.thesis.tools.Dbg;
 
 public class GlobalKillsStatsJob extends Job {
 
@@ -26,22 +27,22 @@ public class GlobalKillsStatsJob extends Job {
         System.out.print(CommFun.getArrayAsString(res));
     }
 
-    private void logKillsToStats() {
+    private void logKillsToStats() {        
         Vector<String> commands = bot.getMessages("");
         if (commands == null) {
             return;
         }
-        for (String cmd : commands) {
+        for (String cmd : commands) {            
             String[] res = DeathMsgsParser.parseMessage(cmd);
 
-            if (res[0] != null && (!res[0].equals(res[1]))) {
+            if (res[0] != null && (!res[0].equals(res[1]))) {               
                 BotStatistic.getInstance().addKill(
                         bot.getFrameNumber(),
                         res[0],
                         res[1],
                         res[2]);
 
-                System.out.println("msg> " + cmd);
+                System.out.println("kill msg> " + cmd);
             }
             else if (DamageMsgsParser.parseMessage(cmd, bot.getFrameNumber())) {
                 System.out.print(".");

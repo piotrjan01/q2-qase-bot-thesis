@@ -165,6 +165,10 @@ public class CommFun {
         FileOutputStream fos = new FileOutputStream(filename);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(o);
+        oos.flush();
+        oos.close();
+        fos.flush();
+        fos.close();
 
     }
 

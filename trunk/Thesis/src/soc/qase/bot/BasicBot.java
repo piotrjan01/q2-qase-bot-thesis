@@ -37,7 +37,7 @@ import java.util.Observable;
 public abstract class BasicBot extends Thread implements Bot
 {
 
-    int rate = 65535;
+    int rate = 65000;
 
 	private User user = null;
 	protected Proxy proxy = null;

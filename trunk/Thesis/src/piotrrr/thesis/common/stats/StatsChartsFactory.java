@@ -4,9 +4,11 @@
  */
 package piotrrr.thesis.common.stats;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -14,6 +16,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import piotrrr.thesis.bots.tuning.DuelEvalResults;
+import piotrrr.thesis.bots.tuning.OptResults;
 import piotrrr.thesis.common.stats.BotStatistic.Kill;
 import piotrrr.thesis.common.stats.BotStatistic.Reward;
 
@@ -65,7 +69,74 @@ public class StatsChartsFactory {
                         s.int1++;
                         double time = k.time / 10;
                         if (time < s.d1) {
-                            time = s.d1+1;
+                            time = s.d1 + 1;
+                        }
+//                    while (time < s.series.)
+                        s.series.add(time, (double) s.int1 / s.int2);
+                        s.d1 = time;
+                    }
+                }
+            }
+
+            for (BotSeries s : series) {
+                ds.addSeries(s.series);
+            }
+
+            JFreeChart c = ChartFactory.createXYLineChart(
+                    "Kills by bot type in time",
+                    "time [s]",
+                    "kills",
+                    ds,
+                    PlotOrientation.VERTICAL,
+                    true, true, true);
+
+            ChartPanel cp = new ChartPanel(c);
+            return cp;
+
+        }
+    }
+
+    private static class KillComparator implements Comparator<Kill> {
+
+        public int compare(Kill o1, Kill o2) {
+            if (o1.time <= o2.time) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+    }
+
+    public static ChartPanel getKillsInTimeByBotTypeSorting(BotStatistic stats) {
+
+        synchronized (stats) {
+
+            XYSeriesCollection ds = new XYSeriesCollection();
+
+            LinkedList<BotSeries> series = new LinkedList<BotSeries>();
+
+            for (String botName : stats.getAllBotFamilies()) {
+                series.add(new BotSeries(new XYSeries(botName, true), 0, 0, botName));
+            }
+
+            for (BotSeries s : series) {
+                s.series.add(0, 0);
+                s.int2 = StatsTools.countBotsOfGivenFamilly(s.botName, stats);
+            }
+
+
+            TreeSet<Kill> ts = new TreeSet<Kill>(new KillComparator());
+            for (Kill k : stats.kills) {
+                ts.add(k);
+            }
+
+            for (Kill k : ts) {
+                for (BotSeries s : series) {
+                    if (k.killer.startsWith(s.botName)) {
+                        s.int1++;
+                        double time = k.time / 10;
+                        if (time < s.d1) {
+                            time = s.d1 + 1;
                         }
 //                    while (time < s.series.)
                         s.series.add(time, (double) s.int1 / s.int2);
@@ -536,17 +607,63 @@ public class StatsChartsFactory {
         }
     }
 
+    public static ChartPanel getEvaluationErrorConvergencePlot(OptResults res, String killerNamePrefix) {
+
+        HashMap<String, LinkedList<double[]>> data = new HashMap<String, LinkedList<double[]>>();
+        LinkedList<String> seriesNames = new LinkedList<String>();
+
+        int n=0;
+        for (DuelEvalResults r : res.iterResults) {
+            BotStatistic stats = r.stats;
+
+            HashMap<String, Integer> scores = new HashMap<String, Integer>();
+            for (Kill k : stats.kills) {
+                if (scores.containsKey(k.killer)) {
+                    continue;
+                }
+                if (k.killer.startsWith(killerNamePrefix)) {
+                    int score = StatsTools.getBotScore(k.killer, stats);
+                    scores.put(k.killer, score);
+                }
+            }
+
+            double avg = 0;
+            for (int score : scores.values()) {
+                avg += score;
+            }
+            avg = avg / scores.values().size();
+
+            LinkedList<double[]> convgData = new LinkedList<double[]>();
+            int i = 0;
+            double cAvg = 0;
+            for (int score : scores.values()) {
+                cAvg += score;
+                convgData.add(new double[]{i, (cAvg / (i + 1)) - avg});
+                i++;
+            }
+
+
+            seriesNames.add(r.shortName+n);
+            data.put(r.shortName+n, convgData);
+            n++;
+        }
+
+        return getXYChart(seriesNames, data, "Evaluation errors", "Iteration", "Error");
+
+    }
+
     /**
      *
-     *
-     * @param
+     * @param seriesNames list of series names
+     * @param data map with key of series name and value with list of x, y points (sorted?)
+     * @param title title of plot
+     * @param xLabel x axis label
+     * @param yLabel y axis label
      * @return
      */
     public static ChartPanel getXYChart(LinkedList<String> seriesNames,
             HashMap<String, LinkedList<double[]>> data,
             String title, String xLabel, String yLabel) {
-
-
 
         XYSeriesCollection ds = new XYSeriesCollection();
 
