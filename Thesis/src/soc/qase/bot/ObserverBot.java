@@ -154,17 +154,21 @@ public abstract class ObserverBot extends BasicBot implements Observer
 /*-------------------------------------------------------------------*/
 	public boolean connect(String host, int port, int ctfTeam, String recordDM2File)
 	{
-            System.out.println("Connecting to: "+host+" port: "+port);
+            System.out.println(getName()+"> Connecting to: "+host+" port: "+port);
 
+            System.out.println(getName()+"> Connecting proxy...");
 		if(!proxy.connect(host, (port <= 0 ? 27910 : port), recordDM2File))
 			return false;
 
+            System.out.println(getName()+"> Ctf team setting...");
 		if(ctfTeam != Integer.MIN_VALUE)
 			setCTFTeam(Math.abs(ctfTeam) < 2 ? Math.abs(ctfTeam) : (int)Math.round(Math.random()));
 
+            System.out.println(getName()+"> Adding observer to proxy and getting map info...");
 		proxy.addObserver(this);
 		mapName = getServerInfo().getMapName();
 
+            System.out.println(getName()+"> Connected! Starting the thread...");
 		setConnected(true);
 		this.start();
 

@@ -21,9 +21,12 @@ import java.util.logging.Logger;
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.learnbot.LearnBot;
 import piotrrr.thesis.bots.referencebot.ReferenceBot;
+import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.gui.AppConfig;
+import piotrrr.thesis.gui.MyPopUpDialog;
 import piotrrr.thesis.gui.OptimizationFrame;
+import piotrrr.thesis.tools.Dbg;
 import soc.qase.tools.vecmath.Vector3f;
 
 /**
@@ -46,6 +49,7 @@ public class OptimizationRunner {
             try {
                 while ((line = br.readLine()) != null) {
 //                    System.out.println(line);
+                    Thread.yield();
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -67,9 +71,13 @@ public class OptimizationRunner {
         }
 
         public void run() {
-            bot.connect(ip, port);
             bot.setName(bot.getBotName());
+            bot.connect(ip, port);
             connected = true;
+            System.out.println("BotConnector: Bot " + bot.getBotName() + " connected!");
+        }
+
+        public void kill() {
         }
     }
     private HashMap<Integer, Process> childProcesses = new HashMap<Integer, Process>();
@@ -81,10 +89,18 @@ public class OptimizationRunner {
     private OptimizationRunner() {
     }
 
-    public void runOptimization(int timescale, int iterations, int maxScore, String mapName, int repetitions) {
-        optProcess = new RandOptProcess(timescale, iterations, maxScore, mapName, repetitions);
-//        optProcess = new HillClimbingProcess(timescale, iterations, maxScore, mapName, repetitions);
-//        optProcess = new NoChangeProcess(timescale, iterations, maxScore, mapName, repetitions);
+    public void runOptimization(int timescale, int iterations, int maxScore, String mapName, String alg, int repetitions) {
+
+        if (alg.equals("Hill Climbing Random")) {
+            optProcess = new HillClimbingWithRandOptProcess(timescale, iterations, maxScore, mapName, repetitions);
+        } else if (alg.equals("Hill Climbing")) {
+            optProcess = new HillClimbingProcess(timescale, iterations, maxScore, mapName, repetitions);
+        } else if (alg.equals("No Change")) {
+            optProcess = new NoChangeProcess(timescale, iterations, maxScore, mapName, repetitions);
+        } else {
+            MyPopUpDialog.showMyDialogBox("Error", "Unknown algorithm: " + alg, MyPopUpDialog.error);
+            return;
+        }
         optThread = new Thread(optProcess);
         optThread.setPriority(Thread.MIN_PRIORITY);
         optThread.setName("OptimizationProcess");
@@ -132,22 +148,28 @@ public class OptimizationRunner {
         t.setName("BotConnector");
         t.start();
         for (int i = 0; i < 10; i++) {
+            System.out.println("Bot connecting... " + i);
             sleep(100);
             if (con.connected) {
+                Dbg.prn("OK: Returning connected bot.");
                 return bot;
             }
         }
+        Dbg.prn("Done loop");
         if (!con.connected) {
+            Dbg.prn("Disconnecting bot");
             con.bot.disconnect();
-            con.bot.stopAndDestroy();
+            Dbg.prn("Stopping and destroying connector thread");
             try {
                 t.stop();
                 t.destroy();
             } catch (Throwable e) {
             }
             t = null;
+            Dbg.prn("Exception: Returning null bot.");
             return null;
         }
+        Dbg.prn("OK: Returning connected bot. Outside the loop.");
         return bot;
     }
 
@@ -279,6 +301,13 @@ public class OptimizationRunner {
     }
 
     public void handleIterationResults(DuelEvalResults res) {
-        OptimizationFrame.getOptFrameInstance().addResults(res);
+        try {
+            OptimizationFrame.getOptFrameInstance().addResults(res);
+            String fileToSave = "current-opt-backup";
+            System.out.println("Saving results to file: " + fileToSave);
+            CommFun.saveToFile(fileToSave, OptimizationFrame.getOptFrameInstance().getOptResults());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

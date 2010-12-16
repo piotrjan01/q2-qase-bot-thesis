@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.*;
 import java.lang.*;
 import java.util.*;
+import piotrrr.thesis.gui.AppConfig;
 import soc.qase.com.message.*;
 import soc.qase.com.packet.*;
 
@@ -225,10 +226,10 @@ public class CommunicationHandler
 
 				for(int i = 0; reliableReceived != true; i++)
 				{
-					if((i % 10) == 0)
+					if((i % 5) == 0)
 						socket.send(outgoingPacket);
 
-					Thread.sleep(50);
+					Thread.sleep(2);
 					currentData = receiveData();
 				}
 			}

@@ -10,7 +10,9 @@ import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.GameObject;
 import piotrrr.thesis.common.jobs.Job;
 import piotrrr.thesis.gui.MyPopUpDialog;
+import piotrrr.thesis.tools.Dbg;
 import soc.qase.bot.NoClipBot;
+import soc.qase.bot.PollingBot;
 import soc.qase.file.bsp.BSPParser;
 import soc.qase.state.PlayerGun;
 import soc.qase.state.PlayerMove;
@@ -95,7 +97,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
     public BotBase(String botName, String skinName) {
         super(botName, skinName);
 //        setHighThreadSafety(true);
-//        setAutoInventoryRefresh(true);
+        setAutoInventoryRefresh(true);
         setUncaughtExceptionHandler(this);
     }
 
@@ -501,7 +503,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
      * @param dst the position where the bot should move.
      */
     public void goToPositionWithNoClipCheating(Vector3f dst) {
-        clipToPosition(dst);
+//        clipToPosition(dst);
     }
 
     @Override
@@ -548,19 +550,26 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
 
     private void doDisconnect() {
         super.disconnect();
-        killProxy();
+        stopAndDestroy();
     }
 
     private void killProxy() {
+        Dbg.prn("killProxy");
         if (proxy != null) {
+            Dbg.prn("proxy.deleteObservers();");
             proxy.deleteObservers();
+             Dbg.prn("proxy.disconnect();");
             proxy.disconnect();
+            Dbg.prn("if ...");
             if (proxy.getRecvThread() != null) {
                 try {
+                    Dbg.prn("stop recv");
                     proxy.getRecvThread().stop();
+                    Dbg.prn("destroy recv");
                     proxy.getRecvThread().destroy();
                 }
                 catch (Throwable e) {
+                    Dbg.prn("exception "+e.getMessage());
                 }
             }
         }
@@ -573,9 +582,13 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
     }
 
     public void stopAndDestroy() {
+        Dbg.prn("stopAndDestroy");
         try {
+            Dbg.prn("kill proxy");
             killProxy();
+            Dbg.prn("stop");
             this.stop();
+            Dbg.prn("destroy");
             this.destroy();
         } catch (Throwable e) {
         }

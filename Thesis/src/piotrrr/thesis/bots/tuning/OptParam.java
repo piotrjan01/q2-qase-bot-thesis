@@ -40,7 +40,7 @@ public class OptParam implements Serializable {
     public void setValue(double value) throws Exception {
         if (value >= min && value <= max)
             this.value = value;
-        throw new Exception("Wrong value: "+toString());
+        else throw new Exception("Wrong value: "+toString());
     }
 
     @Override
