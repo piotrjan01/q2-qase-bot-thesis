@@ -10,11 +10,11 @@ import piotrrr.thesis.common.combat.FiringInstructions;
 import piotrrr.thesis.common.jobs.BasicCommands;
 import piotrrr.thesis.common.jobs.GeneralDebugTalk;
 import piotrrr.thesis.common.jobs.StuckDetector;
-import piotrrr.thesis.common.navigation.FuzzyEntityRanking;
 import piotrrr.thesis.common.navigation.GlobalNav;
 import piotrrr.thesis.common.navigation.LocalNav;
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.common.navigation.NavPlan;
+import piotrrr.thesis.common.navigation.TuningEntityRanking;
 import piotrrr.thesis.common.navigation.WorldKB;
 import soc.qase.state.Action;
 import soc.qase.state.Entity;
@@ -198,11 +198,11 @@ public class MapBotBase extends BotBase {
             }
 
             String fuzzyState = "";
-            fuzzyState += " wd=" + FuzzyEntityRanking.getBotWeaponDeficiency(this, 0);
+//            fuzzyState += " wd=" + TuningEntityRanking.getBotWeaponDeficiency(this, 0);
 //                    say += " ammd="+FuzzyEntityRanking.getBotAmmoDeficiency(b, 0);
 //                    say += " hd="+FuzzyEntityRanking.getBotHealthDeficiency(b, 0);
 //                    say += " armd="+FuzzyEntityRanking.getBotArmorDeficiency(b, 0);
-            fuzzyState += " maxDef=" + FuzzyEntityRanking.getMaximalDeficiency(this);
+//            fuzzyState += " maxDef=" + TuningEntityRanking.getMaximalDeficiency(this);
 
             fuzzyState += " wpns=";
             for (int i = 7; i < 18; i++) {

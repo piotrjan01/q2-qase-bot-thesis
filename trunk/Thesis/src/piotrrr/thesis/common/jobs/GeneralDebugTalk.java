@@ -1,9 +1,6 @@
 package piotrrr.thesis.common.jobs;
 
 import piotrrr.thesis.bots.botbase.BotBase;
-import piotrrr.thesis.bots.mapbotbase.MapBotBase;
-import piotrrr.thesis.common.navigation.FuzzyEntityRanking;
-import piotrrr.thesis.tools.Dbg;
 
 /**
  * Dummy job, that repeats some debug info with given period.
