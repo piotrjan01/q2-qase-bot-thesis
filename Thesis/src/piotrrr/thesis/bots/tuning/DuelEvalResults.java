@@ -5,9 +5,7 @@
 package piotrrr.thesis.bots.tuning;
 
 import java.io.Serializable;
-import java.util.TreeSet;
 import piotrrr.thesis.common.stats.BotStatistic;
-import piotrrr.thesis.common.stats.StatsTools;
 
 /**
  *
@@ -19,13 +17,15 @@ public class DuelEvalResults implements Serializable {
     public String comment;
     public String shortName;
     public double score;
+    public int iterNr;
 
 
-    public DuelEvalResults(BotStatistic stats, String shortName, String comment, double score) {
+    public DuelEvalResults(BotStatistic stats, String shortName, String comment, double score, int iterNr) {
         this.stats = stats;
         this.comment = comment;
         this.shortName = shortName;
         this.score = score;
+        this.iterNr = iterNr;
     }
 
     public String toShortString() {

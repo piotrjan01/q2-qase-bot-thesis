@@ -6,10 +6,11 @@ import java.lang.reflect.Field;
 public class NavConfig implements Serializable {
 
     private static final double stepSize = 0.2;
-    public OptParam weight_health = new OptParam(0.9f, 0, 1, stepSize);
-    public OptParam weight_armor = new OptParam(0.3f, 0, 1, stepSize);
-    public OptParam weight_weapon = new OptParam(0.6f, 0, 1, stepSize);
-    public OptParam weight_ammo = new OptParam(0.5f, 0, 1, stepSize);
+    private static final double initialVals = 0.5;
+    public OptParam weight_health = new OptParam(0.7f, 0, 1, stepSize);
+    public OptParam weight_armor = new OptParam(0.5f, 0, 1, stepSize);
+    public OptParam weight_weapon = new OptParam(0.4f, 0, 1, stepSize);
+    public OptParam weight_ammo = new OptParam(0.3f, 0, 1, stepSize);
     public OptParam weight_distance = new OptParam(0.2f, 0, 1, stepSize);
     public OptParam weight_enemycost = new OptParam(0.5f, 0, 1, stepSize);
     public OptParam weight_aggresiveness = new OptParam(0.7f, 0, 1, stepSize);
@@ -48,13 +49,13 @@ public class NavConfig implements Serializable {
 
     public void setInitialParams() {
         try {
-        weight_health.setValue(0.5);
-        weight_armor.setValue(0.5);
-        weight_weapon.setValue(0.5);
-        weight_ammo.setValue(0.5);
-        weight_distance.setValue(0.5);
-        weight_enemycost.setValue(0.5);
-        weight_aggresiveness.setValue(0.5);
+        weight_health.setValue(initialVals);
+        weight_armor.setValue(initialVals);
+        weight_weapon.setValue(initialVals);
+        weight_ammo.setValue(initialVals);
+        weight_distance.setValue(initialVals);
+        weight_enemycost.setValue(initialVals);
+        weight_aggresiveness.setValue(initialVals);
         }
         catch (Exception e) {
             e.printStackTrace();

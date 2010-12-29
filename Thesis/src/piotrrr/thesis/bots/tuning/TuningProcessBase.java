@@ -22,9 +22,22 @@ public class TuningProcessBase implements OptProcess {
     protected int itScore;
     protected String mapName;
     protected boolean running;
-    protected int repetitions = 5;
+    protected int repetitions;
     Random rand = new Random();
     HashSet<NavConfig> visited;
+    LinkedList<DuelEvalResults> lastIterResults;
+    LinkedList<DuelEvalResults> allResults;
+
+    NavConfig best;
+    double bestScore;
+
+    NavConfig lastEvaluated = null;
+    double lastEvaluatedScore;
+
+    NavConfig lastBest = null;
+    double lastBestScore;
+    
+    
 
     public TuningProcessBase(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         this.timescale = timescale;
@@ -37,18 +50,25 @@ public class TuningProcessBase implements OptProcess {
     public void run() {
         running = true;
         visited = new HashSet<NavConfig>();
+        allResults = new LinkedList<DuelEvalResults>();
+        lastIterResults = new LinkedList<DuelEvalResults>();
         AppConfig.timeScale = timescale;
 
         int i = 0;
+        int e = 0;
 
-        NavConfig best = new NavConfig();
+        best = new NavConfig();
         best.setInitialParams();
         best.additionalInfo = "Initial config";
-        double bestScore = Double.NEGATIVE_INFINITY;
-        int bestIter = -1;
+        bestScore = Double.NEGATIVE_INFINITY;
+        lastBest = best;
+        lastBestScore = bestScore;
+        int bestEval = -1;
         while (i < iterations && running) {
 
             List<NavConfig> nList = generateNextSet(best);
+            lastIterResults.clear();
+            i++;
             
             if (nList.size() == 0) {
                 Dbg.prn("Empty set - nothing to explore");
@@ -57,28 +77,37 @@ public class TuningProcessBase implements OptProcess {
             }
 
             for (NavConfig conf : nList) {
+                e++;
 
-                double score = ConfigEvaluator.sequentialEvaluateConfig(conf, i, repetitions, itScore, mapName);
+                double score = ConfigEvaluator.sequentialEvaluateConfig(conf, repetitions, itScore, mapName);
                 visited.add(conf);
+                lastEvaluated = conf;
+                lastEvaluatedScore = score;
 
                 DuelEvalResults result = new DuelEvalResults(ConfigEvaluator.gameStats,
-                        "Config-eval-"+i,
-                        "Config-eval-"+i+
-                        "\nBest eval nr: " + bestIter+
+                        "Config-eval-"+e,
+                        "Iteration: "+i+
+                        "\nConfig-eval-"+e+
+                        "\nBest eval nr: " + bestEval+
                         "\nSteepest bot score: " + bestScore +
                         "\nCurrent bot score: " + score +
                         "\n\nTested config: " + conf.toString() +
                         "\nBest config: " + best.toString() +
                         "\nConfig diff from best:\n" + best.getDifferences(conf) +
-                        "\nEval log:\n" + ConfigEvaluator.evalLog, score);
+                        "\nEval log:\n" + ConfigEvaluator.evalLog, score, i);
+
+                allResults.add(result);
+                lastIterResults.add(result);
                 OptimizationRunner.getInstance().handleIterationResults(result);
 
                 if (score > bestScore) {
-                    bestScore = score;
+                    lastBestScore = bestScore;
+                    lastBest = best;
+                    bestScore = score;                    
                     best = conf;
-                    bestIter = i;
+                    bestEval = e;
                 }
-                i++;
+
             }
         }
         stopProcess();
@@ -88,6 +117,8 @@ public class TuningProcessBase implements OptProcess {
     public void stopProcess() {
         running = false;
         visited.clear();
+        lastIterResults.clear();
+        allResults.clear();
     }
 
     protected NavConfig findNeighbourSystematically(NavConfig c1) {

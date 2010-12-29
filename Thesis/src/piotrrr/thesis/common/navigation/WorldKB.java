@@ -37,10 +37,16 @@ public class WorldKB {
      */
     LinkedList<Integer> targetBlacklist;
     /**
-     * Stores information on the enemies
+     * Stores information on the enemies. Key=entity id, value=enemy info
      */
     public HashMap<Integer, EnemyInfo> enemyInformation = new HashMap<Integer, EnemyInfo>();
+    /**
+     * Entity number + the frame when it was seen last time. Used to determine if given entity may or not be active.
+     */
     HashMap<Integer, Integer> entitySeenLastTime = new HashMap<Integer, Integer>();
+    /**
+     * A cache that is used to determine if given entity is reachable or not. Key=entity id, Val=true if reachable
+     */
     HashMap<Integer, Boolean> entitiesReachability = new HashMap<Integer, Boolean>();
     /**
      * The maximum size of pickupBlaclist
@@ -277,11 +283,11 @@ public class WorldKB {
             return true; //if marked as active - ret true
         }
         if (!entitySeenLastTime.containsKey(e.getNumber())) {
-            return false; //if it wasnt seen - false
+            return false; //if it wasnt seen ever - false
         }
         int rt = e.getRespawnTime(); // otherwise get respawn time
-        return (bot.getFrameNumber() >= entitySeenLastTime.get(e.getNumber()) + rt); //true if time has passed
-        }
+        return (bot.getFrameNumber() >= entitySeenLastTime.get(e.getNumber()) + rt); //true if enough time has passed
+    }
 
     /**
      * Updates the information on the enemies in the world

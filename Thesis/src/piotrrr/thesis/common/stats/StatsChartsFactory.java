@@ -607,6 +607,59 @@ public class StatsChartsFactory {
         }
     }
 
+    public static ChartPanel getEvalFitnessPlot(OptResults optResults) {
+         LinkedList<double[]> evalScore = new LinkedList<double[]>();
+        LinkedList<double[]> bestScores = new LinkedList<double[]>();
+        int eval = 1;
+        double bestScore = Double.NEGATIVE_INFINITY;
+        for (DuelEvalResults res : optResults.iterResults) {
+            if (res.score > bestScore) bestScore = res.score;
+            evalScore.add(new double[] {eval, res.score});
+            bestScores.add(new double[] {eval, bestScore});
+            eval++;
+        }
+        LinkedList<String> series = new LinkedList<String>();
+        series.add("Best fitness");
+        series.add("Eval fitness");
+        HashMap<String, LinkedList<double[]>> map = new HashMap<String, LinkedList<double[]>>();
+        map.put(series.getFirst(), bestScores);
+        map.put(series.getLast(), evalScore);
+        return StatsChartsFactory.getXYChart(series, map, "Fitness in evaluations", "Evaluation", "Fitness", true);
+
+    }
+
+     public static ChartPanel getIterFitnessPlot(OptResults optResults) {
+        LinkedList<double[]> iterScores = new LinkedList<double[]>();
+        int currentIter = -1;
+        double iterBest = Double.NEGATIVE_INFINITY;
+        boolean firstTime = true;
+        for (DuelEvalResults res : optResults.iterResults) {
+            if (firstTime) {
+                currentIter = res.iterNr;
+                iterBest = res.score;
+                firstTime = false;
+            }
+            
+            if (res.iterNr != currentIter) {
+                iterScores.add(new double[] {currentIter, iterBest});
+                iterBest = Double.NEGATIVE_INFINITY;
+                currentIter = res.iterNr;
+            }
+            if (res.score > iterBest) {
+                iterBest = res.score;
+            }
+        }
+        if (optResults.iterResults.getLast().iterNr == currentIter) {
+            iterScores.add(new double[] {currentIter, iterBest});
+        }
+        LinkedList<String> series = new LinkedList<String>();
+        series.add("Iter fitness");
+        HashMap<String, LinkedList<double[]>> map = new HashMap<String, LinkedList<double[]>>();
+        map.put(series.getLast(), iterScores);
+        return StatsChartsFactory.getXYChart(series, map, "Fitness in iterations", "Iteration", "Fitness", true);
+
+    }
+
     public static ChartPanel getEvaluationErrorConvergencePlot(OptResults res, String killerNamePrefix) {
 
         HashMap<String, LinkedList<double[]>> data = new HashMap<String, LinkedList<double[]>>();
@@ -638,17 +691,78 @@ public class StatsChartsFactory {
             double cAvg = 0;
             for (int score : scores.values()) {
                 cAvg += score;
-                convgData.add(new double[]{i, (cAvg / (i + 1)) - avg});
+                double errorPercent = ((cAvg / (i + 1)) - avg) / r.score;
+                convgData.add(new double[]{i, errorPercent});
                 i++;
             }
 
 
-            seriesNames.add(r.shortName+n);
-            data.put(r.shortName+n, convgData);
+            seriesNames.add(r.shortName);
+            data.put(r.shortName, convgData);
             n++;
         }
+        return getXYChart(seriesNames, data, "Evaluation errors", "Evaluation repetition", "Error", false);
 
-        return getXYChart(seriesNames, data, "Evaluation errors", "Iteration", "Error");
+    }
+
+    public static ChartPanel getEvaluationRelativeAvgErrorConvergencePlot(OptResults res, String killerNamePrefix) {
+
+        HashMap<String, LinkedList<double[]>> data = new HashMap<String, LinkedList<double[]>>();
+        LinkedList<String> seriesNames = new LinkedList<String>();
+
+        LinkedList<double[]> convgData = new LinkedList<double[]>();
+
+        for (DuelEvalResults r : res.iterResults) {
+            BotStatistic stats = r.stats;
+
+            //Score of each game in given evaluation
+            HashMap<String, Integer> scores = new HashMap<String, Integer>();
+            for (Kill k : stats.kills) {
+                if (scores.containsKey(k.killer)) {
+                    continue;
+                }
+                if (k.killer.startsWith(killerNamePrefix)) {
+                    int score = StatsTools.getBotScore(k.killer, stats);
+                    scores.put(k.killer, score);
+                }
+            }
+
+            double avg = 0;
+            for (int score : scores.values()) {
+                avg += score;
+            }
+            avg = avg / scores.values().size();
+
+            
+            int i = 0;
+            double cAvg = 0;
+            for (int score : scores.values()) {
+                cAvg += score;
+                double errorPercent = ((cAvg / (i + 1)) - avg) / r.score;
+                double [] newVal;
+                if (convgData.size()-1 < i) {
+                    newVal = new double[] {i, 0};
+                    newVal[1] += errorPercent;
+                    convgData.add(newVal);
+                }
+                else {
+                    newVal = convgData.get(i);
+                    newVal[1] += errorPercent;
+                    convgData.set(i, newVal);
+                }
+               
+                i++;
+            }           
+        }
+
+        for (double [] val : convgData) {
+            val[1] = val[1] / res.iterResults.size();
+        }
+        
+        seriesNames.add("Average relative error");
+        data.put("Average relative error", convgData);
+
+        return getXYChart(seriesNames, data, "Average relative evaluation error", "Repetition", "Error", true);
 
     }
 
@@ -663,7 +777,7 @@ public class StatsChartsFactory {
      */
     public static ChartPanel getXYChart(LinkedList<String> seriesNames,
             HashMap<String, LinkedList<double[]>> data,
-            String title, String xLabel, String yLabel) {
+            String title, String xLabel, String yLabel, boolean legend) {
 
         XYSeriesCollection ds = new XYSeriesCollection();
 
@@ -681,7 +795,9 @@ public class StatsChartsFactory {
                 yLabel,
                 ds,
                 PlotOrientation.VERTICAL,
-                true, true, true);
+                legend, true, true);
+
+
 
         ChartPanel cp = new ChartPanel(c);
         return cp;
