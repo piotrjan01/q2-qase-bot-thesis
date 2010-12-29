@@ -140,14 +140,14 @@ public class TuningEntityRanking {
             }
 
             //weights depending on context
-            rank += bot.nConfig.weight_distance.getValue() * m.dist / maxDist;
+            rank -= bot.nConfig.weight_distance.getValue() * m.dist / maxDist;
             if (!err && Double.isNaN(rank)) {
                 Dbg.prn("Rank NaN after dist");
                 err=true;
             }
 
             if (maxEnemyCost != 0) {
-                rank += bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost;
+                rank -= bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost;
             }
             if (!err && Double.isNaN(rank)) {
                 Dbg.prn("Rank NaN after enemy cost");
@@ -174,12 +174,17 @@ public class TuningEntityRanking {
         float amd = getBotAmmoDeficiency(bot, 0);
         float wd = getBotWeaponDeficiency(bot, 0);
 
+        float wSum = (float) (bot.nConfig.weight_ammo.getValue() +
+                bot.nConfig.weight_armor.getValue() +
+                bot.nConfig.weight_weapon.getValue() +
+                bot.nConfig.weight_health.getValue());
+
         float st = (float) (bot.nConfig.weight_health.getValue() *
                 hd + bot.nConfig.weight_armor.getValue() *
                 ard + bot.nConfig.weight_armor.getValue() *
                 amd + bot.nConfig.weight_weapon.getValue() *
                 wd);
-        return st;
+        return st/wSum;
     }
 
     private static Measures getMeasures(MapBotBase bot, Entity e, RankingCache cache) {

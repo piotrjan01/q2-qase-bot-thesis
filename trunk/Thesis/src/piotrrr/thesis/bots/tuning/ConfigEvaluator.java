@@ -48,7 +48,7 @@ public class ConfigEvaluator implements Runnable {
         this.itTime = itTime;
     }
 
-    public static double sequentialEvaluateConfig(NavConfig nc1, int bn1, int repetitions, int itScore, String mapName) {
+    public static double sequentialEvaluateConfig(NavConfig nc1, int repetitions, int itScore, String mapName) {
         LinkedList<ConfigEvaluator> ces = new LinkedList<ConfigEvaluator>();
         evalLog = "";
         ConfigEvaluator.gameStats = null;
@@ -159,7 +159,7 @@ public class ConfigEvaluator implements Runnable {
                     stopAndNullBots();
                     OptimizationRunner.getInstance().clearProcess(servPort);
                     result = ret;
-                    evalLog += "\nGame " + gameNr + " result: " + ret;
+                    evalLog += ret+" ";
                     return;
                 }
                 if (unblock) {

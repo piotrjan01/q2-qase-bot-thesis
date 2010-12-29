@@ -97,7 +97,10 @@ public class OptimizationRunner {
             optProcess = new HillClimbingProcess(timescale, iterations, maxScore, mapName, repetitions);
         } else if (alg.equals("No Change")) {
             optProcess = new NoChangeProcess(timescale, iterations, maxScore, mapName, repetitions);
-        } else {
+        } else if (alg.equals("Simulated Annealing")) {
+            optProcess = new SimulatedAnnealingProcess(timescale, iterations, maxScore, mapName, repetitions);
+        }
+        else {
             MyPopUpDialog.showMyDialogBox("Error", "Unknown algorithm: " + alg, MyPopUpDialog.error);
             return;
         }
