@@ -113,6 +113,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         killsChartjPanel5 = new javax.swing.JPanel();
         killsPerDeathjPanel6 = new javax.swing.JPanel();
         killsByBotTypejPanel5 = new javax.swing.JPanel();
+        resultsDistributionjPanel7 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bots Optimization");
@@ -148,14 +149,14 @@ public class OptimizationFrame extends javax.swing.JFrame {
 
         jLabel4.setText("Evaluation repetitions");
 
-        evalRepetitionsjTextField1.setText("36");
+        evalRepetitionsjTextField1.setText("40");
         evalRepetitionsjTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 evalRepetitionsjTextField1ActionPerformed(evt);
             }
         });
 
-        maxIterScorejTextField1.setText("900");
+        maxIterScorejTextField1.setText("800");
         maxIterScorejTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxIterScorejTextField1ActionPerformed(evt);
@@ -180,7 +181,6 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Optimization method"));
 
         algButtonGroup1.add(jRadioButton4);
-        jRadioButton4.setSelected(true);
         jRadioButton4.setText("Hill Climbing Random");
 
         algButtonGroup1.add(jRadioButton5);
@@ -195,6 +195,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         });
 
         algButtonGroup1.add(jRadioButton7);
+        jRadioButton7.setSelected(true);
         jRadioButton7.setText("Simulated Annealing");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -354,14 +355,14 @@ public class OptimizationFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(87, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Run Optimization", jPanel1);
@@ -387,7 +388,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jTabbedPane3.addTab("Evals fitness", fitnessjPanel5);
 
         errorjPanel7.setLayout(new java.awt.GridLayout(1, 1));
-        jTabbedPane3.addTab("Error", errorjPanel7);
+        jTabbedPane3.addTab("sample variance estimate", errorjPanel7);
 
         avgRelError.setLayout(new java.awt.GridLayout(1, 1));
         jTabbedPane3.addTab("Avg relative error", avgRelError);
@@ -406,7 +407,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -424,7 +425,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
                     .addComponent(jButton3)
                     .addComponent(refreshResultsChartsjButton4))
                 .addGap(18, 18, 18)
-                .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -447,14 +448,14 @@ public class OptimizationFrame extends javax.swing.JFrame {
             textjPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(textjPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
                 .addContainerGap())
         );
         textjPanel4Layout.setVerticalGroup(
             textjPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(textjPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -469,6 +470,9 @@ public class OptimizationFrame extends javax.swing.JFrame {
         killsByBotTypejPanel5.setLayout(new java.awt.GridLayout(1, 1));
         jTabbedPane2.addTab("Kills by bot type", killsByBotTypejPanel5);
 
+        resultsDistributionjPanel7.setLayout(new java.awt.GridLayout(1, 1));
+        jTabbedPane2.addTab("Results distribution", resultsDistributionjPanel7);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -477,7 +481,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE)
+                .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -485,8 +489,8 @@ public class OptimizationFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE))
+                    .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -498,14 +502,14 @@ public class OptimizationFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -583,7 +587,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         fitnessjPanel5.revalidate();
 
         errorjPanel7.removeAll();
-        errorjPanel7.add(StatsChartsFactory.getEvaluationErrorConvergencePlot(optResults, "LearnBot"));
+        errorjPanel7.add(StatsChartsFactory.getSampleVarianceEstimatePlot(optResults, "LearnBot"));
         errorjPanel7.revalidate();
 
         iterFitnessjPanel7.removeAll();
@@ -591,7 +595,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         iterFitnessjPanel7.revalidate();
 
         avgRelError.removeAll();
-        avgRelError.add(StatsChartsFactory.getEvaluationRelativeAvgErrorConvergencePlot(optResults, "LearnBot"));
+        avgRelError.add(StatsChartsFactory.getEvaluationAvgVarianceInRepetitionsPlot(optResults, "LearnBot"));
         avgRelError.revalidate();
 
     }//GEN-LAST:event_refreshResultsChartsjButton4ActionPerformed
@@ -636,6 +640,10 @@ public class OptimizationFrame extends javax.swing.JFrame {
         killsByBotTypejPanel5.removeAll();
         killsByBotTypejPanel5.add(StatsChartsFactory.getKillsInTimeByBotTypeSorting(r.stats));
         killsByBotTypejPanel5.revalidate();
+
+        resultsDistributionjPanel7.removeAll();
+        resultsDistributionjPanel7.add(StatsChartsFactory.getResultsDistributionPlot(r, "LearnBot", 20));
+        resultsDistributionjPanel7.revalidate();
 
     }
 
@@ -729,6 +737,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
     private javax.swing.JTextField maxIterScorejTextField1;
     private javax.swing.JButton refreshResultsChartsjButton4;
     private javax.swing.JTextArea resultDetailsTextArea1;
+    private javax.swing.JPanel resultsDistributionjPanel7;
     private javax.swing.JList resultsjList1;
     private javax.swing.JButton runjButton1;
     private javax.swing.JPanel textjPanel4;

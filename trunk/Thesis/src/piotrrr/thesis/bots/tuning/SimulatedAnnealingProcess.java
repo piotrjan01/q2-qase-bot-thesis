@@ -39,19 +39,27 @@ public class SimulatedAnnealingProcess extends TuningProcessBase {
         }
 
         NavConfig toAdd = null;
-        if (worseConfig != null && getWorseChoiceProbability(bestScore, worseScore) < rand.nextDouble()) {
+        double p = getWorseChoiceProbability(bestScore, worseScore);
+        String info = " t="+t+" p="+p;
+        if (worseConfig != null && rand.nextDouble() < p) {
             //worse choice
-            toAdd = findNeighbourSystematically(worseConfig);
+            toAdd = findPossiblyRandomNeighbour(worseConfig);
+            info = "neighbour of worse"+info;
         } else {
             //better choice
-            toAdd = findNeighbourSystematically(best);
-        }
-
+            toAdd = findPossiblyRandomNeighbour(best);
+            info = "neighbour of better"+info;
+        }       
         if (toAdd == null) {
             //if we found no neighbour, we clear visited memory and search again
             visited.clear();
-            return generateNextSet(best);
+            ret = generateNextSet(best);
+            for (NavConfig c : ret) {
+                c.additionalInfo += "; after clearing visited cache"+info;
+            }
+            return ret;
         }
+        toAdd.additionalInfo += info;
         ret.add(toAdd);
         return ret;
     }

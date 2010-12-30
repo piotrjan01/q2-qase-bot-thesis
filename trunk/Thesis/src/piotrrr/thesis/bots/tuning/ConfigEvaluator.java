@@ -72,47 +72,6 @@ public class ConfigEvaluator implements Runnable {
 
     }
 
-    /*public static int parallelEvaluateConfig(NavConfig nc1, int bn1, int repetitions, int itScore, String mapName) {
-    LinkedList<ConfigEvaluator> ces = new LinkedList<ConfigEvaluator>();
-    LinkedList<Thread> ts = new LinkedList<Thread>();
-    evalLog = "";
-
-    ConfigEvaluator.gameStats = null;
-    timer = new Timer("Parallel evaluation [reps=" + repetitions + " itTime=" + itScore + "ms map=" + mapName+"]");
-    timer.startFromZero();
-
-    for (int i = 0; i < repetitions; i++) {
-    ces.add(new ConfigEvaluator(mapName, nc1, i, itScore));
-    Thread t = new Thread(ces.getLast());
-    ts.add(t);
-    t.setName("parallelEval-" + i);
-    t.start();
-    }
-
-    boolean working = true;
-    while (working) {
-    int dead = 0;
-    for (Thread t : ts) {
-    if (!t.isAlive()) {
-    dead++;
-    }
-    }
-    if (dead == ts.size()) {
-    working = false;
-    }
-    }
-
-    int res = 0;
-    for (ConfigEvaluator c : ces) {
-    res += c.result;
-    }
-    res /= ces.size();
-
-    timer.pause();
-    evalLog += "\n" + timer.toString();
-    return res;
-
-    }*/
     public void run() {
 
         int servPort = AppConfig.serverPort + rand.nextInt(500);
@@ -151,11 +110,11 @@ public class ConfigEvaluator implements Runnable {
                 if ((refBot.getFrameNumber()) > time) {
                     time = refBot.getFrameNumber();
                 }
-                int score = StatsTools.getBotScore(bot.getBotName(), gameStats);
-                int refScore = StatsTools.getBotScore(refBot.getBotName(), gameStats);
+                
                 Dbg.prn("avg ts=" + ((time - lastTime) / 10.0) + " done=" + ((time * 100) / (10 * itTime)) + "%");
                 if (time >= 10 * itTime) {
-                    ret = score - refScore;
+                    StatsTools.removeEventsAfter(10*itTime, gameStats);
+                    ret =  StatsTools.getBotScore(bot.getBotName(), gameStats); // - refScore;
                     stopAndNullBots();
                     OptimizationRunner.getInstance().clearProcess(servPort);
                     result = ret;
@@ -173,6 +132,8 @@ public class ConfigEvaluator implements Runnable {
                     return;
                 }
 
+                int score = StatsTools.getBotScore(bot.getBotName(), gameStats);
+                int refScore = StatsTools.getBotScore(refBot.getBotName(), gameStats);
 
                 int maxScore = Math.max(score, refScore);
                 if (maxScore != lastMaxScore) {
@@ -252,7 +213,8 @@ public class ConfigEvaluator implements Runnable {
             refBot = null;
         }
         //System.gc();
-        MyPopUpDialog.showMyDialogBox("Eval unblocked", "Eval was automatically unblocked: " + reason, MyPopUpDialog.info);
+//        MyPopUpDialog.showMyDialogBox("Eval unblocked", "Eval was automatically unblocked: " + reason, MyPopUpDialog.info);
+        System.err.println("Eval was automatically unblocked: " + reason);
         sleep((int) (0.5 * ONE_SECOND));
         OptimizationRunner.getInstance().clearProcess(servPort);
         sleep((int) (0.5 * ONE_SECOND));

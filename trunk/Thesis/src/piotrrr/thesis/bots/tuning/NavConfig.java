@@ -5,20 +5,22 @@ import java.lang.reflect.Field;
 
 public class NavConfig implements Serializable {
 
-    private static final double stepSize = 0.2;
+    private static final double stepSize = 0.3;
     private static final double initialVals = 0.5;
-    public OptParam weight_health = new OptParam(0.7f, 0, 1, stepSize);
+    public OptParam weight_health = new OptParam(0.8f, 0, 1, stepSize);
     public OptParam weight_armor = new OptParam(0.5f, 0, 1, stepSize);
     public OptParam weight_weapon = new OptParam(0.4f, 0, 1, stepSize);
-    public OptParam weight_ammo = new OptParam(0.3f, 0, 1, stepSize);
+    public OptParam weight_ammo = new OptParam(0.4f, 0, 1, stepSize);
+    public OptParam weight_health_ben = new OptParam(0.9f, 0, 1, stepSize);
+    public OptParam weight_armor_ben = new OptParam(0.6f, 0, 1, stepSize);
+    public OptParam weight_weapon_ben = new OptParam(0.2f, 0, 1, stepSize);
+    public OptParam weight_ammo_ben = new OptParam(0.2f, 0, 1, stepSize);
     public OptParam weight_distance = new OptParam(0.2f, 0, 1, stepSize);
-    public OptParam weight_enemycost = new OptParam(0.5f, 0, 1, stepSize);
-    public OptParam weight_aggresiveness = new OptParam(0.7f, 0, 1, stepSize);
-
+    public OptParam weight_enemycost = new OptParam(0.1f, 0, 1, stepSize);
+    public OptParam weight_aggresiveness = new OptParam(0.6f, 0, 1, stepSize);
     public String additionalInfo = "";
 
     public NavConfig() {
-        
     }
 
     public NavConfig(NavConfig original) {
@@ -26,12 +28,16 @@ public class NavConfig implements Serializable {
         weight_armor = new OptParam(original.weight_armor);
         weight_weapon = new OptParam(original.weight_weapon);
         weight_ammo = new OptParam(original.weight_ammo);
+
+        weight_health_ben = new OptParam(original.weight_health_ben);
+        weight_armor_ben = new OptParam(original.weight_armor_ben);
+        weight_weapon_ben = new OptParam(original.weight_weapon_ben);
+        weight_ammo_ben = new OptParam(original.weight_ammo_ben);
+
         weight_distance = new OptParam(original.weight_distance);
         weight_enemycost = new OptParam(original.weight_enemycost);
         weight_aggresiveness = new OptParam(original.weight_aggresiveness);
     }
-
-
 
     public void randAllParams() {
         for (Field f : this.getClass().getDeclaredFields()) {
@@ -49,15 +55,18 @@ public class NavConfig implements Serializable {
 
     public void setInitialParams() {
         try {
-        weight_health.setValue(initialVals);
-        weight_armor.setValue(initialVals);
-        weight_weapon.setValue(initialVals);
-        weight_ammo.setValue(initialVals);
-        weight_distance.setValue(initialVals);
-        weight_enemycost.setValue(initialVals);
-        weight_aggresiveness.setValue(initialVals);
-        }
-        catch (Exception e) {
+            weight_health.setValue(initialVals);
+            weight_armor.setValue(initialVals);
+            weight_weapon.setValue(initialVals);
+            weight_ammo.setValue(initialVals);
+            weight_health_ben.setValue(initialVals);
+            weight_armor_ben.setValue(initialVals);
+            weight_weapon_ben.setValue(initialVals);
+            weight_ammo_ben.setValue(initialVals);
+            weight_distance.setValue(initialVals);
+            weight_enemycost.setValue(initialVals);
+            weight_aggresiveness.setValue(initialVals);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -125,7 +134,7 @@ public class NavConfig implements Serializable {
                 ex.printStackTrace();
             }
         }
-        ret += "Additional info: "+additionalInfo;
+        ret += "Additional info: " + additionalInfo;
         return ret + "\n";
     }
 
@@ -139,7 +148,7 @@ public class NavConfig implements Serializable {
                 OptParam p1 = (OptParam) f.get(this);
                 OptParam p2 = (OptParam) f.get(c);
                 if (p1.getValue() != p2.getValue()) {
-                    ret+="orig."+f.getName()+"="+p1.getValue()+"\nnew."+f.getName()+"="+p2.getValue()+"\n\n";
+                    ret += "orig." + f.getName() + "=" + p1.getValue() + "\nnew." + f.getName() + "=" + p2.getValue() + "\n\n";
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -180,5 +189,25 @@ public class NavConfig implements Serializable {
         int hash = 7;
         hash = 11 * hash + (this.weight_health != null ? this.weight_health.hashCode() : 0);
         return hash;
+    }
+
+    public double getConfigDistance(NavConfig obj) {
+        double dist = 0;
+        for (Field f : this.getClass().getDeclaredFields()) {
+            try {
+                if (!f.getType().equals(OptParam.class)) {
+                    continue;
+                }
+                OptParam p1 = (OptParam) f.get(this);
+                OptParam p2 = (OptParam) f.get(obj);
+
+                dist += Math.abs(p1.getValue() - p2.getValue());
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return dist;
+
     }
 }
