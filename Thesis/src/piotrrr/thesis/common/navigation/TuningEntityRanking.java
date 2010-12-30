@@ -122,13 +122,13 @@ public class TuningEntityRanking {
 
             //Weights constant, independent from context
             if (e.getType().equals(Entity.TYPE_HEALTH)) {
-                rank = bot.nConfig.weight_health.getValue() * (hd + m.healthBen);
+                rank = bot.nConfig.weight_health.getValue() * hd + bot.nConfig.weight_health_ben.getValue()*m.healthBen;
             } else if (e.getType().equals(Entity.TYPE_ARMOR)) {
-                rank = bot.nConfig.weight_armor.getValue() * (ard + m.armorBen);
+                rank = bot.nConfig.weight_armor.getValue() * ard + bot.nConfig.weight_armor_ben.getValue()*m.armorBen;
             } else if (e.isWeaponEntity()) {
-                rank = bot.nConfig.weight_weapon.getValue() * (wd + m.weaponBen);
+                rank = bot.nConfig.weight_weapon.getValue() * wd + bot.nConfig.weight_weapon_ben.getValue()*m.weaponBen;
             } else if (e.getType().equals(Entity.TYPE_AMMO)) {
-                rank = bot.nConfig.weight_ammo.getValue() * (amd + m.ammoBen);
+                rank = bot.nConfig.weight_ammo.getValue() * amd + bot.nConfig.weight_ammo_ben.getValue()*m.ammoBen;
             }
 
             if (!err && Double.isNaN(rank)) {

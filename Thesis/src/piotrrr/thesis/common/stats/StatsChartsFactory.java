@@ -14,6 +14,10 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DatasetGroup;
+import org.jfree.data.statistics.HistogramDataset;
+import org.jfree.data.xy.DefaultIntervalXYDataset;
+import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import piotrrr.thesis.bots.tuning.DuelEvalResults;
@@ -607,15 +611,55 @@ public class StatsChartsFactory {
         }
     }
 
+    public static ChartPanel getResultsDistributionPlot(DuelEvalResults res, String killerNamePrefix, int bins) {
+        BotStatistic stats = res.stats;
+
+        HistogramDataset ds = new HistogramDataset();
+
+        HashMap<String, Integer> scores = new HashMap<String, Integer>();
+        for (Kill k : stats.kills) {
+            if (scores.containsKey(k.killer)) {
+                continue;
+            }
+            if (k.killer.startsWith(killerNamePrefix)) {
+                int score = StatsTools.getBotScore(k.killer, stats);
+                scores.put(k.killer, score);
+            }
+        }
+
+        double [] vals = new double [scores.values().size()];
+        int ind = 0;
+        for (int i : scores.values()) {
+            vals[ind] = i;
+            ind++;
+        }
+        ds.addSeries("Score", vals, bins);
+
+        JFreeChart c = ChartFactory.createHistogram("Results distribution",
+                "Result",
+                "Count",
+                ds,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                true);
+
+        ChartPanel cp = new ChartPanel(c);
+        return cp;
+
+    }
+
     public static ChartPanel getEvalFitnessPlot(OptResults optResults) {
-         LinkedList<double[]> evalScore = new LinkedList<double[]>();
+        LinkedList<double[]> evalScore = new LinkedList<double[]>();
         LinkedList<double[]> bestScores = new LinkedList<double[]>();
         int eval = 1;
         double bestScore = Double.NEGATIVE_INFINITY;
         for (DuelEvalResults res : optResults.iterResults) {
-            if (res.score > bestScore) bestScore = res.score;
-            evalScore.add(new double[] {eval, res.score});
-            bestScores.add(new double[] {eval, bestScore});
+            if (res.score > bestScore) {
+                bestScore = res.score;
+            }
+            evalScore.add(new double[]{eval, res.score});
+            bestScores.add(new double[]{eval, bestScore});
             eval++;
         }
         LinkedList<String> series = new LinkedList<String>();
@@ -628,7 +672,7 @@ public class StatsChartsFactory {
 
     }
 
-     public static ChartPanel getIterFitnessPlot(OptResults optResults) {
+    public static ChartPanel getIterFitnessPlot(OptResults optResults) {
         LinkedList<double[]> iterScores = new LinkedList<double[]>();
         int currentIter = -1;
         double iterBest = Double.NEGATIVE_INFINITY;
@@ -639,9 +683,9 @@ public class StatsChartsFactory {
                 iterBest = res.score;
                 firstTime = false;
             }
-            
+
             if (res.iterNr != currentIter) {
-                iterScores.add(new double[] {currentIter, iterBest});
+                iterScores.add(new double[]{currentIter, iterBest});
                 iterBest = Double.NEGATIVE_INFINITY;
                 currentIter = res.iterNr;
             }
@@ -650,7 +694,7 @@ public class StatsChartsFactory {
             }
         }
         if (optResults.iterResults.getLast().iterNr == currentIter) {
-            iterScores.add(new double[] {currentIter, iterBest});
+            iterScores.add(new double[]{currentIter, iterBest});
         }
         LinkedList<String> series = new LinkedList<String>();
         series.add("Iter fitness");
@@ -660,12 +704,12 @@ public class StatsChartsFactory {
 
     }
 
-    public static ChartPanel getEvaluationErrorConvergencePlot(OptResults res, String killerNamePrefix) {
+    public static ChartPanel getSampleVarianceEstimatePlot(OptResults res, String killerNamePrefix) {
 
         HashMap<String, LinkedList<double[]>> data = new HashMap<String, LinkedList<double[]>>();
         LinkedList<String> seriesNames = new LinkedList<String>();
 
-        int n=0;
+        int n = 0;
         for (DuelEvalResults r : res.iterResults) {
             BotStatistic stats = r.stats;
 
@@ -686,26 +730,28 @@ public class StatsChartsFactory {
             }
             avg = avg / scores.values().size();
 
-            LinkedList<double[]> convgData = new LinkedList<double[]>();
+            LinkedList<double[]> varData = new LinkedList<double[]>();
             int i = 0;
-            double cAvg = 0;
+            double cVarEst = 0;
             for (int score : scores.values()) {
-                cAvg += score;
-                double errorPercent = ((cAvg / (i + 1)) - avg) / r.score;
-                convgData.add(new double[]{i, errorPercent});
+                double var = (score - avg) * (score - avg);
+                cVarEst += var;
+                if (i != 0) {
+                    varData.add(new double[]{i, cVarEst / i});
+                }
                 i++;
             }
 
 
             seriesNames.add(r.shortName);
-            data.put(r.shortName, convgData);
+            data.put(r.shortName, varData);
             n++;
         }
-        return getXYChart(seriesNames, data, "Evaluation errors", "Evaluation repetition", "Error", false);
+        return getXYChart(seriesNames, data, "Evaluations variance in function of repetitions", "Game repetitions in each evaluation", "Variance", false);
 
     }
 
-    public static ChartPanel getEvaluationRelativeAvgErrorConvergencePlot(OptResults res, String killerNamePrefix) {
+    public static ChartPanel getEvaluationAvgVarianceInRepetitionsPlot(OptResults res, String killerNamePrefix) {
 
         HashMap<String, LinkedList<double[]>> data = new HashMap<String, LinkedList<double[]>>();
         LinkedList<String> seriesNames = new LinkedList<String>();
@@ -733,36 +779,35 @@ public class StatsChartsFactory {
             }
             avg = avg / scores.values().size();
 
-            
+
             int i = 0;
             double cAvg = 0;
             for (int score : scores.values()) {
                 cAvg += score;
-                double errorPercent = ((cAvg / (i + 1)) - avg) / r.score;
-                double [] newVal;
-                if (convgData.size()-1 < i) {
-                    newVal = new double[] {i, 0};
-                    newVal[1] += errorPercent;
+                double var = ((cAvg / (i + 1)) - avg) / r.score;
+                double[] newVal;
+                if (convgData.size() - 1 < i) {
+                    newVal = new double[]{i, 0};
+                    newVal[1] += var;
                     convgData.add(newVal);
-                }
-                else {
+                } else {
                     newVal = convgData.get(i);
-                    newVal[1] += errorPercent;
+                    newVal[1] += var;
                     convgData.set(i, newVal);
                 }
-               
+
                 i++;
-            }           
+            }
         }
 
-        for (double [] val : convgData) {
+        for (double[] val : convgData) {
             val[1] = val[1] / res.iterResults.size();
         }
-        
-        seriesNames.add("Average relative error");
-        data.put("Average relative error", convgData);
 
-        return getXYChart(seriesNames, data, "Average relative evaluation error", "Repetition", "Error", true);
+        seriesNames.add("Average evaluation variance");
+        data.put("Average evaluation variance", convgData);
+
+        return getXYChart(seriesNames, data, "Average evaluation variance", "Repetitions in evaluation", "Variance", true);
 
     }
 

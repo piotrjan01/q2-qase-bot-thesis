@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.tools.Dbg;
 
@@ -16,6 +17,8 @@ import piotrrr.thesis.tools.Dbg;
  * @author piotrrr
  */
 public class TuningProcessBase implements OptProcess {
+
+    public static final boolean debug = true;
 
     protected int timescale;
     protected int iterations;
@@ -27,17 +30,12 @@ public class TuningProcessBase implements OptProcess {
     HashSet<NavConfig> visited;
     LinkedList<DuelEvalResults> lastIterResults;
     LinkedList<DuelEvalResults> allResults;
-
     NavConfig best;
     double bestScore;
-
     NavConfig lastEvaluated = null;
     double lastEvaluatedScore;
-
     NavConfig lastBest = null;
     double lastBestScore;
-    
-    
 
     public TuningProcessBase(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         this.timescale = timescale;
@@ -69,7 +67,7 @@ public class TuningProcessBase implements OptProcess {
             List<NavConfig> nList = generateNextSet(best);
             lastIterResults.clear();
             i++;
-            
+
             if (nList.size() == 0) {
                 Dbg.prn("Empty set - nothing to explore");
                 stopProcess();
@@ -79,22 +77,34 @@ public class TuningProcessBase implements OptProcess {
             for (NavConfig conf : nList) {
                 e++;
 
-                double score = ConfigEvaluator.sequentialEvaluateConfig(conf, repetitions, itScore, mapName);
+                BotStatistic evalStats;
+                double score;
+                String evalLog;
+                if (debug) {
+                    score = FakeConfigEvaluator.sequentialEvaluateConfig(conf, repetitions, itScore, mapName);
+                    evalStats = FakeConfigEvaluator.gameStats;
+                    evalLog = FakeConfigEvaluator.evalLog;
+                }
+                else {
+                    score = ConfigEvaluator.sequentialEvaluateConfig(conf, repetitions, itScore, mapName);
+                    evalStats = ConfigEvaluator.gameStats;
+                    evalLog = ConfigEvaluator.evalLog;
+                }
                 visited.add(conf);
                 lastEvaluated = conf;
                 lastEvaluatedScore = score;
 
-                DuelEvalResults result = new DuelEvalResults(ConfigEvaluator.gameStats,
-                        "Config-eval-"+e,
-                        "Iteration: "+i+
-                        "\nConfig-eval-"+e+
-                        "\nBest eval nr: " + bestEval+
+                DuelEvalResults result = new DuelEvalResults(evalStats,
+                        "Config-eval-" + e,
+                        "Iteration: " + i +
+                        "\nConfig-eval-" + e +
+                        "\nBest eval nr: " + bestEval +
                         "\nSteepest bot score: " + bestScore +
                         "\nCurrent bot score: " + score +
                         "\n\nTested config: " + conf.toString() +
                         "\nBest config: " + best.toString() +
                         "\nConfig diff from best:\n" + best.getDifferences(conf) +
-                        "\nEval log:\n" + ConfigEvaluator.evalLog, score, i);
+                        "\nEval log:\n" + evalLog, score, i);
 
                 allResults.add(result);
                 lastIterResults.add(result);
@@ -103,7 +113,7 @@ public class TuningProcessBase implements OptProcess {
                 if (score > bestScore) {
                     lastBestScore = bestScore;
                     lastBest = best;
-                    bestScore = score;                    
+                    bestScore = score;
                     best = conf;
                     bestEval = e;
                 }
@@ -137,6 +147,27 @@ public class TuningProcessBase implements OptProcess {
             }
         }
         return null;
+    }
+
+    protected NavConfig findPossiblyRandomNeighbour(NavConfig c1) {
+        int pcount = c1.getParamsCount();
+        NavConfig ret;
+        for (int i = 0; i < 10; i++) {
+            int toChange = rand.nextInt(pcount);
+            ret = new NavConfig(c1);
+            if (rand.nextBoolean()) {
+                ret.incParam(toChange);
+            } else {
+                ret.decParam(toChange);
+            }
+            if (visited.contains(ret)) {
+                continue;
+            } else {
+                return ret;
+            }
+        }
+        ret = findNeighbourSystematically(c1);
+        return ret;
     }
 
     protected List<NavConfig> generateNextSet(NavConfig best) {

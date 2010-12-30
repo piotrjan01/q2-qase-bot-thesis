@@ -6,6 +6,7 @@ package piotrrr.thesis.bots.tuning;
 
 import java.io.Serializable;
 import piotrrr.thesis.common.stats.BotStatistic;
+import piotrrr.thesis.common.stats.StatsTools;
 
 /**
  *
@@ -34,6 +35,16 @@ public class DuelEvalResults implements Serializable {
 
     @Override
     public String toString() {
-        return comment;
+        double avg = StatsTools.getBotTypeScoreAverage("LearnBot", stats);
+        double var = StatsTools.getBotTypeScoreVariance("LearnBot", stats);
+        double ravg = StatsTools.getBotTypeRelativeScoreAverage("LearnBot", stats);
+        double rvar = StatsTools.getBotTypeRelativeScoreVariance("LearnBot", stats);
+
+        return comment+
+                "\nBot score variance: "+var+
+                " avg="+avg+" rel-std-dev="+(Math.sqrt(var)/avg)+
+                "\nBot relative score variance: "+rvar+
+                " avg="+ravg+" rel-std-dev="+(Math.sqrt(rvar)/ravg);
+
     }    
 }

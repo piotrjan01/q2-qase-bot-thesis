@@ -150,9 +150,9 @@ public class OptimizationRunner {
         Thread t = new Thread(con);
         t.setName("BotConnector");
         t.start();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             System.out.println("Bot connecting... " + i);
-            sleep(100);
+            sleep(10);
             if (con.connected) {
                 Dbg.prn("OK: Returning connected bot.");
                 return bot;
@@ -306,6 +306,7 @@ public class OptimizationRunner {
     public void handleIterationResults(DuelEvalResults res) {
         try {
             OptimizationFrame.getOptFrameInstance().addResults(res);
+            if (TuningProcessBase.debug) return; // dont save on debug
             String fileToSave = "current-opt-backup";
             System.out.println("Saving results to file: " + fileToSave);
             CommFun.saveToFile(fileToSave, OptimizationFrame.getOptFrameInstance().getOptResults());

@@ -99,6 +99,7 @@ public class SimpleAimingModule {
         Vector3f vec1 = CommFun.getNormalizedDirectionVector(playerPos, enemyPos);
         Vector3f vec2 = CommFun.getNormalizedDirectionVector(enemyPos, enemyPredictedPos);
 
+        //Shouldnt be 180 - alpha ???
         double alpha = Math.toRadians(vec1.angle(vec2));
 
         double delta = 4 * d * d * u * u * Math.cos(alpha) * Math.cos(alpha) + 4 * (v * v - u * u) * d * d;
