@@ -6,6 +6,8 @@ package piotrrr.thesis.bots.tuning;
 
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.common.stats.StatsTools;
 import piotrrr.thesis.tools.Timer;
@@ -27,6 +29,7 @@ public class FakeConfigEvaluator implements Runnable {
     public static Random rand = new Random();
     public static String evalLog = "";
     NavConfig optimalCfg = new NavConfig();
+    public static RandomVariates randVars = new RandomVariates();
 
     public FakeConfigEvaluator(String mapName, NavConfig nc1, int gameNr, int itTime) {
         try {
@@ -96,14 +99,15 @@ public class FakeConfigEvaluator implements Runnable {
                 continue;
             }
 
-            if (getRandomBool(p)) {
+            if (getRandomBool(p, 0.5, 0.2)) {
                 gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
             } else {
                 gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
             }
 
             if (time >= 10 * itTime) {
-                ret = StatsTools.getBotScore(fakeLearnBot, gameStats); // - refScore;
+                int refScore = StatsTools.getBotScore(fakeRefBot, gameStats);
+                ret = StatsTools.getBotScore(fakeLearnBot, gameStats) - refScore;
                 result = ret;
                 evalLog += ret + " ";
                 return;
@@ -122,8 +126,16 @@ public class FakeConfigEvaluator implements Runnable {
         return rand.nextDouble() < trueProbability;
     }
 
+    private boolean getRandomBool(double trueProbability, double mean, double variance) {
+        return getRandomNumber(mean, variance) < trueProbability;
+    }
+
+    private double getRandomNumber(double mean, double variance) {
+        return mean + rand.nextGaussian()*variance;
+    }
+
     private double getConfigDistanceFactor() {
-        double dist = optimalCfg.getConfigDistance(nc1);
+        double dist = optimalCfg.getConfigFakingDistance(nc1);
         int count = optimalCfg.getParamsCount();
         return (dist / count);
     }

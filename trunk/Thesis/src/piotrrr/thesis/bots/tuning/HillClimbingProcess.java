@@ -18,7 +18,7 @@ public class HillClimbingProcess extends TuningProcessBase implements OptProcess
 
     @Override
     protected List<NavConfig> generateNextSet(NavConfig best) {
-        return generateAllNeighbours(best);
+        return generateAllNeighboursSystematically(best);
     }
 
 

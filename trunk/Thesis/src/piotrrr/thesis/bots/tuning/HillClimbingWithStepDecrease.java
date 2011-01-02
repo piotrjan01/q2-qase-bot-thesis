@@ -10,18 +10,27 @@ import java.util.List;
  *
  * @author piotrrr
  */
-public class HillClimbingWithRandOptProcess extends TuningProcessBase {
+public class HillClimbingWithStepDecrease extends TuningProcessBase {
 
-    int randNeighboursToAdd = 3;
+    int randNeighboursToAdd = 0;
 
-    public HillClimbingWithRandOptProcess(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
+    double currentStepSize = NavConfig.initialStepSize;
+
+    public HillClimbingWithStepDecrease(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         super(timescale, iterations, maxItScore, mapName, repetitions);
     }
 
     @Override
     protected List<NavConfig> generateNextSet(NavConfig best) {
-        List<NavConfig> r = super.generateAllNeighbours(best);
-        if (r.size() == 0) return r;
+        List<NavConfig> r = super.generateAllNeighboursSystematically(best);
+        if (r.size() == 0) {
+            currentStepSize /= 2;
+            best.setStepSize(currentStepSize);
+            visited.clear();
+            resultsOfVisited.clear();
+            r = super.generateAllNeighboursSystematically(best);
+            return r;
+        }
         for (int i=0; i<randNeighboursToAdd; i++) {
             NavConfig c = new NavConfig();
             c.randAllParams();

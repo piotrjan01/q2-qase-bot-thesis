@@ -37,10 +37,16 @@ public class OptParam implements Serializable {
         return value;
     }
 
-    public void setValue(double value) throws Exception {
-        if (value >= min && value <= max)
+    public boolean setValue(double value) {
+        if (value >= min && value <= max) {
             this.value = value;
-        else throw new Exception("Wrong value: "+toString());
+            return true;
+        }
+        else {
+            if (value > max) this.value = max;
+            if (value < min) this.value = min;
+            return false;
+        }
     }
 
     @Override
@@ -94,6 +100,15 @@ public class OptParam implements Serializable {
         return hash;
     }
 
+    public void setStep(double step) {
+        this.step = step;
+    }
+
+    public double getStep() {
+        return step;
+    }
+
+    
 
 
 

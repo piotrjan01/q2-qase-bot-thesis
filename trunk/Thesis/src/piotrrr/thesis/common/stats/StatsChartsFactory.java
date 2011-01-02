@@ -622,7 +622,7 @@ public class StatsChartsFactory {
                 continue;
             }
             if (k.killer.startsWith(killerNamePrefix)) {
-                int score = StatsTools.getBotScore(k.killer, stats);
+                int score = StatsTools.getBotScore(k.killer, stats)-StatsTools.getBotScore(k.victim, stats);
                 scores.put(k.killer, score);
             }
         }
@@ -704,7 +704,7 @@ public class StatsChartsFactory {
 
     }
 
-    public static ChartPanel getSampleVarianceEstimatePlot(OptResults res, String killerNamePrefix) {
+    public static ChartPanel getEvaluationsVarianceEstimatePlot(OptResults res, String killerNamePrefix) {
 
         HashMap<String, LinkedList<double[]>> data = new HashMap<String, LinkedList<double[]>>();
         LinkedList<String> seriesNames = new LinkedList<String>();
@@ -719,7 +719,7 @@ public class StatsChartsFactory {
                     continue;
                 }
                 if (k.killer.startsWith(killerNamePrefix)) {
-                    int score = StatsTools.getBotScore(k.killer, stats);
+                    int score = StatsTools.getBotScore(k.killer, stats)-StatsTools.getBotScore(k.victim, stats);
                     scores.put(k.killer, score);
                 }
             }
@@ -756,19 +756,23 @@ public class StatsChartsFactory {
         HashMap<String, LinkedList<double[]>> data = new HashMap<String, LinkedList<double[]>>();
         LinkedList<String> seriesNames = new LinkedList<String>();
 
-        LinkedList<double[]> convgData = new LinkedList<double[]>();
+        LinkedList<String> finalSeriesNames = new LinkedList<String>();
+        HashMap<String, LinkedList<double[]>> finalPlotData = new HashMap<String, LinkedList<double[]>>();
 
+
+        int minDataSize = Integer.MAX_VALUE;
+
+        int n = 0;
         for (DuelEvalResults r : res.iterResults) {
             BotStatistic stats = r.stats;
 
-            //Score of each game in given evaluation
             HashMap<String, Integer> scores = new HashMap<String, Integer>();
             for (Kill k : stats.kills) {
                 if (scores.containsKey(k.killer)) {
                     continue;
                 }
                 if (k.killer.startsWith(killerNamePrefix)) {
-                    int score = StatsTools.getBotScore(k.killer, stats);
+                    int score = StatsTools.getBotScore(k.killer, stats)-StatsTools.getBotScore(k.victim, stats);
                     scores.put(k.killer, score);
                 }
             }
@@ -779,35 +783,39 @@ public class StatsChartsFactory {
             }
             avg = avg / scores.values().size();
 
-
+            LinkedList<double[]> varData = new LinkedList<double[]>();
             int i = 0;
-            double cAvg = 0;
+            double cVarEst = 0;
             for (int score : scores.values()) {
-                cAvg += score;
-                double var = ((cAvg / (i + 1)) - avg) / r.score;
-                double[] newVal;
-                if (convgData.size() - 1 < i) {
-                    newVal = new double[]{i, 0};
-                    newVal[1] += var;
-                    convgData.add(newVal);
-                } else {
-                    newVal = convgData.get(i);
-                    newVal[1] += var;
-                    convgData.set(i, newVal);
+                double var = (score - avg) * (score - avg);
+                cVarEst += var;
+                if (i != 0) {
+                    varData.add(new double[]{i, cVarEst / i});
                 }
-
                 i++;
             }
+
+
+            seriesNames.add(r.shortName);
+            data.put(r.shortName, varData);
+            if (minDataSize > varData.size()) minDataSize = varData.size();
+            n++;
         }
+        LinkedList<double[]> varData = new LinkedList<double[]>();
 
-        for (double[] val : convgData) {
-            val[1] = val[1] / res.iterResults.size();
+        for (int e=0; e<minDataSize; e++) {
+            double avgVariance = 0;
+            for (String s : seriesNames) {
+                avgVariance += data.get(s).get(e)[1];
+            }
+            avgVariance /= seriesNames.size();
+            varData.add(new double [] {e, avgVariance});
         }
+        
+        finalSeriesNames.add("Average evaluation variance");
+        finalPlotData.put("Average evaluation variance", varData);
 
-        seriesNames.add("Average evaluation variance");
-        data.put("Average evaluation variance", convgData);
-
-        return getXYChart(seriesNames, data, "Average evaluation variance", "Repetitions in evaluation", "Variance", true);
+        return getXYChart(finalSeriesNames, finalPlotData, "Average evaluation variance", "Repetitions in evaluation", "Variance", true);
 
     }
 

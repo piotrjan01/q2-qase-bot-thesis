@@ -4,7 +4,6 @@
  */
 package piotrrr.thesis.bots.tuning;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -18,28 +17,30 @@ import piotrrr.thesis.tools.Dbg;
  */
 public class TuningProcessBase implements OptProcess {
 
-    public static final boolean debug = true;
+    public static final boolean debug = AppConfig.debug;
 
     protected int timescale;
-    protected int iterations;
+    protected int maxEvals;
     protected int itScore;
     protected String mapName;
     protected boolean running;
     protected int repetitions;
     Random rand = new Random();
-    HashSet<NavConfig> visited;
-    LinkedList<DuelEvalResults> lastIterResults;
-    LinkedList<DuelEvalResults> allResults;
+    LinkedList<NavConfig> visited;
+    LinkedList<Double> resultsOfVisited;
+
+
     NavConfig best;
     double bestScore;
     NavConfig lastEvaluated = null;
     double lastEvaluatedScore;
     NavConfig lastBest = null;
     double lastBestScore;
+    public double tauThreshold;
 
     public TuningProcessBase(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         this.timescale = timescale;
-        this.iterations = iterations;
+        this.maxEvals = iterations;
         this.mapName = mapName;
         this.itScore = maxItScore;
         this.repetitions = repetitions;
@@ -47,9 +48,10 @@ public class TuningProcessBase implements OptProcess {
 
     public void run() {
         running = true;
-        visited = new HashSet<NavConfig>();
-        allResults = new LinkedList<DuelEvalResults>();
-        lastIterResults = new LinkedList<DuelEvalResults>();
+
+        visited = new LinkedList<NavConfig>();
+        resultsOfVisited=new LinkedList<Double>();
+
         AppConfig.timeScale = timescale;
 
         int i = 0;
@@ -62,10 +64,9 @@ public class TuningProcessBase implements OptProcess {
         lastBest = best;
         lastBestScore = bestScore;
         int bestEval = -1;
-        while (i < iterations && running) {
+        while (e < maxEvals && running) {
 
             List<NavConfig> nList = generateNextSet(best);
-            lastIterResults.clear();
             i++;
 
             if (nList.size() == 0) {
@@ -91,8 +92,16 @@ public class TuningProcessBase implements OptProcess {
                     evalLog = ConfigEvaluator.evalLog;
                 }
                 visited.add(conf);
+                resultsOfVisited.add(score);
+
+                
                 lastEvaluated = conf;
                 lastEvaluatedScore = score;
+
+                String differences = " n/a";
+                if (visited.size() >= 2) {
+                    differences = visited.get(visited.size()-2).getDifferences(conf);
+                }
 
                 DuelEvalResults result = new DuelEvalResults(evalStats,
                         "Config-eval-" + e,
@@ -103,12 +112,10 @@ public class TuningProcessBase implements OptProcess {
                         "\nCurrent bot score: " + score +
                         "\n\nTested config: " + conf.toString() +
                         "\nBest config: " + best.toString() +
-                        "\nConfig diff from best:\n" + best.getDifferences(conf) +
+                        "\nConfig diff from last:\n" + differences +
                         "\nEval log:\n" + evalLog, score, i);
 
-                allResults.add(result);
-                lastIterResults.add(result);
-                OptimizationRunner.getInstance().handleIterationResults(result);
+                OptimizationRunner.getInstance().handleEvaluationResults(result);
 
                 if (score > bestScore) {
                     lastBestScore = bestScore;
@@ -127,8 +134,7 @@ public class TuningProcessBase implements OptProcess {
     public void stopProcess() {
         running = false;
         visited.clear();
-        lastIterResults.clear();
-        allResults.clear();
+        resultsOfVisited.clear();
     }
 
     protected NavConfig findNeighbourSystematically(NavConfig c1) {
@@ -174,21 +180,36 @@ public class TuningProcessBase implements OptProcess {
         return new LinkedList<NavConfig>();
     }
 
-    protected List<NavConfig> generateAllNeighbours(NavConfig c1) {
+    /**
+     * Generate all neighbours that were not visited
+     * @param c1
+     * @return
+     */
+    protected List<NavConfig> generateAllNeighboursSystematically(NavConfig c1) {
+        return generateAllNeighboursSystematically(c1, true);
+    }
+
+    /**
+     * Generate all neighbours for each param by first inc and dec each param
+     * @param c1
+     * @param excludeVisited
+     * @return
+     */
+    protected List<NavConfig> generateAllNeighboursSystematically(NavConfig c1, boolean excludeVisited) {
         LinkedList<NavConfig> res = new LinkedList<NavConfig>();
         int pcount = c1.getParamsCount();
         for (int i = 0; i < pcount; i++) {
             NavConfig c2 = new NavConfig(c1);
             c2.incParam(i);
-            c2.additionalInfo = "Neighbour";
-            if (!visited.contains(c2)) {
+            c2.additionalInfo = "Neighbour with inc of "+c2.getParamsName(i);
+            if (!excludeVisited || !visited.contains(c2)) {
                 res.add(c2);
             }
 
             c2 = new NavConfig(c1);
             c2.decParam(i);
-            c2.additionalInfo = "Neighbour";
-            if (!visited.contains(c2)) {
+            c2.additionalInfo = "Neighbour with dec of "+c2.getParamsName(i);
+            if (!excludeVisited || !visited.contains(c2)) {
                 res.add(c2);
             }
         }

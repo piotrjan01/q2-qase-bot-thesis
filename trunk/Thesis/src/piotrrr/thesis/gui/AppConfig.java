@@ -14,6 +14,11 @@ import java.io.PrintWriter;
 public class AppConfig {
 
     /**
+     * If true, we run in debug mode
+     */
+    public static boolean debug = false;
+
+    /**
      * Game speed. 1 is normal. Needs to be also set on server.
      */
     public static int timeScale = 1;

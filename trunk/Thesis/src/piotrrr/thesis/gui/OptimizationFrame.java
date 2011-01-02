@@ -11,18 +11,15 @@
 package piotrrr.thesis.gui;
 
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedList;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
-import javax.swing.JRadioButton;
-import javax.swing.JToggleButton.ToggleButtonModel;
 import javax.swing.UIManager;
 import org.apache.log4j.PropertyConfigurator;
 import piotrrr.thesis.bots.tuning.DuelEvalResults;
 import piotrrr.thesis.bots.tuning.OptResults;
+import piotrrr.thesis.bots.tuning.OptResultsTools;
 import piotrrr.thesis.bots.tuning.OptimizationRunner;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.stats.StatsChartsFactory;
@@ -88,16 +85,22 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jRadioButton5 = new javax.swing.JRadioButton();
         jRadioButton6 = new javax.swing.JRadioButton();
         jRadioButton7 = new javax.swing.JRadioButton();
+        jRadioButton8 = new javax.swing.JRadioButton();
         jPanel5 = new javax.swing.JPanel();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
         jRadioButton3 = new javax.swing.JRadioButton();
         jButton5 = new javax.swing.JButton();
         estTimejLabel5 = new javax.swing.JLabel();
+        taujTextField1 = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jTabbedPane3 = new javax.swing.JTabbedPane();
+        infojPanel7 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        resultsInfojTextArea1 = new javax.swing.JTextArea();
         iterFitnessjPanel7 = new javax.swing.JPanel();
         fitnessjPanel5 = new javax.swing.JPanel();
         errorjPanel7 = new javax.swing.JPanel();
@@ -181,7 +184,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Optimization method"));
 
         algButtonGroup1.add(jRadioButton4);
-        jRadioButton4.setText("Hill Climbing Random");
+        jRadioButton4.setText("Hill Climbing step decreasing");
 
         algButtonGroup1.add(jRadioButton5);
         jRadioButton5.setText("Hill Climbing");
@@ -198,6 +201,9 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jRadioButton7.setSelected(true);
         jRadioButton7.setText("Simulated Annealing");
 
+        algButtonGroup1.add(jRadioButton8);
+        jRadioButton8.setText("Gradient Hill Climbing");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -208,7 +214,8 @@ public class OptimizationFrame extends javax.swing.JFrame {
                     .addComponent(jRadioButton6)
                     .addComponent(jRadioButton5)
                     .addComponent(jRadioButton4)
-                    .addComponent(jRadioButton7))
+                    .addComponent(jRadioButton7)
+                    .addComponent(jRadioButton8))
                 .addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -222,7 +229,9 @@ public class OptimizationFrame extends javax.swing.JFrame {
                 .addComponent(jRadioButton6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton7)
-                .addContainerGap(68, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton8)
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Map"));
@@ -247,7 +256,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
                     .addComponent(jRadioButton1)
                     .addComponent(jRadioButton2)
                     .addComponent(jRadioButton3))
-                .addContainerGap(116, Short.MAX_VALUE))
+                .addContainerGap(123, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -269,6 +278,10 @@ public class OptimizationFrame extends javax.swing.JFrame {
 
         estTimejLabel5.setText("100 evals = x h 1 eval = x min");
 
+        taujTextField1.setText("2.8");
+
+        jLabel5.setText("Acceptence criterion threshold");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -281,13 +294,15 @@ public class OptimizationFrame extends javax.swing.JFrame {
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel4))
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(maxIterScorejTextField1)
                             .addComponent(iterationsjTextField2)
                             .addComponent(timescalejTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                            .addComponent(evalRepetitionsjTextField1)))
+                            .addComponent(evalRepetitionsjTextField1)
+                            .addComponent(taujTextField1)))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -298,15 +313,14 @@ public class OptimizationFrame extends javax.swing.JFrame {
                             .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING)))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton5))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(estTimejLabel5)))
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton5)
+                            .addComponent(estTimejLabel5))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap(32, Short.MAX_VALUE))
+                        .addContainerGap(39, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
@@ -331,11 +345,15 @@ public class OptimizationFrame extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(evalRepetitionsjTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(taujTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
                         .addComponent(jButton5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(estTimejLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 97, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(runjButton1)
                             .addComponent(jButton1))
@@ -355,7 +373,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(66, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -381,6 +399,30 @@ public class OptimizationFrame extends javax.swing.JFrame {
             }
         });
 
+        resultsInfojTextArea1.setColumns(20);
+        resultsInfojTextArea1.setEditable(false);
+        resultsInfojTextArea1.setRows(5);
+        jScrollPane3.setViewportView(resultsInfojTextArea1);
+
+        javax.swing.GroupLayout infojPanel7Layout = new javax.swing.GroupLayout(infojPanel7);
+        infojPanel7.setLayout(infojPanel7Layout);
+        infojPanel7Layout.setHorizontalGroup(
+            infojPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(infojPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        infojPanel7Layout.setVerticalGroup(
+            infojPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(infojPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane3.addTab("Info", infojPanel7);
+
         iterFitnessjPanel7.setLayout(new java.awt.GridLayout(1, 1));
         jTabbedPane3.addTab("Iter fitness", iterFitnessjPanel7);
 
@@ -388,10 +430,10 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jTabbedPane3.addTab("Evals fitness", fitnessjPanel5);
 
         errorjPanel7.setLayout(new java.awt.GridLayout(1, 1));
-        jTabbedPane3.addTab("sample variance estimate", errorjPanel7);
+        jTabbedPane3.addTab("evaluations variance", errorjPanel7);
 
         avgRelError.setLayout(new java.awt.GridLayout(1, 1));
-        jTabbedPane3.addTab("Avg relative error", avgRelError);
+        jTabbedPane3.addTab("Avg evaluations variance", avgRelError);
 
         refreshResultsChartsjButton4.setText("Refresh charts");
         refreshResultsChartsjButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -521,9 +563,10 @@ public class OptimizationFrame extends javax.swing.JFrame {
         int iterations = Integer.parseInt(iterationsjTextField2.getText());
         int iterScore = Integer.parseInt(maxIterScorejTextField1.getText());
         int reps = Integer.parseInt(evalRepetitionsjTextField1.getText());
+        double tau = Double.parseDouble(taujTextField1.getText());
         String mapName=getRadioButtonSelectedString(mapsButtonGroup1);        
         String opt=getRadioButtonSelectedString(algButtonGroup1);
-        OptimizationRunner.getInstance().runOptimization(timescale, iterations, iterScore, mapName, opt, reps);
+        OptimizationRunner.getInstance().runOptimization(timescale, iterations, iterScore, mapName, opt, reps, tau);
         optResults = new OptResults();
     }//GEN-LAST:event_runjButton1ActionPerformed
 
@@ -587,7 +630,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         fitnessjPanel5.revalidate();
 
         errorjPanel7.removeAll();
-        errorjPanel7.add(StatsChartsFactory.getSampleVarianceEstimatePlot(optResults, "LearnBot"));
+        errorjPanel7.add(StatsChartsFactory.getEvaluationsVarianceEstimatePlot(optResults, "LearnBot"));
         errorjPanel7.revalidate();
 
         iterFitnessjPanel7.removeAll();
@@ -597,6 +640,8 @@ public class OptimizationFrame extends javax.swing.JFrame {
         avgRelError.removeAll();
         avgRelError.add(StatsChartsFactory.getEvaluationAvgVarianceInRepetitionsPlot(optResults, "LearnBot"));
         avgRelError.revalidate();
+
+        resultsInfojTextArea1.setText(OptResultsTools.getOptTextDesctiption(optResults));
 
     }//GEN-LAST:event_refreshResultsChartsjButton4ActionPerformed
 
@@ -642,7 +687,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         killsByBotTypejPanel5.revalidate();
 
         resultsDistributionjPanel7.removeAll();
-        resultsDistributionjPanel7.add(StatsChartsFactory.getResultsDistributionPlot(r, "LearnBot", 20));
+        resultsDistributionjPanel7.add(StatsChartsFactory.getResultsDistributionPlot(r, "LearnBot", 10));
         resultsDistributionjPanel7.revalidate();
 
     }
@@ -701,6 +746,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
     private javax.swing.JLabel estTimejLabel5;
     private javax.swing.JTextField evalRepetitionsjTextField1;
     private javax.swing.JPanel fitnessjPanel5;
+    private javax.swing.JPanel infojPanel7;
     private javax.swing.JPanel iterFitnessjPanel7;
     private javax.swing.JTextField iterationsjTextField2;
     private javax.swing.JButton jButton1;
@@ -712,6 +758,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -725,8 +772,10 @@ public class OptimizationFrame extends javax.swing.JFrame {
     private javax.swing.JRadioButton jRadioButton5;
     private javax.swing.JRadioButton jRadioButton6;
     private javax.swing.JRadioButton jRadioButton7;
+    private javax.swing.JRadioButton jRadioButton8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
@@ -738,8 +787,10 @@ public class OptimizationFrame extends javax.swing.JFrame {
     private javax.swing.JButton refreshResultsChartsjButton4;
     private javax.swing.JTextArea resultDetailsTextArea1;
     private javax.swing.JPanel resultsDistributionjPanel7;
+    private javax.swing.JTextArea resultsInfojTextArea1;
     private javax.swing.JList resultsjList1;
     private javax.swing.JButton runjButton1;
+    private javax.swing.JTextField taujTextField1;
     private javax.swing.JPanel textjPanel4;
     private javax.swing.JTextField timescalejTextField1;
     // End of variables declaration//GEN-END:variables
