@@ -13,8 +13,11 @@ import java.util.List;
  */
 public class SimulatedAnnealingProcess extends TuningProcessBase {
 
-    private double t = 100;
+    public static final boolean stopIfVisitedAllNeighbours = true;
+    private double t = 100.0;
     private int step = 0;
+
+    private double currentParamStepSize = NavConfig.initialStepSize;
 
     public SimulatedAnnealingProcess(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         super(timescale, iterations, maxItScore, mapName, repetitions);
@@ -22,51 +25,69 @@ public class SimulatedAnnealingProcess extends TuningProcessBase {
 
     @Override
     protected List<NavConfig> generateNextSet(NavConfig best) {
+
         decreaseTemperature();
         List<NavConfig> ret = new LinkedList<NavConfig>();
 
-        double worseScore;
-        NavConfig worseConfig;
-
-        if (lastEvaluatedScore == bestScore) {
-            //last was best, so worse is lastBest
-            worseConfig = lastBest;
-            worseScore = lastBestScore;
-        } else {
-            //last was not the best, so the worse is last
-            worseConfig = lastEvaluated;
-            worseScore = lastEvaluatedScore;
-        }
-
-        NavConfig toAdd = null;
-        double p = getWorseChoiceProbability(bestScore, worseScore);
-        String info = " t="+t+" p="+p;
-        if (worseConfig != null && rand.nextDouble() < p) {
-            //worse choice
-            toAdd = findPossiblyRandomNeighbour(worseConfig);
-            info = "neighbour of worse"+info;
-        } else {
-            //better choice
-            toAdd = findPossiblyRandomNeighbour(best);
-            info = "neighbour of better"+info;
-        }       
-        if (toAdd == null) {
-            //if we found no neighbour, we clear visited memory and search again
-            visited.clear();
-            ret = generateNextSet(best);
-            for (NavConfig c : ret) {
-                c.additionalInfo += "; after clearing visited cache"+info;
-            }
+        if (visited.size() == 0) {
+            ret.add(best);
             return ret;
         }
+
+        if (visited.size() == 1) {
+            ret.add(findPossiblyRandomNeighbour(best));
+            return ret;
+        }
+
+        NavConfig neew = visited.getLast();
+        NavConfig curr = best;
+        NavConfig toAdd = null;
+
+        double neewScore = resultsOfVisited.getLast();
+        double currScore = bestScore;
+
+        String info = "t=" + t;
+
+        if (neewScore > currScore) {
+            //we take the new one
+            toAdd = findPossiblyRandomNeighbour(neew);
+            info += " found new better config";
+        } else {
+            double p = getWorseChoiceProbability(neewScore, currScore);
+            info += " p=" + p;
+            if (rand.nextDouble() < p) {
+                //we take the worse one - new
+                toAdd = findPossiblyRandomNeighbour(neew);
+                info += " went for worse new config";
+            } else {
+                //we take the better - current
+                toAdd = findPossiblyRandomNeighbour(curr);
+                info += " went for better current config";
+            }
+        }
+
+        if (toAdd == null) {
+            currentParamStepSize /= 2;
+            if (stopIfVisitedAllNeighbours) {
+                //if we found no neighbour, we clear visited memory and search again
+                visited.clear();
+                resultsOfVisited.clear();
+                toAdd = findPossiblyRandomNeighbour(best);                
+                toAdd.setStepSize(currentParamStepSize);
+                info += " clearing visited and setting step size="+currentParamStepSize;
+                
+            }            
+        }
+
         toAdd.additionalInfo += info;
         ret.add(toAdd);
         return ret;
+
     }
 
     private void decreaseTemperature() {
         step++;
-        t = 100 / step;
+        t = 100.0 / step;
     }
 
     private double getWorseChoiceProbability(double val1, double val2) {

@@ -8,17 +8,20 @@ import piotrrr.thesis.bots.tuning.WeaponConfig;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.EnemyInfo;
 import piotrrr.thesis.common.entities.EntityDoublePair;
+import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.tools.Dbg;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
 import soc.qase.tools.vecmath.Vector3f;
 
-public class TuningEntityRanking {
+public class FuzzyEntityRanking {
 
     private static float botMaxHealth = 100f;
-    private static float botMaxArmor = 100f;
+    private static float botMaxArmor = 200f;
     private static float botMaxAmmo = Float.NaN;
     private static float botMaxWeapons = Float.NaN;
+
+    private static float yagerWParam = 2;
 
     private static void setMaxAmmoAndMaxWeapns(MapBotBase bot) {
 
@@ -96,6 +99,10 @@ public class TuningEntityRanking {
 
         double maxDist = 0;
         double maxEnemyCost = 0;
+        double maxHealthBen = -10;
+        double maxArmorBen = -10;
+        double maxWeaponBen = -10;
+        double maxAmmoBen = -10;
 
         //get measures and maximums
         for (Entity ent : bot.kb.getAllPickableEntities()) {
@@ -104,10 +111,36 @@ public class TuningEntityRanking {
             if (m.enemyCost > maxEnemyCost) {
                 maxEnemyCost = m.enemyCost;
             }
-            if (m.dist > maxDist) {
+            if (!Double.isNaN(m.dist) && m.dist > maxDist) {
                 maxDist = m.dist;
             }
+            if (m.healthBen > maxHealthBen) {
+                maxHealthBen = m.healthBen;
+            }
+            if (m.armorBen > maxArmorBen) {
+                maxArmorBen = m.armorBen;
+            }
+            if (m.weaponBen > maxWeaponBen) {
+                maxWeaponBen = m.weaponBen;
+            }
+            if (m.ammoBen > maxAmmoBen) {
+                maxAmmoBen = m.ammoBen;
+            }
         }
+
+        if (maxHealthBen <= 0) {
+            maxHealthBen = 1;
+        }
+        if (maxArmorBen <= 0) {
+            maxArmorBen = 1;
+        }
+        if (maxWeaponBen <= 0) {
+            maxWeaponBen = 1;
+        }
+        if (maxAmmoBen <= 0) {
+            maxAmmoBen = 1;
+        }
+
 
         float hd = getBotHealthDeficiency(bot, 0);
         float ard = getBotArmorDeficiency(bot, 0);
@@ -120,56 +153,66 @@ public class TuningEntityRanking {
 
             boolean err = false;
 
-            String dbg = ""+e.toString()+" ";
+            String dbg = bot.getBotName() + "> " + e.toString() + " ";
 
             //Weights constant, independent from context
             if (e.getType().equals(Entity.TYPE_HEALTH)) {
-                rank = bot.nConfig.weight_health.getValue() * hd + bot.nConfig.weight_health_ben.getValue()*m.healthBen;
-                dbg += "hd="+bot.nConfig.weight_health.getValue() +" hb="+ hd + bot.nConfig.weight_health_ben.getValue()*m.healthBen;
+                rank = bot.nConfig.weight_health.getValue() * hd;
+                rank = fuzzyAnd(rank, bot.nConfig.weight_health_ben.getValue() * m.healthBen / maxHealthBen);
+                dbg += "hd=" + bot.nConfig.weight_health.getValue()*hd + " hb=" + bot.nConfig.weight_health_ben.getValue() * m.healthBen / maxHealthBen;
             } else if (e.getType().equals(Entity.TYPE_ARMOR)) {
-                rank = bot.nConfig.weight_armor.getValue() * ard + bot.nConfig.weight_armor_ben.getValue()*m.armorBen;
-                dbg += "ard="+bot.nConfig.weight_armor.getValue() * ard +" arb="+ bot.nConfig.weight_armor_ben.getValue()*m.armorBen;
+                rank = bot.nConfig.weight_armor.getValue() * ard;
+                rank = fuzzyAnd(rank, bot.nConfig.weight_armor_ben.getValue() * m.armorBen / maxArmorBen);
+                dbg += "ard=" + bot.nConfig.weight_armor.getValue() * ard + " arb=" + bot.nConfig.weight_armor_ben.getValue() * m.armorBen / maxArmorBen;
             } else if (e.isWeaponEntity()) {
-                rank = bot.nConfig.weight_weapon.getValue() * wd + bot.nConfig.weight_weapon_ben.getValue()*m.weaponBen;
-                dbg += "wd="+bot.nConfig.weight_weapon.getValue() * wd +" wb="+ bot.nConfig.weight_weapon_ben.getValue()*m.weaponBen;
+                rank = bot.nConfig.weight_weapon.getValue() * wd;
+                rank = fuzzyAnd(rank, bot.nConfig.weight_weapon_ben.getValue() * m.weaponBen / maxWeaponBen);
+                dbg += "wd=" + bot.nConfig.weight_weapon.getValue() * wd + " wb=" + bot.nConfig.weight_weapon_ben.getValue() * m.weaponBen / maxWeaponBen;
             } else if (e.getType().equals(Entity.TYPE_AMMO)) {
-                rank = bot.nConfig.weight_ammo.getValue() * amd + bot.nConfig.weight_ammo_ben.getValue()*m.ammoBen;
-                dbg += "ad="+bot.nConfig.weight_ammo.getValue() * amd +" ab="+ bot.nConfig.weight_ammo_ben.getValue()*m.ammoBen;
+                rank = bot.nConfig.weight_ammo.getValue() * amd;
+                rank = fuzzyAnd(rank, bot.nConfig.weight_ammo_ben.getValue() * m.ammoBen / maxAmmoBen);
+                dbg += "ad=" + bot.nConfig.weight_ammo.getValue() * amd + " ab=" + bot.nConfig.weight_ammo_ben.getValue() * m.ammoBen / maxAmmoBen;
             }
 
             if (!err && Double.isNaN(rank)) {
-                Dbg.prn("Rank NaN after w*(def+ben) --> Entity:"+e.toString());
-                Dbg.prn("ard="+ard+" wd="+wd+" m.armorBen="+m.armorBen+" m.weapnBen="+m.weaponBen);
-                Dbg.prn("botMaxWeapons="+botMaxWeapons);
+                Dbg.prn("Rank NaN after w*(def+ben) --> Entity:" + e.toString());
+                Dbg.prn("ard=" + ard + " wd=" + wd + " m.armorBen=" + m.armorBen + " m.weapnBen=" + m.weaponBen);
+                Dbg.prn("botMaxWeapons=" + botMaxWeapons + " maxArmorBen=" + maxArmorBen);
                 Dbg.prn("");
-                err=true;
+                err = true;
             }
 
             //weights depending on context
-            rank -= bot.nConfig.weight_distance.getValue() * m.dist / maxDist;
-            dbg += " dist="+bot.nConfig.weight_distance.getValue() * m.dist / maxDist;
-            if (!err && Double.isNaN(rank)) {
-                Dbg.prn("Rank NaN after dist");
-                err=true;
+            if (maxEnemyCost != 0) {
+                rank = fuzzyAnd(rank, 1 - bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost);
+                dbg += " ec=" + bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost;
             }
 
-            if (maxEnemyCost != 0) {
-                rank -= bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost;
-                dbg += " ec="+bot.nConfig.weight_enemycost.getValue() * m.enemyCost / maxEnemyCost;
+            if (!Double.isNaN(m.dist)) {
+                rank = fuzzyAnd(rank, 1 - bot.nConfig.weight_distance.getValue() * m.dist / maxDist);
+                dbg += " dist=" + bot.nConfig.weight_distance.getValue() * m.dist / maxDist;
+                if (!err && Double.isNaN(rank)) {
+                    Dbg.prn("Rank NaN after dist");
+                    err = true;
+                }
             }
+
+
             if (!err && Double.isNaN(rank)) {
                 Dbg.prn("Rank NaN after enemy cost");
-                Dbg.prn("m.enemyCost="+m.enemyCost+" maxEnemyCost="+maxEnemyCost);
-                err=true;
+                Dbg.prn("m.enemyCost=" + m.enemyCost + " maxEnemyCost=" + maxEnemyCost);
+                err = true;
             }
-            
-            Dbg.prn(dbg);
+
+            dbg += " rank=" + rank;
+
+            if (AppConfig.debug) Dbg.prn(dbg);
 
             ret.add(new EntityDoublePair(e, rank));
         }
 
         cache.distCache.clear();
-        cache.pathCache.clear();        
+        cache.pathCache.clear();
         return ret;
     }
 
@@ -184,17 +227,10 @@ public class TuningEntityRanking {
         float amd = getBotAmmoDeficiency(bot, 0);
         float wd = getBotWeaponDeficiency(bot, 0);
 
-        float wSum = (float) (bot.nConfig.weight_ammo.getValue() +
-                bot.nConfig.weight_armor.getValue() +
-                bot.nConfig.weight_weapon.getValue() +
-                bot.nConfig.weight_health.getValue());
-
-        float st = (float) (bot.nConfig.weight_health.getValue() *
-                hd + bot.nConfig.weight_armor.getValue() *
-                ard + bot.nConfig.weight_armor.getValue() *
-                amd + bot.nConfig.weight_weapon.getValue() *
-                wd);
-        return st/wSum;
+        double st = fuzzyOr(bot.nConfig.weight_health.getValue() * hd, bot.nConfig.weight_armor.getValue() * ard);
+        st = fuzzyOr(st, bot.nConfig.weight_armor.getValue() * amd);
+        st = fuzzyOr(st, bot.nConfig.weight_weapon.getValue() * wd);
+        return (float) st;
     }
 
     private static Measures getMeasures(MapBotBase bot, Entity e, RankingCache cache) {
@@ -215,6 +251,31 @@ public class TuningEntityRanking {
         m.enemyCost = getEnemyCost(bot, e, cache);
 
         return m;
+    }
+
+    private static double fuzzyAnd(double a, double b) {
+        double aToW = 1;
+        double bToW = 1;
+        for (int i=0; i<yagerWParam; i++) {
+            aToW *= a;
+            bToW *= b;
+        }
+        double abToWToW = 1;
+        for (int i=0; i<yagerWParam; i++) {
+            abToWToW *= (aToW+bToW);
+        }
+        return Math.min(1, abToWToW);
+    }
+
+    private static double fuzzyOr(double a, double b) {
+        double maToW = 1;
+        double mbToW = 1;
+        for (int i=0; i<yagerWParam; i++) {
+            maToW *= 1-a;
+            mbToW *= 1-b;
+        }
+        double wRootMaMbToW = Math.pow(maToW+mbToW, 1.0/yagerWParam);
+        return 1.0 - Math.min(1, wRootMaMbToW);
     }
 
     private static float getBotHealthDeficiency(MapBotBase bot, int addedHealth) {
@@ -311,18 +372,20 @@ public class TuningEntityRanking {
         int growth = 0;
 
         if (e.getType().equals(Entity.TYPE_ARMOR)) {
-            if (e.getSubType().equals(Entity.SUBTYPE_JACKETARMOR)) {
+            if (e.getSubType().equals("jacket")) {
                 growth = 25;
-            } else if (e.getSubType().equals(Entity.SUBTYPE_COMBATARMOR)) {
+            } else if (e.getSubType().equals("combat")) {
                 growth = 50;
-            } else if (e.getSubType().equals(Entity.SUBTYPE_BODYARMOR)) {
+            } else if (e.getSubType().equals("body")) {
                 growth = 100;
-            } else if (e.getSubType().equals(Entity.SUBTYPE_ARMORSHARD)) {
+            } else if (e.getSubType().equals("shard")) {
                 growth = 1;
             }
 
             float before = getBotArmorDeficiency(bot, 0);
             float after = getBotArmorDeficiency(bot, growth);
+//            Dbg.prn("type="+e.getType()+" subtype="+e.getSubType()+" cat="+e.getCategory());
+//            Dbg.prn("armor growth="+growth+" before-after="+(before - after)+" aftet="+after);
             return (before - after);
 
         }
@@ -391,7 +454,7 @@ public class TuningEntityRanking {
         Waypoint[] path = getShortestPath(bot, from, to, cache);
         if (path == null) {
 //			Dbg.err("Path is null at counting distance on map.");
-            return Double.MAX_VALUE;
+            return Double.NaN;
         }
         Vector3f pos = from;
         for (Waypoint wp : path) {

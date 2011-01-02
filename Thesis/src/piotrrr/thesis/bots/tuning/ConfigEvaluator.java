@@ -110,11 +110,14 @@ public class ConfigEvaluator implements Runnable {
                 if ((refBot.getFrameNumber()) > time) {
                     time = refBot.getFrameNumber();
                 }
+
+                int score = StatsTools.getBotScore(bot.getBotName(), gameStats);
+                int refScore = StatsTools.getBotScore(refBot.getBotName(), gameStats);
                 
                 Dbg.prn("avg ts=" + ((time - lastTime) / 10.0) + " done=" + ((time * 100) / (10 * itTime)) + "%");
                 if (time >= 10 * itTime) {
                     StatsTools.removeEventsAfter(10*itTime, gameStats);
-                    ret =  StatsTools.getBotScore(bot.getBotName(), gameStats); // - refScore;
+                    ret =  score - refScore;
                     stopAndNullBots();
                     OptimizationRunner.getInstance().clearProcess(servPort);
                     result = ret;
@@ -130,10 +133,7 @@ public class ConfigEvaluator implements Runnable {
                 if (areBotsStuck()) {
                     tryAgain(servPort, "Bots did not move");
                     return;
-                }
-
-                int score = StatsTools.getBotScore(bot.getBotName(), gameStats);
-                int refScore = StatsTools.getBotScore(refBot.getBotName(), gameStats);
+                }                
 
                 int maxScore = Math.max(score, refScore);
                 if (maxScore != lastMaxScore) {

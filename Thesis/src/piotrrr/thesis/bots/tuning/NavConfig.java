@@ -5,19 +5,19 @@ import java.lang.reflect.Field;
 
 public class NavConfig implements Serializable {
 
-    private static final double stepSize = 0.3;
-    private static final double initialVals = 0.5;
-    public OptParam weight_health = new OptParam(0.8f, 0, 1, stepSize);
-    public OptParam weight_armor = new OptParam(0.5f, 0, 1, stepSize);
-    public OptParam weight_weapon = new OptParam(0.4f, 0, 1, stepSize);
-    public OptParam weight_ammo = new OptParam(0.4f, 0, 1, stepSize);
-    public OptParam weight_health_ben = new OptParam(0.9f, 0, 1, stepSize);
-    public OptParam weight_armor_ben = new OptParam(0.6f, 0, 1, stepSize);
-    public OptParam weight_weapon_ben = new OptParam(0.2f, 0, 1, stepSize);
-    public OptParam weight_ammo_ben = new OptParam(0.2f, 0, 1, stepSize);
-    public OptParam weight_distance = new OptParam(0.2f, 0, 1, stepSize);
-    public OptParam weight_enemycost = new OptParam(0.1f, 0, 1, stepSize);
-    public OptParam weight_aggresiveness = new OptParam(0.6f, 0, 1, stepSize);
+    public static final double initialStepSize = 0.4;
+    private static final double initialVals = 0.4;
+    public OptParam weight_health = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_armor = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_weapon = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_ammo = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_health_ben = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_armor_ben = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_weapon_ben = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_ammo_ben = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_distance = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_enemycost = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_aggresiveness = new OptParam(0.5f, 0, 1, initialStepSize);
     public String additionalInfo = "";
 
     public NavConfig() {
@@ -82,6 +82,21 @@ public class NavConfig implements Serializable {
         return c;
     }
 
+    public String getParamsName(int ind) {
+        String c = "no such field";
+        int i=0;
+        for (Field f : this.getClass().getDeclaredFields()) {
+            if (!f.getType().equals(OptParam.class)) {
+                continue;
+            }
+            if (ind == i) {
+                c = f.getName();
+            }
+            i++;
+        }
+        return c;
+    }
+
     public boolean incParam(int param) {
         int c = 0;
         for (Field f : this.getClass().getDeclaredFields()) {
@@ -111,6 +126,44 @@ public class NavConfig implements Serializable {
                 if (c == param) {
                     OptParam p = (OptParam) f.get(this);
                     return p.dec();
+                }
+                c++;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public boolean setParam(int param, double value) {
+        int c = 0;
+        for (Field f : this.getClass().getDeclaredFields()) {
+            try {
+                if (!f.getType().equals(OptParam.class)) {
+                    continue;
+                }
+                if (c == param) {
+                    OptParam p = (OptParam) f.get(this);
+                    return p.setValue(value);
+                }
+                c++;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public boolean addToParam(int param, double value) {
+        int c = 0;
+        for (Field f : this.getClass().getDeclaredFields()) {
+            try {
+                if (!f.getType().equals(OptParam.class)) {
+                    continue;
+                }
+                if (c == param) {
+                    OptParam p = (OptParam) f.get(this);
+                    return p.setValue(p.getValue()+value);
                 }
                 c++;
             } catch (Exception ex) {
@@ -191,17 +244,20 @@ public class NavConfig implements Serializable {
         return hash;
     }
 
-    public double getConfigDistance(NavConfig obj) {
+    public double getConfigFakingDistance(NavConfig obj) {
         double dist = 0;
+        int i=0;
         for (Field f : this.getClass().getDeclaredFields()) {
             try {
                 if (!f.getType().equals(OptParam.class)) {
                     continue;
                 }
+                i++;
                 OptParam p1 = (OptParam) f.get(this);
                 OptParam p2 = (OptParam) f.get(obj);
-
-                dist += Math.abs(p1.getValue() - p2.getValue());
+                double diff = Math.abs(p1.getValue() - p2.getValue());
+                if (diff > 0.05*i) diff=1;
+                dist += diff;
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -210,4 +266,20 @@ public class NavConfig implements Serializable {
         return dist;
 
     }
+
+
+    public void setStepSize(double ss) {
+        for (Field f : this.getClass().getDeclaredFields()) {
+            try {
+                if (!f.getType().equals(OptParam.class)) {
+                    continue;
+                }
+                OptParam p1 = (OptParam) f.get(this);
+                p1.setStep(ss);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
 }

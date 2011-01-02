@@ -83,27 +83,31 @@ public class OptimizationRunner {
     private HashMap<Integer, Process> childProcesses = new HashMap<Integer, Process>();
     private static OptimizationRunner instance = null;
     protected BotStatistic gameStats;
-    protected OptProcess optProcess = null;
+    protected TuningProcessBase optProcess = null;
     Thread optThread = null;
 
     private OptimizationRunner() {
     }
 
-    public void runOptimization(int timescale, int iterations, int maxScore, String mapName, String alg, int repetitions) {
+    public void runOptimization(int timescale, int iterations, int maxScore, String mapName, String alg, int repetitions, double tau) {
 
-        if (alg.equals("Hill Climbing Random")) {
-            optProcess = new HillClimbingWithRandOptProcess(timescale, iterations, maxScore, mapName, repetitions);
+        if (alg.equals("Hill Climbing step decreasing")) {
+            optProcess = new HillClimbingWithStepDecrease(timescale, iterations, maxScore, mapName, repetitions);
         } else if (alg.equals("Hill Climbing")) {
             optProcess = new HillClimbingProcess(timescale, iterations, maxScore, mapName, repetitions);
         } else if (alg.equals("No Change")) {
             optProcess = new NoChangeProcess(timescale, iterations, maxScore, mapName, repetitions);
         } else if (alg.equals("Simulated Annealing")) {
             optProcess = new SimulatedAnnealingProcess(timescale, iterations, maxScore, mapName, repetitions);
+        } else if (alg.equals("Gradient Hill Climbing")) {
+            optProcess = new HillClimbingWithGradient(timescale, iterations, maxScore, mapName, repetitions);
         }
         else {
             MyPopUpDialog.showMyDialogBox("Error", "Unknown algorithm: " + alg, MyPopUpDialog.error);
             return;
         }
+        optProcess.tauThreshold = tau;
+        
         optThread = new Thread(optProcess);
         optThread.setPriority(Thread.MIN_PRIORITY);
         optThread.setName("OptimizationProcess");
@@ -303,7 +307,7 @@ public class OptimizationRunner {
         return instance;
     }
 
-    public void handleIterationResults(DuelEvalResults res) {
+    public void handleEvaluationResults(DuelEvalResults res) {
         try {
             OptimizationFrame.getOptFrameInstance().addResults(res);
             if (TuningProcessBase.debug) return; // dont save on debug

@@ -96,7 +96,8 @@ public class TuningGlobalNav implements GlobalNav {
         }
 
 
-        if (bot.nConfig.weight_aggresiveness.getValue() > TuningEntityRanking.getWeigthedDeficiency(bot)) {
+//        if (bot.nConfig.weight_aggresiveness.getValue() > TuningEntityRanking.getWeigthedDeficiency(bot)) {
+        if (bot.nConfig.weight_aggresiveness.getValue() > FuzzyEntityRanking.getWeigthedDeficiency(bot)) {
 
             log.info("Aggressiveness triggered. Trying to get enemy engaging plan");
 
@@ -109,7 +110,8 @@ public class TuningGlobalNav implements GlobalNav {
         }
 
         //Get the entity ranking:
-        TreeSet<EntityDoublePair> ranking = TuningEntityRanking.getEntityFuzzyRanking(bot);
+//        TreeSet<EntityDoublePair> ranking = TuningEntityRanking.getEntityFuzzyRanking(bot);
+        TreeSet<EntityDoublePair> ranking = FuzzyEntityRanking.getEntityFuzzyRanking(bot);
         log.info("Got entity ranking: size="+ranking.size());
 
         EntityDoublePair chosen = null;
