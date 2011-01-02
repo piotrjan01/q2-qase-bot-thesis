@@ -4,6 +4,7 @@
  */
 package piotrrr.thesis.common.stats;
 
+import java.awt.Font;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,6 +14,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DatasetGroup;
 import org.jfree.data.statistics.HistogramDataset;
@@ -668,8 +671,14 @@ public class StatsChartsFactory {
         HashMap<String, LinkedList<double[]>> map = new HashMap<String, LinkedList<double[]>>();
         map.put(series.getFirst(), bestScores);
         map.put(series.getLast(), evalScore);
-        return StatsChartsFactory.getXYChart(series, map, "Fitness in evaluations", "Evaluation", "Fitness", true);
-
+        ChartPanel p = StatsChartsFactory.getXYChart(series, map, "Fitness in evaluations", "Evaluation", "Fitness", true);
+//        XYPlot pl = (XYPlot) p.getChart().getPlot();
+//        XYItemRenderer rend = pl.getRenderer();
+//        rend.setToolTipGenerator(new HillClimbinIterLabelsAndTipsGenerator());
+//        rend.setBaseItemLabelGenerator(new HillClimbinIterLabelsAndTipsGenerator());
+//        rend.setBaseItemLabelsVisible(true);
+//        rend.setItemLabelFont(new Font("Serif", Font.PLAIN, 8));
+        return p;
     }
 
     public static ChartPanel getIterFitnessPlot(OptResults optResults) {

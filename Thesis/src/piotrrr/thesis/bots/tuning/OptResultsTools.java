@@ -21,11 +21,17 @@ public class OptResultsTools {
         ret+="\nBest eval nr: "+bestRes[2];
         ret+="\nBest eval's iteration: "+bestRes[1];
 
-        ret+="\n\nResults mean: "+getResultsAvg(res);
-        ret+="\nResults variance estimation: "+getResultsVarianceEst(res);
-
         ret+="\n\nEach evaluation relative score variance estimation: "+getEvalRelativeScoreAverageVariance(res);
-        ret+="\n\nEach evaluation score variance estimation: "+getEvalScoreAverageVariance(res);
+        ret+="\nEach evaluation score variance estimation: "+getEvalScoreAverageVariance(res);
+
+        ret+="\n\nFor constant config: ";
+        ret+="\nResults mean: "+getResultsAvg(res);
+        ret+="\nResults variance estimation: "+getResultsVarianceEst(res)+" ("+(getResultsVarianceEst(res)/getResultsAvg(res))+")";
+
+        ret+="\n\nFor hill climbing:";
+        ret+="\nEach params average sensitivity spread:";
+        ret+=getEachConfigParamAvgSensitivityForHillClimbing(res);
+        
 
 
         return ret;
@@ -88,6 +94,28 @@ public class OptResultsTools {
         }
         if (max == null) return null;
         return new double [] {maxRes, max.iterNr, bestInd+1};
+    }
+
+    public static String getEachConfigParamAvgSensitivityForHillClimbing(OptResults res) {
+        NavConfig conf = new NavConfig();
+        int i = 0;
+        int paramsCount = conf.getParamsCount();
+        double [] spreads = new double [paramsCount];
+        DuelEvalResults last = null;
+        for (DuelEvalResults r : res.iterResults) {            
+            if (i!=0 && i % 2 == 0) {
+                double spread = Math.abs(last.score - r.score);
+                spreads[(i/2)%paramsCount] += spread;
+            }
+            last = r;
+            i++;
+        }
+        String r = "";
+        for (i=0; i<paramsCount; i++) {
+            spreads[i] /= res.iterResults.size()/2;
+            r += "\n"+conf.getParamsName(i)+": "+spreads[i];
+        }
+        return r;
     }
 
 }

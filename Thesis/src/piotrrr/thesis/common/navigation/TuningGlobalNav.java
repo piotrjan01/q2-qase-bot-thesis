@@ -11,6 +11,7 @@ import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.combat.EnemyInfo;
 import piotrrr.thesis.common.entities.EntityDoublePair;
+import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.tools.Dbg;
 import soc.qase.ai.waypoint.Waypoint;
 import soc.qase.state.Entity;
@@ -28,6 +29,7 @@ public class TuningGlobalNav implements GlobalNav {
     static double antiStuckDecisionTimeout = 10;
     static int maximaSpontanlDistance = 400;
     private static Logger log = Logger.getLogger(TuningGlobalNav.class);
+    private boolean debug = AppConfig.debug;
 
     /**
      * Returns the new plan that the bot should follow
@@ -86,6 +88,7 @@ public class TuningGlobalNav implements GlobalNav {
         }
         if (plan != null) {
             log.info("doing the spontanous plan!");
+            if (debug) Dbg.prn(bot.getBotName()+"> Spontaneous plan!");
             return plan;
         }
 
@@ -100,6 +103,8 @@ public class TuningGlobalNav implements GlobalNav {
         if (bot.nConfig.weight_aggresiveness.getValue() > FuzzyEntityRanking.getWeigthedDeficiency(bot)) {
 
             log.info("Aggressiveness triggered. Trying to get enemy engaging plan");
+
+            if (debug) Dbg.prn(bot.getBotName()+"> Attacking enemy: w_def="+FuzzyEntityRanking.getWeigthedDeficiency(bot)+" aggr="+bot.nConfig.weight_aggresiveness.getValue());
 
             plan = getEnemyEngagingPlan(bot, oldPlan);
 
@@ -143,7 +148,7 @@ public class TuningGlobalNav implements GlobalNav {
         }
         log.info("Found a plan for ranking item. returning it.");
 //        Dbg.prn("Going for: "+chosen.ent.toDetailedString());
-//        Dbg.prn("Rank: "+chosen.dbl+" Ent:"+chosen.ent.toString());
+        if (debug) Dbg.prn(bot.getBotName()+"> Got regular plan! rank="+chosen.dbl+" ent="+chosen.ent.toString());
         return plan;
     }
 

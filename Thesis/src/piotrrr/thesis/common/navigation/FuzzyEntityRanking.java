@@ -21,7 +21,7 @@ public class FuzzyEntityRanking {
     private static float botMaxAmmo = Float.NaN;
     private static float botMaxWeapons = Float.NaN;
 
-    private static float yagerWParam = 2;
+    private static float yagerWParam = 5;
 
     private static void setMaxAmmoAndMaxWeapns(MapBotBase bot) {
 
@@ -253,29 +253,26 @@ public class FuzzyEntityRanking {
         return m;
     }
 
-    private static double fuzzyAnd(double a, double b) {
+    private static double fuzzyOr(double a, double b) {
         double aToW = 1;
         double bToW = 1;
         for (int i=0; i<yagerWParam; i++) {
             aToW *= a;
             bToW *= b;
         }
-        double abToWToW = 1;
-        for (int i=0; i<yagerWParam; i++) {
-            abToWToW *= (aToW+bToW);
-        }
+        double abToWToW = Math.pow(aToW+bToW, 1.0/yagerWParam);
         return Math.min(1, abToWToW);
     }
 
-    private static double fuzzyOr(double a, double b) {
+    private static double fuzzyAnd(double a, double b) {
         double maToW = 1;
         double mbToW = 1;
         for (int i=0; i<yagerWParam; i++) {
             maToW *= 1-a;
             mbToW *= 1-b;
         }
-        double wRootMaMbToW = Math.pow(maToW+mbToW, 1.0/yagerWParam);
-        return 1.0 - Math.min(1, wRootMaMbToW);
+        double abToWToW = Math.pow(maToW+mbToW, 1.0/yagerWParam);
+        return 1.0 - Math.min(1, abToWToW);
     }
 
     private static float getBotHealthDeficiency(MapBotBase bot, int addedHealth) {
