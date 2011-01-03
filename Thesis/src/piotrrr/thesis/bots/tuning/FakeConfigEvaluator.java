@@ -7,10 +7,9 @@ package piotrrr.thesis.bots.tuning;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.common.stats.StatsTools;
+import piotrrr.thesis.tools.Dbg;
 import piotrrr.thesis.tools.Timer;
 import weka.core.RandomVariates;
 
@@ -34,6 +33,10 @@ public class FakeConfigEvaluator implements Runnable {
     NavConfig optCfg3 = new NavConfig();
     public static RandomVariates randVars = new RandomVariates();
 
+    double minBetterP = 0.1;
+
+    double maxBetterP = 0.7;
+
     private double [] configSensitivities = { 0.42, 0.61, 0.93, 0.63, 0.36, 0.40, 0.40, 0.52, 0.35, 0.40, 0.98 };
 
     public FakeConfigEvaluator(String mapName, NavConfig nc1, int gameNr, int itTime) {
@@ -43,41 +46,41 @@ public class FakeConfigEvaluator implements Runnable {
             this.gameNr = gameNr;
             this.itTime = itTime;
             
-            optCfg1.weight_health.setValue(0.9);
-            optCfg1.weight_armor.setValue(0.1);
-            optCfg1.weight_weapon.setValue(0.16);
-            optCfg1.weight_ammo.setValue(0.77);
-            optCfg1.weight_health_ben.setValue(0.97);
-            optCfg1.weight_armor_ben.setValue(0.45);
+            optCfg1.weight_health.setValue(0.12);
+            optCfg1.weight_armor.setValue(0.33);
+            optCfg1.weight_weapon.setValue(0.87);
+            optCfg1.weight_ammo.setValue(0.65);
+            optCfg1.weight_health_ben.setValue(0.67);
+            optCfg1.weight_armor_ben.setValue(0.65);
             optCfg1.weight_weapon_ben.setValue(0.0);
-            optCfg1.weight_ammo_ben.setValue(0.78);
-            optCfg1.weight_distance.setValue(0.16);
-            optCfg1.weight_enemycost.setValue(0.34);
-            optCfg1.weight_aggresiveness.setValue(0.51);
+            optCfg1.weight_ammo_ben.setValue(0.08);
+            optCfg1.weight_distance.setValue(0.32);
+            optCfg1.weight_enemycost.setValue(0.84);
+            optCfg1.weight_aggresiveness.setValue(0.21);
 
-            optCfg2.weight_health.setValue(0.64);
-            optCfg2.weight_armor.setValue(0.24);
-            optCfg2.weight_weapon.setValue(0.56);
-            optCfg2.weight_ammo.setValue(0.47);
-            optCfg2.weight_health_ben.setValue(0.47);
-            optCfg2.weight_armor_ben.setValue(0.65);
-            optCfg2.weight_weapon_ben.setValue(0.40);
-            optCfg2.weight_ammo_ben.setValue(0.48);
-            optCfg2.weight_distance.setValue(0.16);
-            optCfg2.weight_enemycost.setValue(0.54);
-            optCfg2.weight_aggresiveness.setValue(0);
+            optCfg2.weight_health.setValue(0.3);
+            optCfg2.weight_armor.setValue(0.64);
+            optCfg2.weight_weapon.setValue(0.2656);
+            optCfg2.weight_ammo.setValue(0.1947);
+            optCfg2.weight_health_ben.setValue(0.4547);
+            optCfg2.weight_armor_ben.setValue(0.6365);
+            optCfg2.weight_weapon_ben.setValue(0.0540);
+            optCfg2.weight_ammo_ben.setValue(0.3948);
+            optCfg2.weight_distance.setValue(0.4116);
+            optCfg2.weight_enemycost.setValue(0.6654);
+            optCfg2.weight_aggresiveness.setValue(0.0);
 
-            optCfg3.weight_health.setValue(0.39);
-            optCfg3.weight_armor.setValue(0.21);
-            optCfg3.weight_weapon.setValue(0.36);
-            optCfg3.weight_ammo.setValue(0.477);
-            optCfg3.weight_health_ben.setValue(0.197);
+            optCfg3.weight_health.setValue(0.039);
+            optCfg3.weight_armor.setValue(0.821);
+            optCfg3.weight_weapon.setValue(0.436);
+            optCfg3.weight_ammo.setValue(0.9477);
+            optCfg3.weight_health_ben.setValue(0.0197);
             optCfg3.weight_armor_ben.setValue(0.445);
-            optCfg3.weight_weapon_ben.setValue(0.60);
-            optCfg3.weight_ammo_ben.setValue(0.178);
-            optCfg3.weight_distance.setValue(0.116);
-            optCfg3.weight_enemycost.setValue(0.134);
-            optCfg3.weight_aggresiveness.setValue(0.241);
+            optCfg3.weight_weapon_ben.setValue(0.460);
+            optCfg3.weight_ammo_ben.setValue(0.0178);
+            optCfg3.weight_distance.setValue(0.4116);
+            optCfg3.weight_enemycost.setValue(0.4134);
+            optCfg3.weight_aggresiveness.setValue(0.4241);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -124,13 +127,9 @@ public class FakeConfigEvaluator implements Runnable {
 
         int time = 0;
         while (true) {
-            time++;
+            time+=rand.nextInt(720); //mena is 360, that is 22 kills in 800 sec
 
-            if (getRandomBool(0.997)) {
-                continue;
-            }
-
-            if (getRandomBool(0.25+0.5*p, 0.5, 0.3)) {
+            if (getRandomBool(minBetterP+(maxBetterP-minBetterP)*p, 0.1)) {
                 gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
             } else {
                 gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
@@ -150,19 +149,9 @@ public class FakeConfigEvaluator implements Runnable {
 
     private double getConfigIsBetterProbability() {
 
-        double c1 =getConfigIsBetterProbability(optCfg1, testedConfig);
-        double c2 =getConfigIsBetterProbability(optCfg2, testedConfig);
-        double c3 = getConfigIsBetterProbability(optCfg3, testedConfig);
+        return getConfigIsBetterProbability(testedConfig);
 
-        if (c1>c2 && c1 > c3) {
-            return c1;
-        }
-        else if (c2>c1 && c2>c3) {
-            return c2*0.8;
-        }
-        else {
-            return c3*0.6;
-        }
+
         
     }
 
@@ -173,7 +162,7 @@ public class FakeConfigEvaluator implements Runnable {
             maxp += s;
         }
         int i=0;
-        for (Field f : testedConfig.getClass().getDeclaredFields()) {
+        for (Field f : tested.getClass().getDeclaredFields()) {
             try {
                 if (!f.getType().equals(OptParam.class)) {
                     continue;
@@ -181,21 +170,50 @@ public class FakeConfigEvaluator implements Runnable {
                 OptParam p1 = (OptParam) f.get(opt);
                 OptParam p2 = (OptParam) f.get(tested);
                 double diff = Math.abs(p1.getValue() - p2.getValue());
-                p += diff*diff*Math.sqrt(Math.sqrt(configSensitivities[i]));
+                p += diff*configSensitivities[i];
                 i++;
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
-        return p/maxp;
+        return 1-p/maxp;
+    }
+
+    private double getConfigIsBetterProbability(NavConfig tested) {
+        double p = 0;
+        double maxp = 0;
+        double sensitivityConst = 1.05;
+        for (double s : configSensitivities) {
+            maxp += 1/(sensitivityConst-s);
+        }
+        int i=0;
+        for (Field f : tested.getClass().getDeclaredFields()) {
+            try {
+                if (!f.getType().equals(OptParam.class)) {
+                    continue;
+                }
+                OptParam test = (OptParam) f.get(tested);
+                OptParam p1 = (OptParam) f.get(optCfg1);
+                OptParam p2 = (OptParam) f.get(optCfg2);
+                OptParam p3 = (OptParam) f.get(optCfg3);
+                double diff = 0.4*(p1.getValue() - test.getValue())+0.4*(p2.getValue() - test.getValue())+0.2*(p3.getValue() - test.getValue());
+//                double diff = (p1.getValue() - test.getValue());
+                diff = Math.sqrt(Math.abs(diff));
+                p += diff*(1/(sensitivityConst-configSensitivities[i]));
+                i++;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return 1-p/maxp;
     }
 
     private boolean getRandomBool(double trueProbability) {
         return rand.nextDouble() < trueProbability;
     }
 
-    private boolean getRandomBool(double trueProbability, double mean, double variance) {
-        return getRandomNumber(mean, variance) < trueProbability;
+    private boolean getRandomBool(double trueProbability, double variance) {
+        return getRandomNumber(0.5, variance) < trueProbability;
     }
 
     private double getRandomNumber(double mean, double variance) {

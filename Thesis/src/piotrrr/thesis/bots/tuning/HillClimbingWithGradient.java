@@ -32,11 +32,11 @@ public class HillClimbingWithGradient extends TuningProcessBase {
 
     private double c = 0.4;
 
-    private double a = 0.02;
+    private double a = 0.01;
 
     private double alpha = 0.25;
 
-    private double gamma = 0.2;
+    private double gamma = 0.7;
 
     @Override
      public void run() {
