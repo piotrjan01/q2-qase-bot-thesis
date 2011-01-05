@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SimulatedAnnealingProcess extends TuningProcessBase {
 
-    public static final boolean stopIfVisitedAllNeighbours = true;
+    public static final boolean continueAfterVisitedAllNeighbours = true;
     private double t = 100.0;
     private int step = 0;
 
@@ -68,15 +68,15 @@ public class SimulatedAnnealingProcess extends TuningProcessBase {
 
         if (toAdd == null) {
             currentParamStepSize /= 2;
-            if (stopIfVisitedAllNeighbours) {
+            if (continueAfterVisitedAllNeighbours) {
                 //if we found no neighbour, we clear visited memory and search again
                 visited.clear();
                 resultsOfVisited.clear();
+                best.setStepSize(currentParamStepSize);
                 toAdd = findPossiblyRandomNeighbour(best);                
-                toAdd.setStepSize(currentParamStepSize);
-                info += " clearing visited and setting step size="+currentParamStepSize;
-                
-            }            
+                info += " clearing visited and setting step size="+currentParamStepSize;                
+            }
+            else return ret;
         }
 
         toAdd.additionalInfo += info;
