@@ -154,6 +154,25 @@ public class NavConfig implements Serializable {
         return false;
     }
 
+    public double getParam(int param) {
+        int c = 0;
+        for (Field f : this.getClass().getDeclaredFields()) {
+            try {
+                if (!f.getType().equals(OptParam.class)) {
+                    continue;
+                }
+                if (c == param) {
+                    OptParam p = (OptParam) f.get(this);
+                    return p.getValue();
+                }
+                c++;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return Double.NaN;
+    }
+
     public boolean addToParam(int param, double value) {
         int c = 0;
         for (Field f : this.getClass().getDeclaredFields()) {
