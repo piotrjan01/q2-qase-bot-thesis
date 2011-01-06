@@ -94,13 +94,13 @@ public class OptimizationRunner {
             optProcess = new HillClimbingWithStepDecrease(timescale, iterations, maxScore, mapName, repetitions);
         } else if (alg.equals("Hill Climbing")) {
             optProcess = new HillClimbingProcess(timescale, iterations, maxScore, mapName, repetitions);
-        } else if (alg.equals("No Change")) {
+        } else if (alg.equals("Constant solution")) {
             optProcess = new NoChangeProcess(timescale, iterations, maxScore, mapName, repetitions);
         } else if (alg.equals("Simulated Annealing")) {
             optProcess = new SimulatedAnnealingProcess(timescale, iterations, maxScore, mapName, repetitions);
-        } else if (alg.equals("Gradient Hill Climbing")) {
-            optProcess = new HillClimbingWithGradient(timescale, iterations, maxScore, mapName, repetitions);
-        } else if (alg.equals("Random search")) {
+        } else if (alg.equals("Gradient Ascend")) {
+            optProcess = new GradientAscend(timescale, iterations, maxScore, mapName, repetitions);
+        } else if (alg.equals("Localized Random Search")) {
             optProcess = new LocalizedRandomSearch(timescale, iterations, maxScore, mapName, repetitions);
         }
         else {

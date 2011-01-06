@@ -189,7 +189,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jRadioButton5.setText("Hill Climbing");
 
         algButtonGroup1.add(jRadioButton6);
-        jRadioButton6.setText("No Change");
+        jRadioButton6.setText("Constant solution");
         jRadioButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButton6ActionPerformed(evt);
@@ -197,14 +197,14 @@ public class OptimizationFrame extends javax.swing.JFrame {
         });
 
         algButtonGroup1.add(jRadioButton7);
-        jRadioButton7.setSelected(true);
         jRadioButton7.setText("Simulated Annealing");
 
         algButtonGroup1.add(jRadioButton8);
-        jRadioButton8.setText("Gradient Hill Climbing");
+        jRadioButton8.setSelected(true);
+        jRadioButton8.setText("Gradient Ascend");
 
         algButtonGroup1.add(jRadioButton9);
-        jRadioButton9.setText("Random search");
+        jRadioButton9.setText("Localized Random Search");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -213,30 +213,29 @@ public class OptimizationFrame extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRadioButton6)
                     .addComponent(jRadioButton5)
                     .addComponent(jRadioButton4)
-                    .addComponent(jRadioButton7)
+                    .addComponent(jRadioButton9)
                     .addComponent(jRadioButton8)
-                    .addComponent(jRadioButton9))
+                    .addComponent(jRadioButton7)
+                    .addComponent(jRadioButton6))
                 .addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(jRadioButton5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton7)
+                .addComponent(jRadioButton9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton9)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addComponent(jRadioButton7)
+                .addGap(18, 18, 18)
+                .addComponent(jRadioButton6)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Map"));
@@ -344,7 +343,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(evalRepetitionsjTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 110, Short.MAX_VALUE)
                         .addComponent(jButton5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(estTimejLabel5)
@@ -375,7 +374,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(87, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Run Optimization", jPanel1);

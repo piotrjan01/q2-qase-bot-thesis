@@ -14,13 +14,13 @@ import piotrrr.thesis.tools.Dbg;
  *
  * @author piotrrr
  */
-public class HillClimbingWithGradient extends TuningProcessBase {
+public class GradientAscend extends TuningProcessBase {
 
     int randNeighboursToAdd = 0;
 
     double currentStepSize = NavConfig.initialStepSize;
 
-    public HillClimbingWithGradient(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
+    public GradientAscend(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         super(timescale, iterations, maxItScore, mapName, repetitions);
     }
 
