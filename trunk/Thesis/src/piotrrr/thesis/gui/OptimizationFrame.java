@@ -86,14 +86,13 @@ public class OptimizationFrame extends javax.swing.JFrame {
         jRadioButton6 = new javax.swing.JRadioButton();
         jRadioButton7 = new javax.swing.JRadioButton();
         jRadioButton8 = new javax.swing.JRadioButton();
+        jRadioButton9 = new javax.swing.JRadioButton();
         jPanel5 = new javax.swing.JPanel();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
         jRadioButton3 = new javax.swing.JRadioButton();
         jButton5 = new javax.swing.JButton();
         estTimejLabel5 = new javax.swing.JLabel();
-        taujTextField1 = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -152,7 +151,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
 
         jLabel4.setText("Evaluation repetitions");
 
-        evalRepetitionsjTextField1.setText("40");
+        evalRepetitionsjTextField1.setText("20");
         evalRepetitionsjTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 evalRepetitionsjTextField1ActionPerformed(evt);
@@ -204,6 +203,9 @@ public class OptimizationFrame extends javax.swing.JFrame {
         algButtonGroup1.add(jRadioButton8);
         jRadioButton8.setText("Gradient Hill Climbing");
 
+        algButtonGroup1.add(jRadioButton9);
+        jRadioButton9.setText("Random search");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -215,7 +217,8 @@ public class OptimizationFrame extends javax.swing.JFrame {
                     .addComponent(jRadioButton5)
                     .addComponent(jRadioButton4)
                     .addComponent(jRadioButton7)
-                    .addComponent(jRadioButton8))
+                    .addComponent(jRadioButton8)
+                    .addComponent(jRadioButton9))
                 .addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -231,7 +234,9 @@ public class OptimizationFrame extends javax.swing.JFrame {
                 .addComponent(jRadioButton7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton8)
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton9)
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Map"));
@@ -278,10 +283,6 @@ public class OptimizationFrame extends javax.swing.JFrame {
 
         estTimejLabel5.setText("100 evals = x h 1 eval = x min");
 
-        taujTextField1.setText("2.8");
-
-        jLabel5.setText("Acceptence criterion threshold");
-
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -289,20 +290,18 @@ public class OptimizationFrame extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
+                        .addGap(94, 94, 94)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
+                            .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(maxIterScorejTextField1)
                             .addComponent(iterationsjTextField2)
                             .addComponent(timescalejTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                            .addComponent(evalRepetitionsjTextField1)
-                            .addComponent(taujTextField1)))
+                            .addComponent(evalRepetitionsjTextField1)))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -345,11 +344,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(evalRepetitionsjTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(taujTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
                         .addComponent(jButton5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(estTimejLabel5)
@@ -563,7 +558,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
         int iterations = Integer.parseInt(iterationsjTextField2.getText());
         int iterScore = Integer.parseInt(maxIterScorejTextField1.getText());
         int reps = Integer.parseInt(evalRepetitionsjTextField1.getText());
-        double tau = Double.parseDouble(taujTextField1.getText());
+        double tau = 0;
         String mapName=getRadioButtonSelectedString(mapsButtonGroup1);        
         String opt=getRadioButtonSelectedString(algButtonGroup1);
         OptimizationRunner.getInstance().runOptimization(timescale, iterations, iterScore, mapName, opt, reps, tau);
@@ -629,9 +624,11 @@ public class OptimizationFrame extends javax.swing.JFrame {
         fitnessjPanel5.add(StatsChartsFactory.getEvalFitnessPlot(optResults));
         fitnessjPanel5.revalidate();
 
-        errorjPanel7.removeAll();
-        errorjPanel7.add(StatsChartsFactory.getEvaluationsVarianceEstimatePlot(optResults, "LearnBot"));
-        errorjPanel7.revalidate();
+        if (!AppConfig.debug) {
+            errorjPanel7.removeAll();
+            errorjPanel7.add(StatsChartsFactory.getEvaluationsVarianceEstimatePlot(optResults, "LearnBot"));
+            errorjPanel7.revalidate();
+        }
 
         iterFitnessjPanel7.removeAll();
         iterFitnessjPanel7.add(StatsChartsFactory.getIterFitnessPlot(optResults));
@@ -758,7 +755,6 @@ public class OptimizationFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -773,6 +769,7 @@ public class OptimizationFrame extends javax.swing.JFrame {
     private javax.swing.JRadioButton jRadioButton6;
     private javax.swing.JRadioButton jRadioButton7;
     private javax.swing.JRadioButton jRadioButton8;
+    private javax.swing.JRadioButton jRadioButton9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -790,7 +787,6 @@ public class OptimizationFrame extends javax.swing.JFrame {
     private javax.swing.JTextArea resultsInfojTextArea1;
     private javax.swing.JList resultsjList1;
     private javax.swing.JButton runjButton1;
-    private javax.swing.JTextField taujTextField1;
     private javax.swing.JPanel textjPanel4;
     private javax.swing.JTextField timescalejTextField1;
     // End of variables declaration//GEN-END:variables

@@ -35,10 +35,11 @@ public class FakeConfigEvaluator implements Runnable {
     NavConfig optCfg2 = new NavConfig();
     NavConfig optCfg3 = new NavConfig();
     public static RandomVariates randVars = new RandomVariates();
-    double minBetterP = 0.1;
-    double maxBetterP = 0.9;
+    double minBetterP = 0.3;
+    double maxBetterP = 0.85;
     private double[] configSensitivities = {0.42, 0.61, 0.93, 0.63, 0.36, 0.40, 0.40, 0.52, 0.35, 0.40, 0.98};
     private int[] dependingParam = {4, 5, 6, 7, 5, 4, 7, 6, 8, 10, 10};
+    private static int[] nrOfExtremums = {10, 9, 10, 15, 7, 9, 15, 15, 13, 10, 7}; //7 to 15
 
     public FakeConfigEvaluator(String mapName, NavConfig nc1, int gameNr, int itTime) {
         try {
@@ -126,15 +127,40 @@ public class FakeConfigEvaluator implements Runnable {
             gameStats = BotStatistic.createNewInstance();
         }
 
+        int lReps = 0;
+        int rReps = 0;
+        int rate = 2;
+
         int time = 0;
         while (true) {
             time += rand.nextInt(720); //mena is 360, that is 22 kills in 800 sec
 
+
             if (getRandomBool(minBetterP + (maxBetterP - minBetterP) * p)) {
                 gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
-            } else {
+            } 
+//            if (getRandomBool(minBetterP + (maxBetterP - minBetterP) * (1-p))) {
+            else {
                 gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
             }
+//
+//            if (getRandomBool(minBetterP + (maxBetterP - minBetterP) * p)) {
+////                gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
+//                lReps++;
+//            } else {
+////                gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
+//                rReps++;
+//            }
+//
+//            if (lReps > rate) {
+//                gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
+//                lReps = 0;
+//            } else if (rReps > rate) {
+//                gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
+//                rReps = 0;
+//            }
+
+
 
             if (time >= 10 * itTime) {
                 int refScore = StatsTools.getBotScore(fakeRefBot, gameStats);
@@ -219,7 +245,7 @@ public class FakeConfigEvaluator implements Runnable {
                 }
                 OptParam test = (OptParam) f.get(tested);
                 OptParam p1 = (OptParam) f.get(optCfg1);                              
-                double diff = getValueDistance(test.getValue(), p1.getValue());
+                double diff = getValueDistance(test.getValue(), p1.getValue(), i);
                 p += diff * (1 / (sensitivityConst - configSensitivities[i]));
                 i++;
             } catch (Exception ex) {
@@ -229,11 +255,11 @@ public class FakeConfigEvaluator implements Runnable {
         return 1 - p / maxp;
     }
 
-    private static double getValueDistance(double x, double x0) {
+    private static double getValueDistance(double x, double x0, int paramNr) {
         double handicap = 0.9;
         double bestToMedPow = 0.2;
         double fbig = 2;
-        double fmed = 10;
+        double fmed = nrOfExtremums[paramNr]; //from 7 to 15
         double fsmall = 100;
         double smallNoisePow = 0.05;
         double res = handicap-handicap*Math.cos(Math.pow(Math.abs(fbig * (x - x0)), bestToMedPow)) * Math.pow(Math.cos(fmed * (x - x0)), 2);
@@ -259,15 +285,15 @@ public class FakeConfigEvaluator implements Runnable {
         LinkedList<String> seriesNames = new LinkedList<String>();
         HashMap<String, LinkedList<double[]>> data = new HashMap<String, LinkedList<double[]>>();
 
-        double xmin = -0.1;
-        double xmax = 1.2;
+        double xmin = 0;
+        double xmax = 1;
 
         for (double x0 = 0.5; x0 < 1; x0 += 2) {
 
             LinkedList<double[]> line1 = new LinkedList<double[]>();
 
             for (double x = xmin; x < xmax; x += 0.001) {
-                line1.add(new double[]{x, getValueDistance(x, x0)});
+                line1.add(new double[]{x, getValueDistance(x, x0, 5)});
             }
 
             data.put("x0 = "+x0, line1);
