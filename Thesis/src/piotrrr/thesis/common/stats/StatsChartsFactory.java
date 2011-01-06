@@ -4,15 +4,37 @@
  */
 package piotrrr.thesis.common.stats;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.epsgraphics.ColorMode;
+import net.sf.epsgraphics.EpsGraphics;
+import org.freehep.graphics2d.VectorGraphics;
+import org.freehep.graphicsio.emf.EMFGraphics2D;
+import org.freehep.graphicsio.ps.PSGraphics2D;
+import org.freehep.util.export.ExportDialog;
+import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -23,10 +45,14 @@ import org.jfree.data.xy.DefaultIntervalXYDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.RectangleInsets;
+import org.sourceforge.jlibeps.epsgraphics.EpsGraphics2D;
 import piotrrr.thesis.bots.tuning.DuelEvalResults;
 import piotrrr.thesis.bots.tuning.OptResults;
 import piotrrr.thesis.common.stats.BotStatistic.Kill;
 import piotrrr.thesis.common.stats.BotStatistic.Reward;
+import piotrrr.thesis.gui.MyPopUpDialog;
 
 /**
  *
@@ -625,12 +651,12 @@ public class StatsChartsFactory {
                 continue;
             }
             if (k.killer.startsWith(killerNamePrefix)) {
-                int score = StatsTools.getBotScore(k.killer, stats)-StatsTools.getBotScore(k.victim, stats);
+                int score = StatsTools.getBotScore(k.killer, stats) - StatsTools.getBotScore(k.victim, stats);
                 scores.put(k.killer, score);
             }
         }
 
-        double [] vals = new double [scores.values().size()];
+        double[] vals = new double[scores.values().size()];
         int ind = 0;
         for (int i : scores.values()) {
             vals[ind] = i;
@@ -728,7 +754,7 @@ public class StatsChartsFactory {
                     continue;
                 }
                 if (k.killer.startsWith(killerNamePrefix)) {
-                    int score = StatsTools.getBotScore(k.killer, stats)-StatsTools.getBotScore(k.victim, stats);
+                    int score = StatsTools.getBotScore(k.killer, stats) - StatsTools.getBotScore(k.victim, stats);
                     scores.put(k.killer, score);
                 }
             }
@@ -781,7 +807,7 @@ public class StatsChartsFactory {
                     continue;
                 }
                 if (k.killer.startsWith(killerNamePrefix)) {
-                    int score = StatsTools.getBotScore(k.killer, stats)-StatsTools.getBotScore(k.victim, stats);
+                    int score = StatsTools.getBotScore(k.killer, stats) - StatsTools.getBotScore(k.victim, stats);
                     scores.put(k.killer, score);
                 }
             }
@@ -807,20 +833,22 @@ public class StatsChartsFactory {
 
             seriesNames.add(r.shortName);
             data.put(r.shortName, varData);
-            if (minDataSize > varData.size()) minDataSize = varData.size();
+            if (minDataSize > varData.size()) {
+                minDataSize = varData.size();
+            }
             n++;
         }
         LinkedList<double[]> varData = new LinkedList<double[]>();
 
-        for (int e=0; e<minDataSize; e++) {
+        for (int e = 0; e < minDataSize; e++) {
             double avgVariance = 0;
             for (String s : seriesNames) {
                 avgVariance += data.get(s).get(e)[1];
             }
             avgVariance /= seriesNames.size();
-            varData.add(new double [] {e, avgVariance});
+            varData.add(new double[]{e, avgVariance});
         }
-        
+
         finalSeriesNames.add("Average evaluation variance");
         finalPlotData.put("Average evaluation variance", varData);
 
@@ -860,9 +888,85 @@ public class StatsChartsFactory {
                 legend, true, true);
 
 
-
         ChartPanel cp = new ChartPanel(c);
         return cp;
+
+    }
+
+    public static void formatChart(ChartPanel p, float we) {
+        formatChart(p, new LinkedList<float[]>(), we);
+    }
+
+    public static void formatChart(ChartPanel p, LinkedList<float[]> dashes, float we) {
+
+        ChartColor[] myChartColors = new ChartColor[]{
+            new ChartColor(0, 0, 255), //intensive blue
+            new ChartColor(200, 0, 0), //dark red
+            new ChartColor(128, 255, 128), //pastel green
+            new ChartColor(255, 128, 0), //orange            
+            new ChartColor(128, 255, 255), //v light blue
+            new ChartColor(0, 128, 0) //dark green
+        };
+
+        JFreeChart c = p.getChart();
+
+        Font f = new Font("Serif", Font.BOLD, 14);
+        c.getLegend().setItemFont(f);
+        c.getLegend().setBorder(BlockBorder.NONE);
+        c.getLegend().setPosition(RectangleEdge.RIGHT);
+        c.getLegend().setItemLabelPadding(new RectangleInsets(1, 15, 1, 15));
+        c.getXYPlot().getDomainAxis().setLabelFont(f);
+        c.setBackgroundPaint(Color.WHITE);
+        c.getXYPlot().setBackgroundPaint(Color.WHITE);
+
+
+//        c.getXYPlot().getRenderer().setBaseOutlineStroke(s);
+//        c.getXYPlot().getRenderer().setStroke(s);
+
+        XYPlot pl = c.getXYPlot();
+
+        for (int line = 0; line < pl.getSeriesCount(); line++) {
+            if (dashes.size() > line && dashes.get(line) != null) {
+                float[] dash = dashes.get(line);
+                Stroke s1 = new BasicStroke(we, BasicStroke.CAP_BUTT, 1, BasicStroke.JOIN_BEVEL, dash, 0);
+                pl.getRenderer().setSeriesStroke(line, s1);
+            } else {
+                Stroke s = new BasicStroke(we, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                pl.getRenderer().setSeriesStroke(line, s);
+            }
+            if (line < myChartColors.length) {
+                pl.getRenderer().setSeriesPaint(line, myChartColors[line]);
+            }
+        }
+
+//        c.getXYPlot().getRenderer().setOutlineStroke(new BasicStroke(0f));
+//        c.getXYPlot().getRenderer().setBaseOutlineStroke(new BasicStroke(0f));
+
+//        c.setBorderStroke(new BasicStroke(0f));
+//        c.setBorderVisible(false);
+
+        pl.rendererChanged(new RendererChangeEvent(pl.getRenderer(), true));
+
+    }
+
+    public static void saveChartAsEMF(ChartPanel c, String fName, int w, int h) {
+        try {
+//        ExportDialog exp = new ExportDialog();
+//        exp.showExportDialog(c, "Export...", c, new Dimension(800, 600), fName);
+            Properties p = new Properties();
+            p.setProperty("PageSize", "A4");
+//    VectorGraphics g = new PSGraphics2D(new File("Output.eps", new Dimension(400,300));
+//            VectorGraphics g = new PSGraphics2D(new File(fName), new Dimension(800, 600));
+            VectorGraphics g = new EMFGraphics2D(new File(fName), new Dimension(w, h));
+            g.setProperties(p);
+            g.startExport();
+//            c.print(g);
+            c.getChart().draw(g, new Rectangle2D.Double(0, 0, w, h));
+            g.endExport();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(StatsChartsFactory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
 
     }
 }

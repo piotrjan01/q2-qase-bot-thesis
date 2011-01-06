@@ -102,13 +102,12 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
                                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel3" alignment="1" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -116,7 +115,6 @@
                                       <Component id="iterationsjTextField2" alignment="0" max="32767" attributes="1"/>
                                       <Component id="timescalejTextField1" alignment="0" pref="78" max="32767" attributes="1"/>
                                       <Component id="evalRepetitionsjTextField1" alignment="0" max="32767" attributes="1"/>
-                                      <Component id="taujTextField1" alignment="0" max="32767" attributes="1"/>
                                   </Group>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
@@ -176,12 +174,7 @@
                                       <Component id="evalRepetitionsjTextField1" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="taujTextField1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace pref="83" max="32767" attributes="0"/>
+                                  <EmptySpace pref="109" max="32767" attributes="0"/>
                                   <Component id="jButton5" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="estTimejLabel5" min="-2" max="-2" attributes="0"/>
@@ -236,7 +229,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="evalRepetitionsjTextField1">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="40"/>
+                    <Property name="text" type="java.lang.String" value="20"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="evalRepetitionsjTextField1ActionPerformed"/>
@@ -298,6 +291,7 @@
                                   <Component id="jRadioButton4" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jRadioButton7" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="jRadioButton8" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jRadioButton9" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace pref="50" max="32767" attributes="0"/>
                           </Group>
@@ -316,7 +310,9 @@
                               <Component id="jRadioButton7" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jRadioButton8" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="45" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jRadioButton9" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="22" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -364,6 +360,14 @@
                           <ComponentRef name="algButtonGroup1"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Gradient Hill Climbing"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JRadioButton" name="jRadioButton9">
+                      <Properties>
+                        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                          <ComponentRef name="algButtonGroup1"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" value="Random search"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -443,16 +447,6 @@
                 <Component class="javax.swing.JLabel" name="estTimejLabel5">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="100 evals = x h 1 eval = x min"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JTextField" name="taujTextField1">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="2.8"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JLabel" name="jLabel5">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Acceptence criterion threshold"/>
                   </Properties>
                 </Component>
               </SubComponents>

@@ -27,7 +27,6 @@ import piotrrr.thesis.gui.AppConfig;
 import piotrrr.thesis.gui.MyPopUpDialog;
 import piotrrr.thesis.gui.OptimizationFrame;
 import piotrrr.thesis.tools.Dbg;
-import soc.qase.tools.vecmath.Vector3f;
 
 /**
  *
@@ -101,6 +100,8 @@ public class OptimizationRunner {
             optProcess = new SimulatedAnnealingProcess(timescale, iterations, maxScore, mapName, repetitions);
         } else if (alg.equals("Gradient Hill Climbing")) {
             optProcess = new HillClimbingWithGradient(timescale, iterations, maxScore, mapName, repetitions);
+        } else if (alg.equals("Random search")) {
+            optProcess = new LocalizedRandomSearch(timescale, iterations, maxScore, mapName, repetitions);
         }
         else {
             MyPopUpDialog.showMyDialogBox("Error", "Unknown algorithm: " + alg, MyPopUpDialog.error);
