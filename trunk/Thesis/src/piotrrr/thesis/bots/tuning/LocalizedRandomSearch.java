@@ -57,7 +57,7 @@ public class LocalizedRandomSearch extends TuningProcessBase {
             info += " p=" + p;
             if (rand.nextDouble() < p) {
                 //we take the worse one - new
-                toAdd = findPossiblyRandomNeighbour(neew);
+                toAdd = generateLocallyRandomNeighbur(neew);
                 info += " went for worse new config";
             } else {
                 //we take the better - current
