@@ -16,11 +16,13 @@ public class LocalizedRandomSearch extends TuningProcessBase {
     public static final boolean continueAfterVisitedAllNeighbours = true;
     private double t = 100.0;
     private int step = 0;
+    private double variance = 0.02;
+    private double tau = 2;
 
-    private double currentParamStepSize = 0.05;
 
     public LocalizedRandomSearch(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         super(timescale, iterations, maxItScore, mapName, repetitions);
+        tauThreshold = tau;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class LocalizedRandomSearch extends TuningProcessBase {
 
         String info = ""; // "t=" + t;
 
-        if (neewScore > currScore) {
+        if (neewScore == currScore) {
             //we take the new one
             toAdd = generateLocallyRandomNeighbur(neew);
             info += " found new better config";
@@ -87,7 +89,7 @@ public class LocalizedRandomSearch extends TuningProcessBase {
         NavConfig ret = new NavConfig(from);
         int n = ret.getParamsCount();       
         for (int i=0; i<n; i++) {
-            ret.addToParam(i, getRandomNumber(0, 0.22)*currentParamStepSize);
+            ret.addToParam(i, getRandomNumber(0, variance));
         }
         return ret;
     }

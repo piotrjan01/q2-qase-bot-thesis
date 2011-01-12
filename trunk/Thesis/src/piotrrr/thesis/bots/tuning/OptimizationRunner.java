@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import piotrrr.thesis.bots.botbase.BotBase;
 import piotrrr.thesis.bots.learnbot.LearnBot;
+import piotrrr.thesis.bots.mapbotbase.MapBotBase;
 import piotrrr.thesis.bots.referencebot.ReferenceBot;
 import piotrrr.thesis.common.CommFun;
 import piotrrr.thesis.common.stats.BotStatistic;
@@ -58,12 +59,12 @@ public class OptimizationRunner {
 
     private class BotConnector implements Runnable {
 
-        BotBase bot;
+        MapBotBase bot;
         String ip;
         int port;
         public boolean connected = false;
 
-        public BotConnector(BotBase bot, String ip, int port) {
+        public BotConnector(MapBotBase bot, String ip, int port) {
             this.bot = bot;
             this.ip = ip;
             this.port = port;
@@ -71,6 +72,7 @@ public class OptimizationRunner {
 
         public void run() {
             bot.setName(bot.getBotName());
+            bot.reportPickups = false;
             bot.connect(ip, port);
             connected = true;
             System.out.println("BotConnector: Bot " + bot.getBotName() + " connected!");
@@ -150,7 +152,7 @@ public class OptimizationRunner {
         return bot;
     }
 
-    private BotBase connect(BotBase bot, String ip, int port) {
+    private BotBase connect(MapBotBase bot, String ip, int port) {
         BotConnector con = new BotConnector(bot, ip, port);
         Thread t = new Thread(con);
         t.setName("BotConnector");

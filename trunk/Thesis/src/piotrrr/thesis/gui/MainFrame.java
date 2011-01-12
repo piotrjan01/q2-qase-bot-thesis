@@ -165,8 +165,8 @@ public class MainFrame extends javax.swing.JFrame {
         weaponsjPanel14 = new javax.swing.JPanel();
         whoKillsWhomjPanel14 = new javax.swing.JPanel();
         killsePerDeathjPanel14 = new javax.swing.JPanel();
-        rewardPanel16 = new javax.swing.JPanel();
-        avgRewardjPanel16 = new javax.swing.JPanel();
+        itemsCategoryPicks = new javax.swing.JPanel();
+        itemPickUpsRewardjPanel16 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -1046,11 +1046,11 @@ public class MainFrame extends javax.swing.JFrame {
         killsePerDeathjPanel14.setLayout(new java.awt.GridLayout(1, 0));
         jTabbedPane2.addTab("kills per death", killsePerDeathjPanel14);
 
-        rewardPanel16.setLayout(new java.awt.GridLayout(1, 0));
-        jTabbedPane2.addTab("reward", rewardPanel16);
+        itemsCategoryPicks.setLayout(new java.awt.GridLayout(1, 0));
+        jTabbedPane2.addTab("picked up by category", itemsCategoryPicks);
 
-        avgRewardjPanel16.setLayout(new java.awt.GridLayout(1, 0));
-        jTabbedPane2.addTab("avg reward", avgRewardjPanel16);
+        itemPickUpsRewardjPanel16.setLayout(new java.awt.GridLayout(1, 0));
+        jTabbedPane2.addTab("piecked up items", itemPickUpsRewardjPanel16);
 
         jButton1.setText("Save current statistics");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -1248,13 +1248,13 @@ public class MainFrame extends javax.swing.JFrame {
         whoKillsWhomjPanel14.add(StatsChartsFactory.getWhoKillsWhomBarChart(currentStats));
         whoKillsWhomjPanel14.revalidate();
 
-        rewardPanel16.removeAll();
-        rewardPanel16.add(StatsChartsFactory.getRewardsInTimeByEachBot(currentStats));
-        rewardPanel16.revalidate();
+        itemsCategoryPicks.removeAll();
+        itemsCategoryPicks.add(StatsChartsFactory.getPickedUpItemsByCategoryChart(currentStats, ""));
+        itemsCategoryPicks.revalidate();
 
-        avgRewardjPanel16.removeAll();
-        avgRewardjPanel16.add(StatsChartsFactory.getAvgRewardsChart(currentStats));
-        avgRewardjPanel16.revalidate();
+        itemPickUpsRewardjPanel16.removeAll();
+        itemPickUpsRewardjPanel16.add(StatsChartsFactory.getPickedUpItemsChart(currentStats, ""));
+        itemPickUpsRewardjPanel16.revalidate();
 
     }//GEN-LAST:event_refreshButtonActionPerformed
 
@@ -1465,7 +1465,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (dbgBot != null) {
             return;
         }
-        LearnBot bot = new LearnBot("LearnBot-dbg", AppConfig.altSkinName);
+        LearnBot bot = new LearnBot("LearnBot", AppConfig.altSkinName);
         bot.connect(AppConfig.serverIP, AppConfig.serverPort);
         stepJob = new DebugStepJob(bot, this);
         bot.addBotJob(stepJob);
@@ -1577,7 +1577,6 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton allEntsRadioButton1;
     private javax.swing.JButton applyConfigButton;
-    private javax.swing.JPanel avgRewardjPanel16;
     private javax.swing.JList bot1List;
     private javax.swing.JList bot2List;
     private javax.swing.JList bot3List;
@@ -1596,6 +1595,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane fullInfoScrollPane3;
     private javax.swing.JButton goToButton;
     private javax.swing.ButtonGroup infoButtonGroup;
+    private javax.swing.JPanel itemPickUpsRewardjPanel16;
+    private javax.swing.JPanel itemsCategoryPicks;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -1667,7 +1668,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton refreshButton;
     private javax.swing.JList reqList;
     private javax.swing.JScrollPane reqListScrollPane2;
-    private javax.swing.JPanel rewardPanel16;
     private javax.swing.JCheckBox saveExamplesChkBox;
     private javax.swing.JTextArea selectedBotInfoTextArea1;
     private javax.swing.JButton sendCommandToAnothersButton;

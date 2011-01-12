@@ -1587,11 +1587,11 @@
                     <Property name="rows" type="int" value="1"/>
                   </Layout>
                 </Container>
-                <Container class="javax.swing.JPanel" name="rewardPanel16">
+                <Container class="javax.swing.JPanel" name="itemsCategoryPicks">
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="reward">
-                        <Property name="tabTitle" type="java.lang.String" value="reward"/>
+                      <JTabbedPaneConstraints tabName="picked up by category">
+                        <Property name="tabTitle" type="java.lang.String" value="picked up by category"/>
                       </JTabbedPaneConstraints>
                     </Constraint>
                   </Constraints>
@@ -1601,11 +1601,11 @@
                     <Property name="rows" type="int" value="1"/>
                   </Layout>
                 </Container>
-                <Container class="javax.swing.JPanel" name="avgRewardjPanel16">
+                <Container class="javax.swing.JPanel" name="itemPickUpsRewardjPanel16">
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="avg reward">
-                        <Property name="tabTitle" type="java.lang.String" value="avg reward"/>
+                      <JTabbedPaneConstraints tabName="piecked up items">
+                        <Property name="tabTitle" type="java.lang.String" value="piecked up items"/>
                       </JTabbedPaneConstraints>
                     </Constraint>
                   </Constraints>

@@ -16,7 +16,7 @@ public class AppConfig {
     /**
      * If true, we run in debug mode
      */
-    public static boolean debug = true;
+    public static boolean debug = false;
 
     /**
      * Game speed. 1 is normal. Needs to be also set on server.

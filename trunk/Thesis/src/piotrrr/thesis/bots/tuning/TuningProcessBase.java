@@ -36,7 +36,7 @@ public class TuningProcessBase implements OptProcess {
     double lastEvaluatedScore;
     NavConfig lastBest = null;
     double lastBestScore;
-    public double tauThreshold;
+    public double tauThreshold=0;
 
     public TuningProcessBase(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         this.timescale = timescale;
@@ -117,7 +117,7 @@ public class TuningProcessBase implements OptProcess {
 
                 OptimizationRunner.getInstance().handleEvaluationResults(result);
 
-                if (score > bestScore) {
+                if (score > bestScore+tauThreshold) {
                     lastBestScore = bestScore;
                     lastBest = best;
                     bestScore = score;

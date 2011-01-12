@@ -61,11 +61,11 @@ public class WeaponConfig {
     /**
      * Weapon preference weight
      */
-    public int wpWGrenadeLauncher = 60;
+    public int wpWGrenadeLauncher = 0;
     /**
      * Weapon preference weight
      */
-    public int wpWRocketLauncher = 70;
+    public int wpWRocketLauncher = 40;
     /**
      * Weapon preference weight
      */
@@ -77,7 +77,7 @@ public class WeaponConfig {
     /**
      * Weapon preference weight
      */
-    public int wpWBFG10K = 100;
+    public int wpWBFG10K = 40;
 
     /**
      *
