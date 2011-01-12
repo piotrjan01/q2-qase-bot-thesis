@@ -11,6 +11,7 @@
 package piotrrr.thesis.gui;
 
 import java.util.Enumeration;
+import java.util.LinkedList;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -22,6 +23,7 @@ import piotrrr.thesis.bots.tuning.OptResults;
 import piotrrr.thesis.bots.tuning.OptResultsTools;
 import piotrrr.thesis.bots.tuning.OptimizationRunner;
 import piotrrr.thesis.common.CommFun;
+import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.common.stats.StatsChartsFactory;
 import piotrrr.thesis.tools.Dbg;
 
@@ -589,6 +591,9 @@ public class OptimizationFrame extends javax.swing.JFrame {
         try {
             if (optResults == null) {
                 return;
+            }
+            for (DuelEvalResults s : optResults.iterResults) {
+                s.stats.pickups = new LinkedList<BotStatistic.Pickup>();
             }
             JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
             fc.setApproveButtonText("Save");

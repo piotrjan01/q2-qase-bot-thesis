@@ -36,7 +36,7 @@ public class BotBase extends NoClipBot implements GameObject, UncaughtExceptionH
     /**
      * Counts the deaths of the bot.
      */
-    private int deathsNumber = 0;
+    protected int deathsNumber = 0;
     /**
      * Stores information about the world from QASE
      */

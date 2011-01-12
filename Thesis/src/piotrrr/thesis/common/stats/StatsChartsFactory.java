@@ -8,13 +8,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,12 +20,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.epsgraphics.ColorMode;
-import net.sf.epsgraphics.EpsGraphics;
 import org.freehep.graphics2d.VectorGraphics;
 import org.freehep.graphicsio.emf.EMFGraphics2D;
-import org.freehep.graphicsio.ps.PSGraphics2D;
-import org.freehep.util.export.ExportDialog;
 import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -37,22 +30,16 @@ import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DatasetGroup;
 import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.data.xy.DefaultIntervalXYDataset;
-import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-import org.sourceforge.jlibeps.epsgraphics.EpsGraphics2D;
 import piotrrr.thesis.bots.tuning.DuelEvalResults;
 import piotrrr.thesis.bots.tuning.OptResults;
 import piotrrr.thesis.common.stats.BotStatistic.Kill;
 import piotrrr.thesis.common.stats.BotStatistic.Reward;
-import piotrrr.thesis.gui.MyPopUpDialog;
 
 /**
  *
@@ -501,6 +488,141 @@ public class StatsChartsFactory {
         }
     }
 
+    private static TreeSet<String> getAllPickedUpItemsNames(BotStatistic stat) {
+        TreeSet<String> ret = new TreeSet<String>();
+        for (BotStatistic.Pickup k : stat.pickups) {
+            ret.add(getPickupItemName(k));
+        }
+        return ret;
+    }
+
+    private static String getPickupItemName(BotStatistic.Pickup p) {
+        return p.what.substring(0, p.what.indexOf("#"));
+    }
+
+    private static String getPickupBotName(BotStatistic.Pickup p) {
+        return p.what.substring(p.what.indexOf("#") + 1);
+    }
+
+    public static ChartPanel getPickedUpItemsChart(BotStatistic stat, String botName) {
+        synchronized (stat) {
+            TreeMap<String, TreeMap<String, Integer>> map = new TreeMap<String, TreeMap<String, Integer>>();
+
+            DefaultCategoryDataset ds = new DefaultCategoryDataset();
+
+
+            for (String p : stat.getAllKillingBotNames()) {
+                TreeMap<String, Integer> tm = new TreeMap<String, Integer>();
+                for (String in : getAllPickedUpItemsNames(stat)) {
+                    tm.put(in, 0);
+                }
+                map.put(p, tm);
+            }
+
+            for (BotStatistic.Pickup p : stat.pickups) {
+                TreeMap<String, Integer> tm = map.get(getPickupBotName(p));
+                int c = tm.get(getPickupItemName(p));
+                tm.remove(getPickupItemName(p));
+                tm.put(getPickupItemName(p), c + 1);
+            }
+
+            for (String bn : map.keySet()) {
+                TreeMap<String, Integer> usage = map.get(bn);
+                for (String wpn : usage.keySet()) {
+                    ds.addValue((Number) usage.get(wpn), wpn, bn);
+                }
+            }
+
+            JFreeChart c = ChartFactory.createBarChart(
+                    "",
+                    "Item",
+                    "Nr of pick ups",
+                    ds,
+                    PlotOrientation.VERTICAL,
+                    true, true, true);
+
+
+
+            ChartPanel cp = new ChartPanel(c);
+            return cp;
+        }
+    }
+
+    private static TreeSet<String> getAllPickedUpItemsCategories(BotStatistic stat) {
+        TreeSet<String> ret = new TreeSet<String>();
+        for (BotStatistic.Pickup k : stat.pickups) {
+            ret.add(getPickupItemCategory(k));
+        }
+        return ret;
+    }
+
+    private static String getPickupItemCategory(BotStatistic.Pickup p) {
+        String es = p.what;
+        if (es.contains("health")) {
+            return "health";
+        } else if (es.contains("armor")) {
+            return "armor";
+        } else if (es.contains("weapons")) {
+            return "weapon";
+        } else if (es.contains("ammo")) {
+            return "ammo";
+        } else {
+            return "UNKNOWN";
+        }
+
+    }
+
+    public static ChartPanel getPickedUpItemsByCategoryChart(BotStatistic stat, String botName) {
+        synchronized (stat) {
+            TreeMap<String, TreeMap<String, Integer>> map = new TreeMap<String, TreeMap<String, Integer>>();
+
+            DefaultCategoryDataset ds = new DefaultCategoryDataset();
+
+
+
+            for (String p : stat.getAllKillingBotNames()) {
+                TreeMap<String, Integer> tm = new TreeMap<String, Integer>();
+                for (String in : getAllPickedUpItemsCategories(stat)) {
+                    if (in.equals("UNKNOWN")) {
+                        continue;
+                    }
+                    tm.put(in, 0);
+                }
+                map.put(p, tm);
+            }
+
+            for (BotStatistic.Pickup p : stat.pickups) {
+                if (getPickupItemCategory(p).equals("UNKNOWN")) {
+                    continue;
+                }
+                TreeMap<String, Integer> tm = map.get(getPickupBotName(p));
+                int c = tm.get(getPickupItemCategory(p));
+                tm.remove(getPickupItemCategory(p));
+                tm.put(getPickupItemCategory(p), c + 1);
+            }
+
+            for (String bn : map.keySet()) {
+                TreeMap<String, Integer> usage = map.get(bn);
+                for (String wpn : usage.keySet()) {
+                    ds.addValue((Number) usage.get(wpn), wpn, bn);
+                }
+            }
+
+            JFreeChart c = ChartFactory.createBarChart(
+                    "",
+                    "Item category",
+                    "Nr of pick ups",
+                    ds,
+                    PlotOrientation.VERTICAL,
+                    true, true, true);
+
+
+
+            ChartPanel cp = new ChartPanel(c);
+            return cp;
+        }
+    }
+
     public static ChartPanel getRewardsInTimeByEachBot(BotStatistic stats) {
         synchronized (stats) {
             XYSeriesCollection ds = new XYSeriesCollection();
@@ -681,6 +803,11 @@ public class StatsChartsFactory {
     public static ChartPanel getEvalFitnessPlot(OptResults optResults) {
         LinkedList<double[]> evalScore = new LinkedList<double[]>();
         LinkedList<double[]> bestScores = new LinkedList<double[]>();
+        LinkedList<double[]> maScores = new LinkedList<double[]>();
+
+        int maBackSteps = 40;
+        LinkedList<double[]> maData = new LinkedList<double[]>();
+
         int eval = 1;
         double bestScore = Double.NEGATIVE_INFINITY;
         for (DuelEvalResults res : optResults.iterResults) {
@@ -688,22 +815,40 @@ public class StatsChartsFactory {
                 bestScore = res.score;
             }
             evalScore.add(new double[]{eval, res.score});
+            maData.add(new double[]{eval, res.score});
+            if (maData.size() > maBackSteps) {
+                maData.pollFirst();
+                double avg = 0;
+                for (double[] s : maData) {
+                    avg += s[1];
+                }
+                avg /= maBackSteps;
+                maScores.add(new double[]{eval, avg});
+            }
             bestScores.add(new double[]{eval, bestScore});
             eval++;
         }
         LinkedList<String> series = new LinkedList<String>();
-        series.add("Best fitness");
-        series.add("Eval fitness");
         HashMap<String, LinkedList<double[]>> map = new HashMap<String, LinkedList<double[]>>();
-        map.put(series.getFirst(), bestScores);
+        series.add("best result");
+        map.put(series.getLast(), bestScores);        
+        series.add("moving avg (" + maBackSteps + ")");
+        map.put(series.getLast(), maScores);
+        series.add("result");
         map.put(series.getLast(), evalScore);
-        ChartPanel p = StatsChartsFactory.getXYChart(series, map, "Fitness in evaluations", "Evaluation", "Fitness", true);
+        ChartPanel p = StatsChartsFactory.getXYChart(series, map, "", "Evaluation", "Result", true);
+
 //        XYPlot pl = (XYPlot) p.getChart().getPlot();
 //        XYItemRenderer rend = pl.getRenderer();
 //        rend.setToolTipGenerator(new HillClimbinIterLabelsAndTipsGenerator());
 //        rend.setBaseItemLabelGenerator(new HillClimbinIterLabelsAndTipsGenerator());
 //        rend.setBaseItemLabelsVisible(true);
 //        rend.setItemLabelFont(new Font("Serif", Font.PLAIN, 8));
+
+        formatChart(p, 2);
+
+        saveChartAsEMF(p, "fitnessInEvals.emf", 640, 400);
+
         return p;
     }
 
@@ -846,13 +991,17 @@ public class StatsChartsFactory {
                 avgVariance += data.get(s).get(e)[1];
             }
             avgVariance /= seriesNames.size();
-            varData.add(new double[]{e, avgVariance});
+            varData.add(new double[]{e+1, avgVariance});
         }
 
-        finalSeriesNames.add("Average evaluation variance");
-        finalPlotData.put("Average evaluation variance", varData);
+        String sn = "avg variance";
+        finalSeriesNames.add(sn);
+        finalPlotData.put(sn, varData);
 
-        return getXYChart(finalSeriesNames, finalPlotData, "Average evaluation variance", "Repetitions in evaluation", "Variance", true);
+        ChartPanel p = getXYChart(finalSeriesNames, finalPlotData, "", "N", "Variance", false);
+        formatChart(p, 2);
+        saveChartAsEMF(p, "variance-in-n.emf", 640, 400);
+        return p;
 
     }
 
@@ -911,10 +1060,12 @@ public class StatsChartsFactory {
         JFreeChart c = p.getChart();
 
         Font f = new Font("Serif", Font.BOLD, 14);
-        c.getLegend().setItemFont(f);
-        c.getLegend().setBorder(BlockBorder.NONE);
-        c.getLegend().setPosition(RectangleEdge.RIGHT);
-        c.getLegend().setItemLabelPadding(new RectangleInsets(1, 15, 1, 15));
+        if (c.getLegend() != null) {
+            c.getLegend().setItemFont(f);
+            c.getLegend().setBorder(BlockBorder.NONE);
+            c.getLegend().setPosition(RectangleEdge.RIGHT);
+            c.getLegend().setItemLabelPadding(new RectangleInsets(1, 15, 1, 15));
+        }
         c.getXYPlot().getDomainAxis().setLabelFont(f);
         c.setBackgroundPaint(Color.WHITE);
         c.getXYPlot().setBackgroundPaint(Color.WHITE);

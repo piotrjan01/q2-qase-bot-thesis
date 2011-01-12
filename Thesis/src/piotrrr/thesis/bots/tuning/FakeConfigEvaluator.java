@@ -22,6 +22,7 @@ import weka.core.RandomVariates;
  */
 public class FakeConfigEvaluator implements Runnable {
 
+    private static final boolean noisy = true;
     static BotStatistic gameStats = null;
     static Timer timer;
     String mapName;
@@ -35,11 +36,13 @@ public class FakeConfigEvaluator implements Runnable {
     NavConfig optCfg2 = new NavConfig();
     NavConfig optCfg3 = new NavConfig();
     public static RandomVariates randVars = new RandomVariates();
-    double minBetterP = 0.3;
-    double maxBetterP = 0.85;
+    double minBetterP = 0.0;
+    double maxBetterP = 1.0;
     private double[] configSensitivities = {0.42, 0.61, 0.93, 0.63, 0.36, 0.40, 0.40, 0.52, 0.35, 0.40, 0.98};
     private int[] dependingParam = {4, 5, 6, 7, 5, 4, 7, 6, 8, 10, 10};
-    private static int[] nrOfExtremums = {10, 9, 10, 15, 7, 9, 15, 15, 13, 10, 7}; //7 to 15
+//    private static int[] nrOfExtremums = {10, 9, 10, 15, 7, 9, 15, 15, 13, 10, 7}; //7 to 15
+    private static int[] nrOfExtremums = {7, 2, 7, 2, 2, 2, 5, 2, 4, 7, 1}; //2 to 15
+//    private static int[] nrOfExtremums = {15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15}; //7 to 15
 
     public FakeConfigEvaluator(String mapName, NavConfig nc1, int gameNr, int itTime) {
         try {
@@ -48,17 +51,18 @@ public class FakeConfigEvaluator implements Runnable {
             this.gameNr = gameNr;
             this.itTime = itTime;
 
-            optCfg1.weight_health.setValue(0.12);                   //0
-            optCfg1.weight_armor.setValue(0.33);                    //1
-            optCfg1.weight_weapon.setValue(0.87);                   //2
-            optCfg1.weight_ammo.setValue(0.65);                     //3
-            optCfg1.weight_health_ben.setValue(0.67);               //4
+            //Taken from opt. Do not change!
+            optCfg1.weight_health.setValue(0.20);                   //0
+            optCfg1.weight_armor.setValue(0.68);                    //1
+            optCfg1.weight_weapon.setValue(0.37);                   //2
+            optCfg1.weight_ammo.setValue(0.205);                     //3
+            optCfg1.weight_health_ben.setValue(0.27);               //4
             optCfg1.weight_armor_ben.setValue(0.65);                //5
-            optCfg1.weight_weapon_ben.setValue(0.0);                //6
-            optCfg1.weight_ammo_ben.setValue(0.08);                 //7
-            optCfg1.weight_distance.setValue(0.32);                 //8
-            optCfg1.weight_enemycost.setValue(0.84);                //9
-            optCfg1.weight_aggresiveness.setValue(0.21);            //10
+            optCfg1.weight_weapon_ben.setValue(0.031);                //6
+            optCfg1.weight_ammo_ben.setValue(0.31);                 //7
+            optCfg1.weight_distance.setValue(0.422);                 //8
+            optCfg1.weight_enemycost.setValue(0.264);                //9
+            optCfg1.weight_aggresiveness.setValue(0.061);            //10
 
             optCfg2.weight_health.setValue(0.3);
             optCfg2.weight_armor.setValue(0.64);
@@ -108,7 +112,7 @@ public class FakeConfigEvaluator implements Runnable {
         res /= ces.size();
 
         timer.pause();
-        evalLog += "\n" + timer.toString();
+//        evalLog += "\n" + timer.toString();
         evalLog += "\nConfig is better probability: " + ces.getFirst().getConfigIsBetterProbability();
         return res;
 
@@ -127,47 +131,81 @@ public class FakeConfigEvaluator implements Runnable {
             gameStats = BotStatistic.createNewInstance();
         }
 
-        int lReps = 0;
-        int rReps = 0;
-        int rate = 2;
+        int killsNr = 28;
+
+        double killsL = ((minBetterP + (maxBetterP - minBetterP) * p) * killsNr);
+        double killsR = ((1.0 - (minBetterP + (maxBetterP - minBetterP) * p)) * killsNr);
+
+        if (noisy == false) {
+            if (getRandomBool(p)) {
+                killsL += 1;
+            }
+            if (getRandomBool(p)) {
+                killsL -= 1;
+            }
+            if (getRandomBool(p)) {
+                killsR += 1;
+            }
+            if (getRandomBool(p)) {
+                killsR -= 1;
+            }
+        } else {
+            double var = 4.2;
+            killsL = getRandomNumber(killsL, var);
+            killsR = getRandomNumber(killsR, var);
+        }
 
         int time = 0;
+
+        boolean lastR = false;
+
         while (true) {
-            time += rand.nextInt(720); //mena is 360, that is 22 kills in 800 sec
 
+            time += rand.nextInt(800/killsNr*10*2); //mean is 360, that is 22 kills in 800 sec
 
-            if (getRandomBool(minBetterP + (maxBetterP - minBetterP) * p)) {
-                gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
-            } 
-//            if (getRandomBool(minBetterP + (maxBetterP - minBetterP) * (1-p))) {
-            else {
-                gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
-            }
-//
-//            if (getRandomBool(minBetterP + (maxBetterP - minBetterP) * p)) {
-////                gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
-//                lReps++;
-//            } else {
-////                gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
-//                rReps++;
-//            }
-//
-//            if (lReps > rate) {
-//                gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
-//                lReps = 0;
-//            } else if (rReps > rate) {
-//                gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
-//                rReps = 0;
-//            }
+            int rScore = StatsTools.getBotScore(fakeRefBot, gameStats);
+            int lScore = StatsTools.getBotScore(fakeLearnBot, gameStats);
 
+            if (noisy == false) {
+                if (lastR) {
+                    lastR = false;
+                    gameStats.addKill(time, fakeLearnBot, fakeRefBot, "weapon");
+                } else {
+                    lastR = true;
+                    if (rScore < killsR) {
+                        gameStats.addKill(time, fakeRefBot, fakeLearnBot, "weapon");
+                    }
+                }
 
+                if (lScore >= killsL) {
+                    ret = lScore - rScore;
+                    result = ret;
+                    evalLog += ret + " ";
+                    return;
+                }
+            } else {
 
-            if (time >= 10 * itTime) {
-                int refScore = StatsTools.getBotScore(fakeRefBot, gameStats);
-                ret = StatsTools.getBotScore(fakeLearnBot, gameStats) - refScore;
-                result = ret;
-                evalLog += ret + " ";
-                return;
+                if (getRandomBool(minBetterP + (maxBetterP - minBetterP) * p)) {
+                    if (time > 8*itTime || lScore < killsL) {
+                        gameStats.addKill(time, fakeLearnBot, fakeRefBot, "weapon");
+                    }
+                } //            if (getRandomBool(minBetterP + (maxBetterP - minBetterP) * (1-p))) {
+                else {
+                    if (time > 8*itTime || rScore < killsR) {
+                        gameStats.addKill(time, fakeRefBot, fakeLearnBot, "weapon");
+                    }
+                }
+
+                if (time >= 10 * itTime) {
+//                    gameStats.addKill(time, fakeLearnBot, fakeRefBot, "fake-gun");
+//                    gameStats.addKill(time, fakeRefBot, fakeLearnBot, "fake-gun");
+
+                    int refScore = rScore;
+                    ret = lScore - refScore;
+                    result = ret;
+                    evalLog += ret + " ";
+                    return;
+                }
             }
 
         }
@@ -180,49 +218,6 @@ public class FakeConfigEvaluator implements Runnable {
 
 
 
-    }
-
-    private double getConfigIsBetterProbability(NavConfig tested) {
-        double p = 0;
-        double maxp = 0;
-        double sensitivityConst = 1.05;
-        double lastDiff = 0;
-        double fuckUpFactor = 0.5;
-        int pCount = tested.getParamsCount();
-        for (double s : configSensitivities) {
-            maxp += 1 / (sensitivityConst - s);
-        }
-        int i = 0;
-        for (Field f : tested.getClass().getDeclaredFields()) {
-            try {
-                if (!f.getType().equals(OptParam.class)) {
-                    continue;
-                }
-                OptParam test = (OptParam) f.get(tested);
-                OptParam p1 = (OptParam) f.get(optCfg1);
-                OptParam p2 = (OptParam) f.get(optCfg2);
-                OptParam p3 = (OptParam) f.get(optCfg3);
-                double diff = 0.3 * (p1.getValue() - test.getValue()) + 0.3 * (p2.getValue() - test.getValue()) + 0.3 * (p3.getValue() - test.getValue());
-//                diff += rand.nextDouble()*2*fuckUpFactor-fuckUpFactor;
-
-                double related = tested.getParam(dependingParam[i]);
-                diff = Math.abs(diff);
-                diff = Math.sqrt(diff * related);
-//                int hash = 89 + (int) (Double.doubleToLongBits(test.getValue()) ^ (Double.doubleToLongBits(diff) >>> 32));
-//                if (hash % 2 == 0) diff *= (1 - fuckUpFactor*Math.abs(Math.sin(hash)));
-//                double noise = tested.getParam(Math.abs(hash) % tested.getParamsCount());
-//                if (Double.isNaN(noise)) Dbg.prn("NAN!!!!: hash="+(hash%tested.getParamsCount()));
-//                else diff = (diff + noise)/2;
-
-//                diff = Math.sqrt(diff);
-                p += diff * (1 / (sensitivityConst - configSensitivities[i]));
-                i++;
-                lastDiff = diff;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return 1 - p / maxp;
     }
 
     /**
@@ -244,7 +239,7 @@ public class FakeConfigEvaluator implements Runnable {
                     continue;
                 }
                 OptParam test = (OptParam) f.get(tested);
-                OptParam p1 = (OptParam) f.get(optCfg1);                              
+                OptParam p1 = (OptParam) f.get(optCfg1);
                 double diff = getValueDistance(test.getValue(), p1.getValue(), i);
                 p += diff * (1 / (sensitivityConst - configSensitivities[i]));
                 i++;
@@ -256,16 +251,21 @@ public class FakeConfigEvaluator implements Runnable {
     }
 
     private static double getValueDistance(double x, double x0, int paramNr) {
-        double handicap = 0.9;
+        double handicap = 0.1;
+        double spread = 1 - handicap;
         double bestToMedPow = 0.2;
         double fbig = 2;
         double fmed = nrOfExtremums[paramNr]; //from 7 to 15
         double fsmall = 100;
         double smallNoisePow = 0.05;
-        double res = handicap-handicap*Math.cos(Math.pow(Math.abs(fbig * (x - x0)), bestToMedPow)) * Math.pow(Math.cos(fmed * (x - x0)), 2);
-        res += smallNoisePow*Math.sin(fsmall*x);
-        if (res > 1) res = 1;
-        if (res < 0) res = 0;
+        double res = handicap + spread - spread * Math.cos(Math.pow(Math.abs(fbig * (x - x0)), bestToMedPow)) * Math.pow(Math.cos(fmed * (x - x0)), 2);
+        res += smallNoisePow * Math.cos(fsmall * x);
+        if (res > 1) {
+            res = 1;
+        }
+        if (res < 0) {
+            res = 0;
+        }
         return res;
     }
 
@@ -288,16 +288,16 @@ public class FakeConfigEvaluator implements Runnable {
         double xmin = 0;
         double xmax = 1;
 
-        for (double x0 = 0.5; x0 < 1; x0 += 2) {
+        for (double x0 = 0.2; x0 < 1; x0 += 2) {
 
             LinkedList<double[]> line1 = new LinkedList<double[]>();
 
             for (double x = xmin; x < xmax; x += 0.001) {
-                line1.add(new double[]{x, getValueDistance(x, x0, 5)});
+                line1.add(new double[]{x, getValueDistance(x, x0, 10)});
             }
 
-            data.put("x0 = "+x0, line1);
-            seriesNames.add("x0 = "+x0);
+            data.put("x0 = " + x0, line1);
+            seriesNames.add("x0 = " + x0);
 
         }
 

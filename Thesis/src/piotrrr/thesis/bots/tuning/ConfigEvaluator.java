@@ -154,6 +154,7 @@ public class ConfigEvaluator implements Runnable {
 //            result = ret;
 //            return;
         } catch (Exception e) {
+            e.printStackTrace();
             tryAgain(servPort, "Exception in run(): " + e.toString());
             return;
         }

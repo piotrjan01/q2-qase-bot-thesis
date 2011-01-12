@@ -8,16 +8,12 @@ import java.util.LinkedList;
 import java.util.List;
 import piotrrr.thesis.common.stats.BotStatistic;
 import piotrrr.thesis.gui.AppConfig;
-import piotrrr.thesis.tools.Dbg;
 
 /**
  *
  * @author piotrrr
  */
 public class GradientAscend extends TuningProcessBase {
-
-    int randNeighboursToAdd = 0;
-
     double currentStepSize = NavConfig.initialStepSize;
 
     public GradientAscend(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
@@ -30,13 +26,15 @@ public class GradientAscend extends TuningProcessBase {
 
     private double ckGain;
 
-    private double c = 0.4;
+    private double c = 0.1;
 
-    private double a = 0.01;
+    private double a = 0.02;
 
-    private double alpha = 0.25;
+    private double A = 50;
 
-    private double gamma = 0.7;
+    private double alpha = 0.602;
+
+    private double gamma = 0.101;
 
     @Override
      public void run() {
@@ -68,7 +66,7 @@ public class GradientAscend extends TuningProcessBase {
             }
 
             ckGain = c/Math.pow(i+1, gamma);
-            akGain = a/Math.pow(i+1, alpha);
+            akGain = a/Math.pow(i+1+A, alpha);
 
             List<NavConfig> nList = generateAllNeighboursSystematically(initial, false, ckGain);
             gradientEstimate = new double [nList.size()/2]; 
@@ -99,7 +97,7 @@ public class GradientAscend extends TuningProcessBase {
 
                 //after each 2 evaluations
                 if (param % 2 == 0) {
-                    gradientEstimate[param/2-1] = (lastEvaluatedScore-score)/(2*currentStepSize);
+                    gradientEstimate[param/2-1] = (lastEvaluatedScore-score)/(2*ckGain);
                     evalLog += "\nAdded gradient estimate for param "+best.getParamsName(param/2-1)+": "+gradientEstimate[param/2-1];
                     evalLog += "\nakGain="+akGain+" ckGain="+ckGain;
                 }

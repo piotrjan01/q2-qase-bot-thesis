@@ -14,8 +14,8 @@ import piotrrr.thesis.common.navigation.GlobalNav;
 import piotrrr.thesis.common.navigation.LocalNav;
 import piotrrr.thesis.common.navigation.NavInstructions;
 import piotrrr.thesis.common.navigation.NavPlan;
-import piotrrr.thesis.common.navigation.TuningEntityRanking;
 import piotrrr.thesis.common.navigation.WorldKB;
+import piotrrr.thesis.common.stats.BotStatistic;
 import soc.qase.state.Action;
 import soc.qase.state.Entity;
 import soc.qase.state.PlayerMove;
@@ -73,6 +73,14 @@ public class MapBotBase extends BotBase {
      */
     public NavConfig nConfig = new NavConfig();
 
+    /**
+     * If set to true, the bot will collect statistics about item pick ups.
+     */
+    public boolean reportPickups = true;
+
+    private int lastBotHealth = -1;
+    private int lastDeathsNumber = 0;
+
 
 
     /**
@@ -108,6 +116,8 @@ public class MapBotBase extends BotBase {
             assert kb != null;
             dtalk.addToLog("KB loaded!");
         }
+
+        if (reportPickups) reportPickUps();
 
         kb.updateEnemyInformation();
 
@@ -231,6 +241,7 @@ public class MapBotBase extends BotBase {
                     "alive: " + isAlive() + "\n" +
                     "connected: " + isConnected() + "\n" +
                     "state: " + fuzzyState + "\n\n" +
+                    nConfig.toString() + "\n\n"+
                     kb.toString();
         }
     }
@@ -247,6 +258,24 @@ public class MapBotBase extends BotBase {
             }
         }
         return false;
+    }
+
+    private void reportPickUps() {
+        Entity e = world.getPickupEntity();
+        if (e != null) {
+            BotStatistic stats = BotStatistic.getInstance();
+            if (stats != null) {
+                stats.pickups.add(new BotStatistic.Pickup(e.toString() + "#" + getBotName(), e.getObjectPosition(), getFrameNumber()));
+            }
+        }
+        if (getHealth() > lastBotHealth && deathsNumber == lastDeathsNumber) {
+            BotStatistic stats = BotStatistic.getInstance();
+            if (stats != null) {
+                stats.pickups.add(new BotStatistic.Pickup("health" + "#" + getBotName(), getObjectPosition(), getFrameNumber()));
+            }
+        }
+        lastBotHealth = getHealth();
+        lastDeathsNumber = deathsNumber;
     }
 
     

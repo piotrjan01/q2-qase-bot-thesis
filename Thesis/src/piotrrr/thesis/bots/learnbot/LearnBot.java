@@ -23,6 +23,12 @@ public class LearnBot extends MapBotBase {
     protected void botLogic() {
         super.botLogic();
 
+        //TODO: remove it
+        if (getFrameNumber() > 18000) {
+            disconnect();
+            return;
+        }
+
         NavInstructions ni = null;
         if (!noMove) {
 

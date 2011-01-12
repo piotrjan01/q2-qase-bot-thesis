@@ -18,6 +18,7 @@ public class HillClimbingWithStepDecrease extends TuningProcessBase {
 
     public HillClimbingWithStepDecrease(int timescale, int iterations, int maxItScore, String mapName, int repetitions) {
         super(timescale, iterations, maxItScore, mapName, repetitions);
+        tauThreshold = 2;
     }
 
     @Override
