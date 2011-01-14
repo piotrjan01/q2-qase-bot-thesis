@@ -1005,6 +1005,18 @@ public class StatsChartsFactory {
 
     }
 
+
+    public static ChartPanel getXYChart(HashMap<String, LinkedList<double[]>> data,
+            String title, String xLabel, String yLabel, boolean legend) {
+        LinkedList<String> seriesNames = new LinkedList<String>();
+        for (String s : data.keySet()) {
+            seriesNames.add(s);
+        }
+
+        return getXYChart(seriesNames, data, title, xLabel, yLabel, legend);
+        
+    }
+
     /**
      *
      * @param seriesNames list of series names
