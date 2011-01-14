@@ -10,17 +10,17 @@ public class NavConfig implements Serializable {
 
 //before
 
-//    public OptParam weight_health = new OptParam(0.4f, 0, 1, initialStepSize);
-//    public OptParam weight_armor = new OptParam(0.3f, 0, 1, initialStepSize);
-//    public OptParam weight_weapon = new OptParam(0.3f, 0, 1, initialStepSize);
-//    public OptParam weight_ammo = new OptParam(0.2f, 0, 1, initialStepSize);
-//    public OptParam weight_health_ben = new OptParam(0.5f, 0, 1, initialStepSize);
-//    public OptParam weight_armor_ben = new OptParam(0.4f, 0, 1, initialStepSize);
-//    public OptParam weight_weapon_ben = new OptParam(0.5f, 0, 1, initialStepSize);
-//    public OptParam weight_ammo_ben = new OptParam(0.2f, 0, 1, initialStepSize);
-//    public OptParam weight_distance = new OptParam(0.4f, 0, 1, initialStepSize);
-//    public OptParam weight_enemycost = new OptParam(0.5f, 0, 1, initialStepSize);
-//    public OptParam weight_aggresiveness = new OptParam(0.3f, 0, 1, initialStepSize);
+    public OptParam weight_health = new OptParam(0.4f, 0, 1, initialStepSize);
+    public OptParam weight_armor = new OptParam(0.3f, 0, 1, initialStepSize);
+    public OptParam weight_weapon = new OptParam(0.3f, 0, 1, initialStepSize);
+    public OptParam weight_ammo = new OptParam(0.2f, 0, 1, initialStepSize);
+    public OptParam weight_health_ben = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_armor_ben = new OptParam(0.4f, 0, 1, initialStepSize);
+    public OptParam weight_weapon_ben = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_ammo_ben = new OptParam(0.2f, 0, 1, initialStepSize);
+    public OptParam weight_distance = new OptParam(0.4f, 0, 1, initialStepSize);
+    public OptParam weight_enemycost = new OptParam(0.5f, 0, 1, initialStepSize);
+    public OptParam weight_aggresiveness = new OptParam(0.3f, 0, 1, initialStepSize);
 
 
 //hc-sd
@@ -39,17 +39,17 @@ public class NavConfig implements Serializable {
 
 //fdsa
     
-    public OptParam weight_health = new OptParam(0.468f, 0, 1, initialStepSize);
-    public OptParam weight_armor = new OptParam(0.706f, 0, 1, initialStepSize);
-    public OptParam weight_weapon = new OptParam(0.392f, 0, 1, initialStepSize);
-    public OptParam weight_ammo = new OptParam(0.234f, 0, 1, initialStepSize);
-    public OptParam weight_health_ben = new OptParam(0.293f, 0, 1, initialStepSize);
-    public OptParam weight_armor_ben = new OptParam(0.514f, 0, 1, initialStepSize);
-    public OptParam weight_weapon_ben = new OptParam(0.567f, 0, 1, initialStepSize);
-    public OptParam weight_ammo_ben = new OptParam(0.344f, 0, 1, initialStepSize);
-    public OptParam weight_distance = new OptParam(0.420f, 0, 1, initialStepSize);
-    public OptParam weight_enemycost = new OptParam(0.255f, 0, 1, initialStepSize);
-    public OptParam weight_aggresiveness = new OptParam(0.036f, 0, 1, initialStepSize);
+//    public OptParam weight_health = new OptParam(0.468f, 0, 1, initialStepSize);
+//    public OptParam weight_armor = new OptParam(0.706f, 0, 1, initialStepSize);
+//    public OptParam weight_weapon = new OptParam(0.392f, 0, 1, initialStepSize);
+//    public OptParam weight_ammo = new OptParam(0.234f, 0, 1, initialStepSize);
+//    public OptParam weight_health_ben = new OptParam(0.293f, 0, 1, initialStepSize);
+//    public OptParam weight_armor_ben = new OptParam(0.514f, 0, 1, initialStepSize);
+//    public OptParam weight_weapon_ben = new OptParam(0.567f, 0, 1, initialStepSize);
+//    public OptParam weight_ammo_ben = new OptParam(0.344f, 0, 1, initialStepSize);
+//    public OptParam weight_distance = new OptParam(0.420f, 0, 1, initialStepSize);
+//    public OptParam weight_enemycost = new OptParam(0.255f, 0, 1, initialStepSize);
+//    public OptParam weight_aggresiveness = new OptParam(0.036f, 0, 1, initialStepSize);
 
 
     public String additionalInfo = "";
